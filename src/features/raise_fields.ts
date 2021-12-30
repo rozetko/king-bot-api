@@ -202,7 +202,7 @@ class raise extends feature_item {
 			// check if building time is less than 5 min
 			// add 2 seconds for safety
 			if (get_diff_time(upgrade_time) <= (five_minutes - 2)) {
-				if(finish_earlier.running) {
+				if (finish_earlier.running) {
 					await api.finish_now(village_id, 2);
 					logger.info('upgrade time less 5 min, instant finish!', 'raise fields');
 				}

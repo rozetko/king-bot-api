@@ -194,7 +194,7 @@ class api {
 			villageId: village_id
 		};
 		return await this.post('recruitUnits', 'building', params);
-	};
+	}
 
 	async post(action: string, controller: string, params: object): Promise<any> {
 		const session = this.session;

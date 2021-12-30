@@ -5,19 +5,16 @@ import { format } from 'logform';
 import settings from './settings';
 
 const level = () => {
-	const env = process.env.NODE_ENV || 'development'
-	const isDevelopment = env === 'development'
-	return isDevelopment ? 'debug' : 'warn'
-}
+	const env = process.env.NODE_ENV || 'development';
+	const isDevelopment = env === 'development';
+	return isDevelopment ? 'debug' : 'warn';
+};
 
 const transports = [
 	new winston.transports.Console(),
-	new winston.transports.File({
-	  filename: 'logs/errors.log',
-	  level: 'error',
-	}),
+	new winston.transports.File({ filename: 'logs/errors.log', level: 'error' })
 	//new winston.transports.File({ filename: 'logs/all.log' })
-]
+];
 
 interface log {
 	level: string
@@ -128,12 +125,12 @@ class logger {
 	}
 
 	get_timestamp(date: Date = new Date()): string {
-		let day = ("0" + date.getDate()).slice(-2);
-		let month = ("0" + (date.getMonth() + 1)).slice(-2);
+		let day = ('0' + date.getDate()).slice(-2);
+		let month = ('0' + (date.getMonth() + 1)).slice(-2);
 		let year = date.getFullYear();
-		let hours = `${date.getHours()}`.padStart(2, '0');		;
-		let minutes = `${date.getMinutes()}`.padStart(2, '0');		
-		let seconds = `${date.getSeconds()}`.padStart(2, '0');		
+		let hours = `${date.getHours()}`.padStart(2, '0');
+		let minutes = `${date.getMinutes()}`.padStart(2, '0');
+		let seconds = `${date.getSeconds()}`.padStart(2, '0');
 		return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
 	}
 }

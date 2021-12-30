@@ -70,3 +70,9 @@ typings/
 
 # next.js build output
 .next
+
+# Visual Studio Project
+/.vs
+
+# Visual Studio Code
+/.vscode

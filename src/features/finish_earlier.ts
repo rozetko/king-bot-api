@@ -55,7 +55,7 @@ class finish_earlier extends feature_single {
 	}
 
 	async run(): Promise<void> {
-		logger.info('finish earlier started', "instant finish");
+		logger.info('finish earlier started', 'instant finish');
 
 		const five_minutes: number = 5 * 60;
 
@@ -97,7 +97,7 @@ class finish_earlier extends feature_single {
 					// add 2 seconds for safety
 					if (rest_time < (five_minutes - 2)) {
 						const res = await api.finish_now(vill.villageId, qu);
-						logger.info(`finished building earlier for free in village ${vill.name}`, "instant finish");
+						logger.info(`finished building earlier for free in village ${vill.name}`, 'instant finish');
 						continue;
 					}
 
@@ -115,7 +115,7 @@ class finish_earlier extends feature_single {
 			await sleep(sleep_time);
 		}
 
-		logger.info('finish earlier stopped', "instant finish");
+		logger.info('finish earlier stopped', 'instant finish');
 		this.running = false;
 		this.options.run = false;
 	}

@@ -44,14 +44,14 @@ class kingbot {
 		}
 
 		if (!email || !password || !gameworld) {
-			logger.error('please provide email, password and gameworld', "login");
+			logger.error('please provide email, password and gameworld', 'login');
 			process.exit();
 			return;
 		}
 
 		//console.log(`start login to gameworld ${gameworld} with account ${email} ...`);
-		logger.info('start login...', "login");
-		
+		logger.info('start login...', 'login');
+
 		await api.login(email, password, gameworld, sitter_type, sitter_name);
 	}
 

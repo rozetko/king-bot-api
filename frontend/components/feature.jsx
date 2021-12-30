@@ -113,7 +113,7 @@ export default class Feature extends Component {
 			'fa-toggle-off': !this.state.run,
 		});
 
-		var visibleStyle = this.state.ident == "finish_earlier" ?
+		var visibleStyle = this.state.ident == 'finish_earlier' ?
 			{ display: 'none' } : {};
 
 		// TODO translate description

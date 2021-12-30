@@ -77,10 +77,10 @@ class building_queue {
 					// finish building instant
 					// add 2 seconds for safety
 					if (rest_time <= (five_minutes - 2)) {
-						if(!finish_earlier.running)
+						if (!finish_earlier.running)
 							continue;
 						const res = await api.finish_now(vill.villageId, qu);
-						logger.info(`finished building earlier for free in village ${vill.name}`, "building");
+						logger.info(`finished building earlier for free in village ${vill.name}`, 'building');
 						continue;
 					}
 
@@ -243,14 +243,14 @@ class building_queue {
 					const res: any = await api.upgrade_building(upgrade_building.buildingType, upgrade_building.locationId, village_obj.villageId);
 					if (res.errors) {
 						//TODO delete this console log
-						logger.error('error upgrading building', "building");
+						logger.error('error upgrading building', 'building');
 					}
 
 					// set sleep time
 					if (!sleep_time) sleep_time = upgrade_building.upgradeTime;
 					else if (upgrade_building.upgradeTime < sleep_time) sleep_time = upgrade_building.upgradeTime;
 
-					logger.info('upgrade building ' + upgrade_building.locationId + ' on village ' + village_id, "building");
+					logger.info('upgrade building ' + upgrade_building.locationId + ' on village ' + village_id, 'building');
 				}
 			}
 
