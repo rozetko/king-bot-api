@@ -80,9 +80,6 @@ export default class NavBar extends Component {
 			<nav class="navbar is-light is-fixed-top">
 				<div class="container">
 					<div class="navbar-brand">
-						<a class="navbar-item" target="_blank" href="https://github.com/breuerfelix/king-bot-api">
-							{this.props.lang_navbar_king_bot_api}
-						</a>
 						<a role="button" onClick={ this.show_burger } class={ burger_class } aria-label="menu" aria-expanded="false">
 							<span aria-hidden="true"></span>
 							<span aria-hidden="true"></span>
@@ -138,33 +135,9 @@ export default class NavBar extends Component {
 									{this.availableLanguages}
 								</div>
 							</div>
-
-							<div class="navbar-item has-dropdown is-hoverable">
-								<a class="navbar-link is-arrowless">
-									{this.props.lang_navbar_links}
-								</a>
-
-								<div class='navbar-dropdown is-radiusless'>
-									<a className='navbar-item' target='__blank' href='http://kingbot.felixbreuer.me'>
-										{this.props.lang_navbar_landing_page}
-									</a>
-									<a className='navbar-item' target='__blank' href='http://github.com/breuerfelix/king-bot-api'>
-										{this.props.lang_navbar_github}
-									</a>
-									<a className='navbar-item' target='__blank' href='http://github.com/breuerfelix/king-bot-api/issues'>
-										{this.props.lang_navbar_report_bug}
-									</a>
-									<a className='navbar-item' target='__blank' href='http://github.com/breuerfelix/king-bot-api/releases'>
-										{this.props.lang_navbar_releases}
-									</a>
-									<a className='navbar-item' target='__blank' href='http://breuer.dev'>
-										{this.props.lang_navbar_felixbreuer}
-									</a>
-								</div>
-							</div>
-
-							<a class='navbar-item' target='_blank' href='https://ko-fi.com/Y8Y6KZHJ'>
-								{this.props.lang_navbar_donate}
+							
+							<a class="navbar-item" target="_blank" href="https://github.com/pkeweloh/king-bot-api">
+								{this.props.lang_navbar_king_bot_api}
 							</a>
 						</div>
 					</div>

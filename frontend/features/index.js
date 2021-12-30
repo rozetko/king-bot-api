@@ -4,6 +4,7 @@ import BuildingQueue from './building_queue';
 import RaiseFields from './raise_fields';
 import TradeRoute from './trade_route';
 import TimedAttack from './timed_attack';
+import TrainTroops from './train_troops';
 
 const features = {
 	hero: {
@@ -30,6 +31,10 @@ const features = {
 		navbar: true,
 		component: TimedAttack,
 	},
+	train_troops: {
+		navbar: true,
+		component: TrainTroops,
+	}
 };
 
 export default features;

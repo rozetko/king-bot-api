@@ -184,6 +184,18 @@ class api {
 		return await this.post('dialogAction', 'quest', params);
 	}
 
+	async recruit_units(location_Id: number, village_id: number, unit: number, amount: number): Promise<any> {
+		let units: { [unit: number]: number; } = {};
+		units[unit] = amount;
+
+		const params = {
+			locationId: location_Id,
+			units: units,
+			villageId: village_id
+		};
+		return await this.post('recruitUnits', 'building', params);
+	};
+
 	async post(action: string, controller: string, params: object): Promise<any> {
 		const session = this.session;
 

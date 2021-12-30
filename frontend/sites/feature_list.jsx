@@ -28,7 +28,7 @@ export default class FeatureList extends Component {
 		return (
 			<div>
 				<h1 className='subtitle is-4' align='center'>
-					{props.lang_home_features}
+					{props.lang_navbar_king_bot_api}
 				</h1>
 				<table className='table is-hoverable is-fullwidth'>
 					<thead>

@@ -113,6 +113,9 @@ export default class Feature extends Component {
 			'fa-toggle-off': !this.state.run,
 		});
 
+		var visibleStyle = this.state.ident == "finish_earlier" ?
+			{ display: 'none' } : {};
+
 		// TODO translate description
 		return (
 			<tr>
@@ -135,7 +138,7 @@ export default class Feature extends Component {
 					</a>
 				</td>
 				<td style={ rowStyle }>
-					<a class='has-text-black' onClick={ this.edit.bind(this) }>
+					<a class='has-text-black' onClick={ this.edit.bind(this) } style={ visibleStyle }>
 						<span class='icon is-medium'>
 							<i class='fas fa-lg fa-edit'></i>
 						</span>

@@ -64,7 +64,7 @@ class farm_feature extends feature_item {
 
 	get_description(): string {
 		const { interval_min, interval_max } = this.options;
-		return ` Farmlist: ${interval_min} - ${interval_max} s`;
+		return `Farmlist: ${interval_min} - ${interval_max}s`;
 	}
 
 	get_long_description(): string {

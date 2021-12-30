@@ -4,6 +4,7 @@ import { log, sleep } from './util';
 import { Ivillage, Ifarmlist, Iunits, Iplayer } from './interfaces';
 import { tribe } from './data';
 import server from './server';
+import logger from './logger';
 
 import { farming, village, player } from './gamedata';
 
@@ -43,13 +44,14 @@ class kingbot {
 		}
 
 		if (!email || !password || !gameworld) {
-			log('please provide email, password and gameworld');
+			logger.error('please provide email, password and gameworld', "login");
 			process.exit();
 			return;
 		}
 
 		//console.log(`start login to gameworld ${gameworld} with account ${email} ...`);
-		log('start login...');
+		logger.info('start login...', "login");
+		
 		await api.login(email, password, gameworld, sitter_type, sitter_name);
 	}
 

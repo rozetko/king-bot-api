@@ -67,7 +67,7 @@ export interface Ivillage {
 	villageId: number;
 	playerId: number;
 	name: string;
-	tribeId: number;
+	tribeId: tribe;
 	belongsToKing: number;
 	belongsToKingdom: number;
 	type: number;
