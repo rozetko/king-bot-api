@@ -1,12 +1,15 @@
 
 import { h, render, Component } from 'preact';
 import axios from 'axios';
+import { connect } from 'unistore/preact';
+import { storeKeys } from '../language';
 
 const rowStyle = {
 	verticalAlign: 'middle',
 	textAlign: 'center',
 };
 
+@connect(storeKeys)
 export default class Logger extends Component {
 	state = {
 		log_list: [],
@@ -26,7 +29,10 @@ export default class Logger extends Component {
 				<table className='table is-hoverable is-fullwidth'>
 					<thead>
 						<tr>
-							<th style={ rowStyle }>{props.lang_log_leve}</th>
+							<th
+								style={{ verticalAlign: 'middle', textAlign: 'left' }}
+							>{props.lang_log_timestamp}</th>
+							<th style={ rowStyle }>{props.lang_log_level}</th>
 							<th style={ rowStyle }>{props.lang_log_group}</th>
 							<th
 								style={{ verticalAlign: 'middle', textAlign: 'left' }}
@@ -44,6 +50,9 @@ export default class Logger extends Component {
 
 const Log = ({ log }) => (
 	<tr>
+		<td
+			style={{ verticalAlign: 'middle', textAlign: 'left' }}
+		>{ log.timestamp }</td>
 		<td
 			style={{ verticalAlign: 'middle', textAlign: 'center' }}
 		>{ log.level }</td>

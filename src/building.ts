@@ -3,6 +3,8 @@ import { log, get_date, clash_obj, find_state_data } from './util';
 import { sleep } from './util';
 import api from './api';
 import { village } from './gamedata';
+import { finish_earlier } from './features';
+import logger from './logger';
 
 class building_queue {
 	building_type: { [index: number]: number, wood: number, clay: number, iron: number, crop: number } = {
@@ -14,7 +16,6 @@ class building_queue {
 
 	running: boolean = false;
 	loop_data: { [index: string]: [{ [index: number]: number[] }] } = {};
-	finish_earlier: boolean = false;
 
 	building_collection_ident: string = 'Collection:Building:';
 	building_ident: string = 'Building:';
@@ -38,7 +39,6 @@ class building_queue {
 	}
 
 	async upgrade_earlier(): Promise<void> {
-		this.finish_earlier = true;
 		const five_minutes: number = 5 * 60;
 
 		while (true) {
@@ -77,8 +77,10 @@ class building_queue {
 					// finish building instant
 					// add 2 seconds for safety
 					if (rest_time <= (five_minutes - 2)) {
+						if(!finish_earlier.running)
+							continue;
 						const res = await api.finish_now(vill.villageId, qu);
-						console.log(`finished building earlier for free in village ${vill.name}`);
+						logger.info(`finished building earlier for free in village ${vill.name}`, "building");
 						continue;
 					}
 
@@ -241,18 +243,18 @@ class building_queue {
 					const res: any = await api.upgrade_building(upgrade_building.buildingType, upgrade_building.locationId, village_obj.villageId);
 					if (res.errors) {
 						//TODO delete this console log
-						console.log('error upgrading building');
+						logger.error('error upgrading building', "building");
 					}
 
 					// set sleep time
 					if (!sleep_time) sleep_time = upgrade_building.upgradeTime;
 					else if (upgrade_building.upgradeTime < sleep_time) sleep_time = upgrade_building.upgradeTime;
 
-					console.log('upgrade building ' + upgrade_building.locationId + ' on village ' + village_id);
+					logger.info('upgrade building ' + upgrade_building.locationId + ' on village ' + village_id, "building");
 				}
 			}
 
-			if (sleep_time && this.finish_earlier) sleep_time = sleep_time - (5 * 60) + 10;
+			if (sleep_time && finish_earlier.running) sleep_time = sleep_time - (5 * 60) + 10;
 
 			// set save sleep time
 			if (!sleep_time || sleep_time <= 0) sleep_time = 60;

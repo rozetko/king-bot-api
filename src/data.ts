@@ -60,6 +60,7 @@ export const troops: any = {
 	// roman units
 	1: {
 		1: {
+			unit: 1,
 			name: 'Legionnaire',
 			attack: 40,
 			speed: 6,
@@ -69,6 +70,7 @@ export const troops: any = {
 			costs: [ 75, 50, 100, 0	]
 		},
 		2: {
+			unit: 2,
 			name: 'Praetorian',
 			attack: 30,
 			speed: 5,
@@ -78,6 +80,7 @@ export const troops: any = {
 			costs: [ 80, 100, 160, 0 ]
 		},
 		3: {
+			unit: 3,
 			name: 'Imperian',
 			attack: 70,
 			speed: 7,
@@ -87,6 +90,7 @@ export const troops: any = {
 			costs: [ 100, 110, 140, 0 ]
 		},
 		4: {
+			unit: 4,
 			name: 'Equites Legati',
 			attack: 0,
 			speed: 16,
@@ -96,6 +100,7 @@ export const troops: any = {
 			costs: [ 100, 140, 10, 0 ]
 		},
 		5: {
+			unit: 5,
 			name: 'Equites Imperatoris',
 			attack: 120,
 			speed: 14,
@@ -105,6 +110,7 @@ export const troops: any = {
 			costs: [ 350, 260, 180,	0 ]
 		},
 		6: {
+			unit: 6,
 			name: 'Equites Caesaris',
 			attack: 180,
 			speed: 10,
@@ -114,6 +120,7 @@ export const troops: any = {
 			costs: [ 280, 340, 600, 0 ]
 		},
 		7: {
+			unit: 7,
 			name: 'Battering Ram',
 			attack: 60,
 			speed: 4,
@@ -123,6 +130,7 @@ export const troops: any = {
 			costs: [ 700, 180, 400,	0 ]
 		},
 		8: {
+			unit: 8,
 			name: 'Fire Catapult',
 			attack: 75,
 			speed: 3,
@@ -132,6 +140,7 @@ export const troops: any = {
 			costs: [ 690, 1000, 400, 0 ]
 		},
 		9: {
+			unit: 9,
 			name: 'Senator',
 			attack: 50,
 			speed: 4,
@@ -141,6 +150,7 @@ export const troops: any = {
 			costs: [ 30750,	27200, 45000, 0 ]
 		},
 		10: {
+			unit: 10,
 			name: 'Settler',
 			attack: 0,
 			speed: 5,
@@ -153,6 +163,7 @@ export const troops: any = {
 	// teuton units
 	2: {
 		1: {
+			unit: 11,
 			name: 'Clubswinger',
 			attack: 40,
 			speed: 7,
@@ -162,6 +173,7 @@ export const troops: any = {
 			costs: [ 85, 65, 30, 0 ]
 		},
 		2: {
+			unit: 12,
 			name: 'Spearfighter',
 			attack: 10,
 			speed: 7,
@@ -171,6 +183,7 @@ export const troops: any = {
 			costs: [ 125, 50, 65, 0 ]
 		},
 		3: {
+			unit: 13,
 			name: 'Axefighter',
 			attack: 60,
 			speed: 7,
@@ -180,6 +193,7 @@ export const troops: any = {
 			costs: [ 80, 65, 130, 0 ]
 		},
 		4: {
+			unit: 14,
 			name: 'Scout',
 			attack: 0,
 			speed: 10,
@@ -189,6 +203,7 @@ export const troops: any = {
 			costs: [ 140, 80, 30, 0 ]
 		},
 		5: {
+			unit: 15,
 			name: 'Paladin',
 			attack: 55,
 			speed: 10,
@@ -198,6 +213,7 @@ export const troops: any = {
 			costs: [ 330, 170, 200,	0 ]
 		},
 		6: {
+			unit: 16,
 			name: 'Teutonic Knight',
 			attack: 150,
 			speed: 9,
@@ -207,6 +223,7 @@ export const troops: any = {
 			costs: [ 350, 400, 320,	0 ]
 		},
 		7: {
+			unit: 17,
 			name: 'Ram',
 			attack: 65,
 			speed: 4,
@@ -216,6 +233,7 @@ export const troops: any = {
 			costs: [ 800, 150, 250, 0 ]
 		},
 		8: {
+			unit: 18,
 			name: 'Catapult',
 			attack: 50,
 			speed: 3,
@@ -225,6 +243,7 @@ export const troops: any = {
 			costs: [ 660, 900, 370, 0 ]
 		},
 		9: {
+			unit: 19,
 			name: 'Chief',
 			attack: 40,
 			speed: 4,
@@ -234,6 +253,7 @@ export const troops: any = {
 			costs: [ 35500, 26600, 25000, 0	]
 		},
 		10: {
+			unit: 20,
 			name: 'Settler',
 			attack: 0,
 			speed: 5,
@@ -246,6 +266,7 @@ export const troops: any = {
 	// gaul units
 	3: {
 		1: {
+			unit: 21,
 			name: 'Phalanx',
 			attack: 15,
 			speed: 7,
@@ -255,6 +276,7 @@ export const troops: any = {
 			costs: [ 85, 100, 50, 0	]
 		},
 		2: {
+			unit: 22,
 			name: 'Swordsman',
 			attack: 65,
 			speed: 6,
@@ -264,6 +286,7 @@ export const troops: any = {
 			costs: [ 95, 60, 140, 0 ]
 		},
 		3: {
+			unit: 23,
 			name: 'Pathfinder',
 			attack: 0,
 			speed: 17,
@@ -273,6 +296,7 @@ export const troops: any = {
 			costs: [ 140, 110, 20, 0 ]
 		},
 		4: {
+			unit: 24,
 			name: 'Theutates Thunder',
 			attack: 90,
 			speed: 19,
@@ -282,6 +306,7 @@ export const troops: any = {
 			costs: [ 200, 280, 130, 0 ]
 		},
 		5: {
+			unit: 25,
 			name: 'Druidrider',
 			attack: 45,
 			speed: 16,
@@ -291,6 +316,7 @@ export const troops: any = {
 			costs: [ 300, 270, 190, 0 ]
 		},
 		6: {
+			unit: 26,
 			name: 'Haeduan',
 			attack: 140,
 			speed: 13,
@@ -300,6 +326,7 @@ export const troops: any = {
 			costs: [ 300, 380, 440, 0 ]
 		},
 		7: {
+			unit: 27,
 			name: 'Ram',
 			attack: 50,
 			speed: 4,
@@ -309,6 +336,7 @@ export const troops: any = {
 			costs: [ 750, 370, 220, 0 ]
 		},
 		8: {
+			unit: 28,
 			name: 'Trebuchet',
 			attack: 70,
 			speed: 3,
@@ -318,6 +346,7 @@ export const troops: any = {
 			costs: [ 590, 1200, 400, 0 ]
 		},
 		9: {
+			unit: 29,
 			name: 'Chieftain',
 			attack: 40,
 			speed: 5,
@@ -327,6 +356,7 @@ export const troops: any = {
 			costs: [ 30750,	45400, 31000, 0 ]
 		},
 		10: {
+			unit: 30,
 			name: 'Settler',
 			attack: 0,
 			speed: 5,

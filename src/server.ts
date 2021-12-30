@@ -12,7 +12,7 @@ import { find_state_data } from './util';
 import {
 	raise_fields, building_queue,
 	finish_earlier, auto_adventure, send_farmlist,
-	trade_route, timed_attack
+	trade_route, timed_attack, train_troops
 } from './features';
 import { farming, village, player } from './gamedata';
 import database from './database';
@@ -28,6 +28,7 @@ class server {
 		raise_fields,
 		trade_route,
 		timed_attack,
+		train_troops
 	];
 
 	constructor() {
@@ -235,7 +236,7 @@ class server {
 	}
 
 	async start(port: number) {
-		this.app.listen(port, () => logger.info(`server running on => http://localhost:${port}`));
+		this.app.listen(port, () => logger.info(`server running on => http://localhost:${port}`, "server"));
 
 		// start all features on startup
 		for (let feat of this.features) feat.start_for_server();

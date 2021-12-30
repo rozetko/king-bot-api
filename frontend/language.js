@@ -26,12 +26,14 @@ const languages = {
 		lang_feature_raise_fields: 'raise fields',
 		lang_feature_trade_route: 'trade route',
 		lang_feature_timed_attack: 'timed attack',
+		lang_feature_train_troops: 'train troops',
 
 		lang_feature_desc_hero: 'this feature sends the hero automaticly on an adventure if the health is above given percentage.',
 		lang_feature_desc_queue: 'this is an endless building queue. don\'t change the village once it\'s set. if you want to change the village, just do another building queue feature with your desired village',
 		lang_feature_desc_raise_fields: 'this feature will raise all your fields to a given level on it\'s own. it will always upgrade the type which got the lowest storage.',
 		lang_feature_desc_farming: 'this feature will just send the farmlist in a given interval.',
 		lang_feature_desc_trade_route: 'sends merchants from the origin village to the desination at a given interval.',
+		lang_feature_desc_train_troops: 'train troops in a given interval, if the amount is 0, it will train as many troops as possible.',
 
 		lang_home_features: 'your features',
 		lang_home_name: 'feature name',
@@ -105,6 +107,7 @@ const languages = {
 		lang_log_level: 'level',
 		lang_log_group: 'group',
 		lang_log_message: 'message',
+		lang_log_timestamp: 'time',
 
 		lang_login_notification: 'the bot is going to shut down.... restart it, so the changes take effect.',
 		lang_login_reset_features: 'this will reset all features you configured!',
@@ -153,12 +156,14 @@ const languages = {
 		lang_feature_raise_fields: 'ressourcenfelder ausbau',
 		lang_feature_trade_route: 'handelsroute',
 		lang_feature_timed_attack: 'pünktlicher angriff',
+		lang_feature_train_troops: 'truppen trainieren',
 
-		lang_feature_desc_hero: 'der held wird automatisch auf abenteuer geschickt wenn er eine gewisse mindestprozentzahl an gesundheit hat',
+		lang_feature_desc_hero: 'der held wird automatisch auf abenteuer geschickt wenn er eine gewisse mindestprozentzahl an gesundheit hat.',
 		lang_feature_desc_queue: 'dies ist eine endlose bauschleife. falls du die stadt ändern willst, lege ein neues feature mit einer neuen stadt an. sonst kommt es zu problemen.',
 		lang_feature_desc_raise_fields: 'die ressourcesfelder werden automatisch auf ein gewisses level ausgebaut. dabei wird geguckt welche ressource am wenigsten speicher hat.',
-		lang_feature_desc_farming: 'dieses feature verschickt farmlisten automatisch in einem bestimmten interval',
-		lang_feature_desc_trade_route: 'händler werden automatisch zwischen zwei städten geschickt',
+		lang_feature_desc_farming: 'dieses feature verschickt farmlisten automatisch in einem bestimmten intervall.',
+		lang_feature_desc_trade_route: 'händler werden automatisch zwischen zwei städten geschickt.',
+		lang_feature_desc_train_troops: 'truppen in einem bestimmten intervall trainieren, wenn die menge 0 ist, werden so viele truppen wie möglich trainiert.',
 
 		lang_home_features: 'deine features',
 		lang_home_name: 'feature name',
@@ -231,7 +236,8 @@ const languages = {
 
 		lang_log_level: 'level',
 		lang_log_group: 'gruppe',
-		lang_log_message: 'message',
+		lang_log_message: 'meldung',
+		lang_log_timestamp: 'zeit',
 
 		lang_login_notification: 'der bot beendet sich nun.... starte ihn neu damit die änderungen funktionieren',
 		lang_login_reset_features: 'dies wird alle deine features zurücksetzen!',
