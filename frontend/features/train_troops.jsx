@@ -32,7 +32,7 @@ export default class TrainTroops extends Component {
 
 		axios.get('/api/data?ident=villages').then(res => this.setState({ all_villages: res.data }));
 		axios.get('/api/data?ident=troops').then(res => this.setState({ all_troops: res.data }));
-		axios.get('/api/data?ident=player_tribe').then(res => this.setState({ own_tribe: Number(res.data) }));		
+		axios.get('/api/data?ident=player_tribe').then(res => this.setState({ own_tribe: Number(res.data) }));
 	}
 
 	async submit() {
@@ -109,35 +109,35 @@ export default class TrainTroops extends Component {
 		);
 
 		// TODO: all_troops doesn't work as expected.
-		const tribes = [[{ unit: 0, name: 'Tribe undefined'}],
-		[
-			{ unit: 1, name: 'Legionnaire'},
-			{ unit: 2, name: 'Praetorian'},
-			{ unit: 3, name: 'Imperian'},
-			{ unit: 4, name: 'Equites Legati'},
-			{ unit: 5, name: 'Equites Imperatoris'},
-			{ unit: 6, name: 'Equites Caesaris'},
-			{ unit: 7, name: 'Battering Ram'},
-			{ unit: 8, name: 'Fire Catapult'}
-		],[
-			{ unit: 11, name: 'Clubswinger'},
-			{ unit: 12, name: 'Spearfighter'},
-			{ unit: 13, name: 'Axefighter'},
-			{ unit: 14, name: 'Scout'},
-			{ unit: 15, name: 'Paladin'},
-			{ unit: 16, name: 'Teutonic Knight'},
-			{ unit: 17, name: 'Ram'},
-			{ unit: 18, name: 'Catapult'}
-		],[
-			{ unit: 21, name: 'Phalanx'},
-			{ unit: 22, name: 'Swordsman'},
-			{ unit: 23, name: 'Pathfinder'},
-			{ unit: 24, name: 'Theutates thunder'},
-			{ unit: 25, name: 'Druidrider'},
-			{ unit: 26, name: 'Headuan'},
-			{ unit: 27, name: 'Ram'},
-			{ unit: 28, name: 'Trebuchet'}
-		]];
+		const tribes = [[{ unit: 0, name: 'Tribe undefined' }],
+			[
+				{ unit: 1, name: 'Legionnaire' },
+				{ unit: 2, name: 'Praetorian' },
+				{ unit: 3, name: 'Imperian' },
+				{ unit: 4, name: 'Equites Legati' },
+				{ unit: 5, name: 'Equites Imperatoris' },
+				{ unit: 6, name: 'Equites Caesaris' },
+				{ unit: 7, name: 'Battering Ram' },
+				{ unit: 8, name: 'Fire Catapult' }
+			],[
+				{ unit: 11, name: 'Clubswinger' },
+				{ unit: 12, name: 'Spearfighter' },
+				{ unit: 13, name: 'Axefighter' },
+				{ unit: 14, name: 'Scout' },
+				{ unit: 15, name: 'Paladin' },
+				{ unit: 16, name: 'Teutonic Knight' },
+				{ unit: 17, name: 'Ram' },
+				{ unit: 18, name: 'Catapult' }
+			],[
+				{ unit: 21, name: 'Phalanx' },
+				{ unit: 22, name: 'Swordsman' },
+				{ unit: 23, name: 'Pathfinder' },
+				{ unit: 24, name: 'Theutates thunder' },
+				{ unit: 25, name: 'Druidrider' },
+				{ unit: 26, name: 'Headuan' },
+				{ unit: 27, name: 'Ram' },
+				{ unit: 28, name: 'Trebuchet' }
+			]];
 
 		const troops = tribes[own_tribe].map(troop =>
 			<option

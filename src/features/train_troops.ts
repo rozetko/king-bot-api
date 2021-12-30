@@ -49,19 +49,19 @@ class train_feature extends feature_item {
 			unit, unit_name, amount,
 			interval_min, interval_max } = options;
 
-			this.options = {
-				...this.options,
-				uuid,
-				run,
-				error,
-				village_id,
-				village_name,
-				unit,
-				unit_name,
-				amount,
-				interval_min,
-				interval_max				
-			};
+		this.options = {
+			...this.options,
+			uuid,
+			run,
+			error,
+			village_id,
+			village_name,
+			unit,
+			unit_name,
+			amount,
+			interval_min,
+			interval_max
+		};
 	}
 
 	get_options(): Ioptions_train_troops {
@@ -77,7 +77,7 @@ class train_feature extends feature_item {
 
 	get_description(): string {
 		const { village_name, unit_name, amount, interval_min, interval_max } = this.options;
-		return `${village_name} -> ${unit_name} (${amount > 0 ? amount : "max"}) | ${interval_min} - ${interval_max}s`;
+		return `${village_name} -> ${unit_name} (${amount > 0 ? amount : 'max'}) | ${interval_min} - ${interval_max}s`;
 	}
 
 	get_long_description(): string {
@@ -98,7 +98,7 @@ class train_feature extends feature_item {
 		// get troop
 		let troop: any = {};
 		for (var i = 1; i < 11; i++) {
-			if(troops[own_tribe][i].unit == unit) {
+			if (troops[own_tribe][i].unit == unit) {
 				troop = troops[own_tribe][i];
 				break;
 			}
@@ -109,25 +109,25 @@ class train_feature extends feature_item {
 
 		// get village resources
 		let resources = village_obj.storage;
-	
+
 		// get less posible amount of troop for training
-		let training_amount = this.get_training_amount(costs, resources);  
-		if(training_amount == 0)
+		let training_amount = this.get_training_amount(costs, resources);
+		if (training_amount == 0)
 			return;
 
-		if(amount < training_amount)
+		if (amount < training_amount)
 			training_amount = amount;
 
 		// get total cost
-		let total_training_cost = []  // amount of troop * costs
-		for(var unit_cost of costs) {
-			total_training_cost.push(unit_cost * training_amount)	
+		let total_training_cost = [];  // amount of troop * costs
+		for (var unit_cost of costs) {
+			total_training_cost.push(unit_cost * training_amount);
 		}
 
 		// get building collection
 		let params: string[] = [];
 		params.push(village.building_collection_ident + village_id);
-		let response: any[] = await api.get_cache(params);		
+		let response: any[] = await api.get_cache(params);
 		const building_collection: Ibuilding_collection[] = find_state_data(village.building_collection_ident + village_id, response);
 
 		// get building type
@@ -144,14 +144,14 @@ class train_feature extends feature_item {
 				break;
 			}
 		}
-		
+
 		// recruit units
 		var recruit: any = await api.recruit_units(building_data.locationId, village_id, unit, training_amount);
-		if(recruit.errors) {
-			for(let error of recruit.errors)
+		if (recruit.errors) {
+			for (let error of recruit.errors)
 				logger.error(error.message, 'train troops');
 			return;
-		}		
+		}
 		logger.info(`training ${training_amount} units of type ${unit_name} with a cost of wood: ${total_training_cost[0]}, clay: ${total_training_cost[1]}, iron: ${total_training_cost[2]}`, 'train troops');
 		return;
 	}
@@ -166,21 +166,21 @@ class train_feature extends feature_item {
 		}
 
 		this.running = false;
-		this.options.run = false;		
+		this.options.run = false;
 		logger.info(`train troops: ${this.options.uuid} stopped`, 'train troops');
 	}
 
 	building_type(unit: number): number {
 		const barracks_units: number[] = [1,2,3,11,12,13,14,21,22];
 		const stable_units: number[] = [4,5,6,15,16,23,24,25,26];
-		const workshop_units: number[] = [7,8,17,18,27,28];		
-		if(barracks_units.filter(type => { return type == unit})){
+		const workshop_units: number[] = [7,8,17,18,27,28];
+		if (barracks_units.filter(type => { return type == unit;})){
 			return 19; // Barracks
 		}
-		else if(stable_units.filter(type => { return type == unit})) {
+		else if (stable_units.filter(type => { return type == unit;})) {
 			return 20; // Stable
 		}
-		else if(workshop_units.filter(type => { return type == unit})) {
+		else if (workshop_units.filter(type => { return type == unit;})) {
 			return 21; // Workshop
 		}
 		return 0;
@@ -191,9 +191,9 @@ class train_feature extends feature_item {
 		let total_units_cost_wood = [];  // total wood cost for every unit in units_train
 		let total_units_cost_clay = [];  // total clay cost for every unit in units_train
 		let total_units_cost_iron = [];  // total iron cost for every unit in units_train
-		total_units_cost_wood.push(costs[0])
-		total_units_cost_clay.push(costs[1])
-		total_units_cost_iron.push(costs[2])
+		total_units_cost_wood.push(costs[0]);
+		total_units_cost_clay.push(costs[1]);
+		total_units_cost_iron.push(costs[2]);
 
 		// training amount distributed by: less resources consumption per unit type
 		let training_amount_wood: any[] = [];
@@ -210,15 +210,15 @@ class train_feature extends feature_item {
 		total_units_cost_iron.forEach(function (cost: any){
 			var train_amount = Math.floor(resources[3] / cost);
 			training_amount_iron.push(train_amount);
-		});	
+		});
 		let training_amount: number = training_amount_wood[0];  // less posible amount of troop for training
-		for(let i = 0; i < training_amount_wood.length; i++) {
+		for (let i = 0; i < training_amount_wood.length; i++) {
 			training_amount = Math.min(training_amount, training_amount_wood[i]);
 		}
-		for(let i = 0; i < training_amount_clay.length; i++) {
+		for (let i = 0; i < training_amount_clay.length; i++) {
 			training_amount = Math.min(training_amount, training_amount_clay[i]);
 		}
-		for(let i = 0; i < training_amount_iron.length; i++) {
+		for (let i = 0; i < training_amount_iron.length; i++) {
 			training_amount = Math.min(training_amount, training_amount_iron[i]);
 		}
 		return training_amount;

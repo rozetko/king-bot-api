@@ -135,7 +135,7 @@ export default class NavBar extends Component {
 									{this.availableLanguages}
 								</div>
 							</div>
-							
+
 							<a class="navbar-item" target="_blank" href="https://github.com/pkeweloh/king-bot-api">
 								{this.props.lang_navbar_king_bot_api}
 							</a>

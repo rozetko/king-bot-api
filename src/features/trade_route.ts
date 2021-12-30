@@ -142,7 +142,7 @@ class trade_feature extends feature_item {
 	}
 
 	async run(): Promise<void> {
-		logger.info(`trading uuid: ${this.options.uuid} started`, "trade route");
+		logger.info(`trading uuid: ${this.options.uuid} started`, 'trade route');
 
 		const { source_village_name, destination_village_name, source_village_id, destination_village_id, interval_min, interval_max, send_wood, send_clay, send_iron, send_crop, source_wood,
 			source_clay,
@@ -197,19 +197,19 @@ class trade_feature extends feature_item {
 				if (resources[1] + resources[2] + resources[3] + resources[4] > 0) {
 
 					await api.send_merchants(sourceVillage_id, destVillage_id, resources);
-					logger.info(`trade ${resources} sent from ${source_village_id} to ${destination_village_id}`, "trade route");
+					logger.info(`trade ${resources} sent from ${source_village_id} to ${destination_village_id}`, 'trade route');
 				} else {
-					logger.info(`trade conditions not met. ${resources}`, "trade route");
+					logger.info(`trade conditions not met. ${resources}`, 'trade route');
 				}
 				await sleep(get_random_int(interval_min, interval_max));
 			} else {
-				logger.warn('not enough merchants for trade', "trade route");
+				logger.warn('not enough merchants for trade', 'trade route');
 				await sleep(get_random_int(300, 600));
 			}
 
 		}
 
-		logger.info(`trading uuid: ${this.options.uuid} stopped`, "trade route");
+		logger.info(`trading uuid: ${this.options.uuid} stopped`, 'trade route');
 		this.running = false;
 		this.options.run = false;
 	}
