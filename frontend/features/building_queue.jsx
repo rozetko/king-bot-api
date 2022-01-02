@@ -21,7 +21,7 @@ export default class BuildingQueue extends Component {
 		buildings: [],
 		resources: [],
 		buildings_dict: null,
-	}
+	};
 
 	componentWillMount() {
 		this.setState({

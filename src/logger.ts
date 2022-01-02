@@ -12,8 +12,8 @@ const level = () => {
 
 const transports = [
 	new winston.transports.Console(),
-	new winston.transports.File({ filename: 'logs/errors.log', level: 'error' })
-	//new winston.transports.File({ filename: 'logs/all.log' })
+	new winston.transports.File({ filename: 'logs/errors.log', level: 'error' }),
+	new winston.transports.File({ filename: 'logs/app.log' })
 ];
 
 interface log {
@@ -30,18 +30,18 @@ class logger {
 	log_list: log[] = [];
 
 	constructor() {
-		const logFormat = format.combine(
+		const LOG_FORMAT = format.combine(
 			//format.timestamp({ format: 'DD-MM-YYYY HH:mm:ss' }),
 			format.colorize(),
 			//format.align(),
 			format.printf(
-				(info) => `[${info.timestamp}] [${info.level}] [[34m${info.group}[39m]: ${info.message}`
+				(info) => `[${info.level}] ${info.timestamp} [[34m${info.group}[39m] ${info.message}`
 			)
 		);
 
 		this.log_inst = winston.createLogger({
 			level: level(),
-			format: logFormat,
+			format: LOG_FORMAT,
 			transports
 		});
 

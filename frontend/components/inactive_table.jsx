@@ -37,13 +37,13 @@ export default connect(storeKeys)(props => {
 class Inactive extends Component {
 	state = {
 		toggled: false,
-	}
+	};
 
 	tribe_dict = {
 		'1': 'roman',
 		'2': 'teuton',
 		'3': 'gaul',
-	}
+	};
 
 	render({ content, clicked }, { toggled }) {
 		const {

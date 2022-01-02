@@ -14,7 +14,7 @@ class Login extends Component {
 
 		loadingLogin: false,
 		loadingStart: false
-	}
+	};
 
 	start = _ => {
 		alert('if the app shuts down you might have enterd wrong credentials. you should restart and login again.');
@@ -24,7 +24,7 @@ class Login extends Component {
 		fetch('/api/start', {
 			method: 'GET'
 		});
-	}
+	};
 
 	submit = _ => {
 		const { gameworld, email, password, ingameName } = this.state;
@@ -54,7 +54,7 @@ class Login extends Component {
 				ingameName
 			})
 		});
-	}
+	};
 
 	render(props, {
 		gameworld,

@@ -30,7 +30,7 @@ export default class InactiveFinder extends Component {
 		inactives: [],
 		loading: false,
 		message: '',
-	}
+	};
 
 	componentDidMount() {
 		axios.get('/api/data?ident=villages').then(res => {

@@ -26,7 +26,7 @@ export default class NavBar extends Component {
 		this.setState({
 			burger: !this.state.burger,
 		});
-	}
+	};
 
 	get_new = async ident => {
 		this.setState({ burger: false });
@@ -48,12 +48,12 @@ export default class NavBar extends Component {
 		const { uuid } = data;
 
 		route(`/edit_feature/${ident}/${uuid}`);
-	}
+	};
 
 	route = name => {
 		this.setState({ burger: false });
 		route(name);
-	}
+	};
 
 	render() {
 		this.navbarFeatures = Object.keys(features).filter(x => features[x].navbar)

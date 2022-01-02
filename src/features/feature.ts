@@ -50,7 +50,7 @@ export abstract class feature_single implements feature {
 	abstract get_description(): string;
 
 	abstract update(options: Ioptions): Iresponse;
-	abstract async run(): Promise<void>;
+	abstract run(): Promise<void>;
 
 	constructor() {
 		this.set_params();
@@ -159,7 +159,7 @@ export abstract class feature_single implements feature {
 }
 
 export abstract class feature_collection implements feature {
-	features: feature_item[] = []
+	features: feature_item[] = [];
 
 	abstract get_ident(): string;
 	abstract get_new_item(options: Ioptions): feature_item;
@@ -303,7 +303,7 @@ export abstract class feature_item {
 	running: boolean = false;
 	params: Ifeature;
 
-	abstract async run(): Promise<void>;
+	abstract run(): Promise<void>;
 	abstract get_options(): Ioptions;
 	abstract set_options(options: Ioptions): void;
 	abstract set_params(): void;

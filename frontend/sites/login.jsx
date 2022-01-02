@@ -14,7 +14,7 @@ export default class Login extends Component {
 		errorGameworld: false,
 		errorEmail: false,
 		errorPassword: false,
-	}
+	};
 
 	submit() {
 		const { gameworld, email, password, ingameName } = this.state;

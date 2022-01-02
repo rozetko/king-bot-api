@@ -6,6 +6,7 @@ import api from '../api';
 import database from '../database';
 import uniqid from 'uniqid';
 import { clean_farmlist } from '../utilities/clean_farmlist';
+import logger from '../logger';
 
 interface Ioptions_farm extends Ioptions {
 	farmlists: any[];
@@ -73,7 +74,7 @@ class farm_feature extends feature_item {
 	}
 
 	async run(): Promise<void> {
-		log(`farming uuid: ${this.options.uuid} started`);
+		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
 		const params = [
 			village.own_villages_ident,
@@ -97,7 +98,7 @@ class farm_feature extends feature_item {
 				const now: number = get_date();
 
 				if ((now - lastSent) < interval_min) {
-					log(`farmlist: ${farmlistinfo.farmlist} sent too recently. skipping until next time`);
+					logger.info(`farmlist: ${farmlistinfo.farmlist} sent too recently. skipping until next time`, this.params.name);
 					continue;
 				}
 
@@ -123,12 +124,12 @@ class farm_feature extends feature_item {
 				}
 			}
 
-			log('farmlists sent');
+			logger.info('farmlists sent', this.params.name);
 
 			await sleep(get_random_int(interval_min, interval_max));
 		}
 
-		log(`farming uuid: ${this.options.uuid} stopped`);
+		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
 		this.running = false;
 		this.options.run = false;
 	}

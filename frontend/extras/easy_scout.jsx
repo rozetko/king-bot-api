@@ -23,7 +23,7 @@ export default class EasyScout extends Component {
 		error_village: false,
 		error_farmlist: false,
 		error_amount: false,
-	}
+	};
 
 	componentDidMount() {
 		axios.get('/api/data?ident=villages')

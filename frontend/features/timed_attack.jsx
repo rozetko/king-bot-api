@@ -37,7 +37,7 @@ export default class SendTimedAttack extends Component {
 		error_wait_time: false,
 		error_village: false,
 		error_target: false
-	}
+	};
 
 	componentWillMount() {
 		this.setState({
@@ -89,7 +89,7 @@ export default class SendTimedAttack extends Component {
 		const target_player_name = check_target_data.destPlayerName;
 		if (target_player_name == null || target_village_name == null) alert('Something went wrong. Is your target banned?');
 		this.setState({ target_villageId, target_village_name, target_x, target_y, target_playerId, target_player_name, target_tribeId, target_distance });
-	}
+	};
 
 	submit = async e => {
 		this.setState({
@@ -100,15 +100,15 @@ export default class SendTimedAttack extends Component {
 		if (/*this.state.error_wait_time || */this.state.error_village) return;
 
 		this.props.submit({ ...this.state });
-	}
+	};
 
 	delete = async e => {
 		this.props.delete({ ...this.state });
-	}
+	};
 
 	cancel = async e => {
 		route('/');
-	}
+	};
 
 	render() {
 		var { wait_time, all_villages, village_name, village_id, target_x, target_y, target_player_name, target_village_name, target_tribeId, target_distance, own_tribe, troops,

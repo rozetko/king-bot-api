@@ -23,7 +23,7 @@ export default class TrainTroops extends Component {
 		interval_max: 0,
 		error_interval_max: false,
 		error_interval_min: false
-	}
+	};
 
 	componentWillMount() {
 		this.setState({
