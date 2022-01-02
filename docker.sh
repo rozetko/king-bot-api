@@ -10,5 +10,5 @@ read port
 echo at which folder do you want to mount the datastorage? for credentials and database.
 read cred
 
-sudo docker container run -d -p $port:3000 -v $cred:/usr/kingbot/assets --name $container --restart=always scriptworld/king-bot-api
+sudo docker container run -d -p $port:3000 -v $cred:/usr/kingbot/assets --name $container --restart=always skunk1/king-bot-api
 

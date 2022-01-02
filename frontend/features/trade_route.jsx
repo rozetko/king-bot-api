@@ -32,7 +32,7 @@ export default class TradeRoute extends Component {
 		error_input_max: false,
 		error_source_village_id: false,
 		error_destination_village_id: false,
-	}
+	};
 
 	componentWillMount() {
 		this.setState({ ...this.props.feature });

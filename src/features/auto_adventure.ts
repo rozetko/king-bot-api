@@ -1,10 +1,11 @@
 import { Ihero, Iplayer } from '../interfaces';
-import { feature_single, Ioptions, Ifeature, Iresponse } from './feature';
-import { log, find_state_data, get_diff_time, sleep } from '../util';
+import { feature_single, Ioptions, Iresponse } from './feature';
+import { find_state_data, get_diff_time, sleep } from '../util';
 import api from '../api';
 import { player } from '../gamedata';
 import database from '../database';
 import uniqid from 'uniqid';
+import logger from '../logger';
 
 interface Ioptions_hero extends Ioptions {
 	type: adventure_type
@@ -78,7 +79,7 @@ class auto_adventure extends feature_single {
 	}
 
 	async auto_adventure(type: adventure_type, min_health: number): Promise<void> {
-		log('auto adventure started');
+		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
 		// write data to database
 		this.options.min_health = min_health;
@@ -106,7 +107,7 @@ class auto_adventure extends feature_single {
 
 				if (send) {
 					await api.start_adventure(type);
-					log('sent hero on adventure');
+					logger.info('sent hero on adventure', this.params.name);
 				}
 			}
 
@@ -122,7 +123,7 @@ class auto_adventure extends feature_single {
 
 		this.running = false;
 		this.options.run = false;
-		log('auto adventure stopped');
+		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
 	}
 }
 

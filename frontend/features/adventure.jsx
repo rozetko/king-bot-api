@@ -11,7 +11,7 @@ export default class Adventure extends Component {
 		type: 0,
 		min_health: '',
 		error_input: false,
-	}
+	};
 
 	componentWillMount() {
 		this.setState({ ...this.props.feature });

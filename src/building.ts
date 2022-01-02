@@ -12,7 +12,7 @@ class building_queue {
 		clay: 2,
 		iron: 3,
 		crop: 4
-	}
+	};
 
 	running: boolean = false;
 	loop_data: { [index: string]: [{ [index: number]: number[] }] } = {};

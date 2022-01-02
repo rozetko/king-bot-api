@@ -14,7 +14,7 @@ const rowStyle = {
 export default class FeatureList extends Component {
 	state = {
 		features: [],
-	}
+	};
 
 	async componentDidMount() {
 		const res = await axios.get('/api/allfeatures');

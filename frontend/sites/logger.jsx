@@ -13,7 +13,7 @@ const rowStyle = {
 export default class Logger extends Component {
 	state = {
 		log_list: [],
-	}
+	};
 
 	componentDidMount() {
 		axios.get('/api/data?ident=logger')

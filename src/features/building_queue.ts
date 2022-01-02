@@ -1,5 +1,5 @@
 import { feature_collection, feature_item, Ioptions, Ifeature } from './feature';
-import { log, find_state_data, sleep, get_diff_time } from '../util';
+import { find_state_data, sleep, get_diff_time } from '../util';
 import { village, player } from '../gamedata';
 import { Ivillage, Ibuilding_queue, Iresources, Iplayer } from '../interfaces';
 import { tribe } from '../data';
@@ -83,7 +83,7 @@ class queue extends feature_item {
 	}
 
 	async run(): Promise<void> {
-		logger.info(`building queue: ${this.options.uuid} started`, 'building queue');
+		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
 		while (this.options.run) {
 			const { village_name, village_id, queue } = this.options;
@@ -133,7 +133,7 @@ class queue extends feature_item {
 				// upgrade building here
 				if (this.able_to_build(queue_item.costs, village_obj)) {
 					const res: any = await api.upgrade_building(queue_item.type, queue_item.location, village_id);
-					logger.info('upgrade building ' + queue_item.location + ' on village ' + village_name, 'building queue');
+					logger.info(`upgrade building ${queue_item.location} on village ${village_name}`, this.params.name);
 
 					// TODO save new options to database
 					this.options.queue.shift();
@@ -145,7 +145,7 @@ class queue extends feature_item {
 					if (get_diff_time(upgrade_time) <= (five_minutes - 2)) {
 						if (finish_earlier.running) {
 							await api.finish_now(village_id, 2);
-							logger.info('upgrade time less 5 min, instant finish!', 'building queue');
+							logger.info(`upgrade time less 5 min on village ${village_name}, instant finish!`, this.params.name);
 						}
 
 						// only wait one second to build next building
@@ -179,7 +179,7 @@ class queue extends feature_item {
 
 		this.running = false;
 		this.options.run = false;
-		logger.info(`building queue: ${this.options.uuid} stopped`, 'building queue');
+		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
 	}
 
 	able_to_build(costs: Iresources, village: Ivillage): boolean {

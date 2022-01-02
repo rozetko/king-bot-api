@@ -13,7 +13,7 @@ export default class EditFeature extends Component {
 	state = {
 		ident: '',
 		show_tips: false,
-	}
+	};
 
 	componentWillMount() {
 		const { ident, uuid } = this.props;

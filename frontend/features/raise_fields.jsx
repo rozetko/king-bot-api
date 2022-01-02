@@ -18,7 +18,7 @@ export default class RaiseFields extends Component {
 		wood: 0,
 		clay: 0,
 		iron: 0,
-	}
+	};
 
 	componentWillMount() {
 		this.setState({ ...this.props.feature });

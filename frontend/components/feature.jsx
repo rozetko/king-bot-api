@@ -28,7 +28,7 @@ export default class Feature extends Component {
 		error: false,
 		// error, loading, offline, online
 		status: 'offline'
-	}
+	};
 
 	interval = null;
 

@@ -3,7 +3,7 @@ import { Ivillage } from '../interfaces';
 import api from '../api';
 
 class village {
-	village_ident: string = 'Collection:Village:'
+	village_ident: string = 'Collection:Village:';
 	own_villages_ident: string = this.village_ident + 'own';
 
 	building_collection_ident: string = 'Collection:Building:';

@@ -24,7 +24,7 @@ export default class SendFarmlist extends Component {
 		error_farmlist: false,
 		error_farmlists: false,
 		error_village: false,
-	}
+	};
 
 	componentWillMount() {
 		this.setState({ ...this.props.feature });

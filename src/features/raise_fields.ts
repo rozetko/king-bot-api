@@ -44,14 +44,14 @@ class raise extends feature_item {
 		clay: 2,
 		iron: 3,
 		crop: 4
-	}
+	};
 
 	building_type_reverse: { [index: number]: string } = {
 		1: 'wood',
 		2: 'clay',
 		3: 'iron',
 		4: 'crop'
-	}
+	};
 
 	options: Ioptions_raise;
 
@@ -121,13 +121,13 @@ class raise extends feature_item {
 			} else if (queue_data.queues[1].length) {
 				finished = queue_data.queues[1][0].finished;
 			} else {
-				logger.error('error calculating queue time! queue object:');
-				logger.error(queue_data.queues);
+				logger.error('error calculating queue time! queue object:', this.params.name);
+				logger.error(queue_data.queues, this.params.name);
 				this.options.error = true;
 				return null;
 			}
 
-			logger.info('queue for raise field is not free for ' + String(get_diff_time(finished)) + ' seconds', 'raise fields');
+			logger.info('queue for raise field is not free for ' + String(get_diff_time(finished)) + ' seconds on village ' + village_name, this.params.name);
 			return get_diff_time(finished);
 		}
 
@@ -187,14 +187,14 @@ class raise extends feature_item {
 
 		// all fields are raised
 		if (done) {
-			logger.info('raise fields done !', 'raise fields');
+			logger.info(`raise fields done on ${village_name}!`, this.params.name);
 			return null;
 		}
 
 		if (upgrade_building) {
 			// upgrade building
 			const res: any = await api.upgrade_building(upgrade_building.buildingType, upgrade_building.locationId, village_id);
-			logger.info('upgrade building ' + upgrade_building.locationId + ' on village ' + village_obj.name, 'raise fields');
+			logger.info(`upgrade building ${upgrade_building.locationId} on village ${village_obj.name}`, this.params.name);
 
 			const upgrade_time: number = Number(upgrade_building.upgradeTime);
 			const five_minutes: number = 5 * 60;
@@ -204,7 +204,7 @@ class raise extends feature_item {
 			if (get_diff_time(upgrade_time) <= (five_minutes - 2)) {
 				if (finish_earlier.running) {
 					await api.finish_now(village_id, 2);
-					logger.info('upgrade time less 5 min, instant finish!', 'raise fields');
+					logger.info(`upgrade time less 5 min on village ${village_name}, instant finish!`, this.params.name);
 				}
 
 				// only wait one second to build next building
@@ -220,14 +220,14 @@ class raise extends feature_item {
 	}
 
 	async run(): Promise<void> {
-		logger.info(`raise fields: ${this.options.uuid} started`, 'raise fields');
+		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
 		while (this.options.run) {
 			let sleep_time: number = await this.upgrade_field();
 
 			// all fields are raised
 			if (!sleep_time) {
-				logger.info('finished raising fields.', 'raise fields');
+				logger.info('finished raising fields.', this.params.name);
 				break;
 			}
 
@@ -242,7 +242,7 @@ class raise extends feature_item {
 
 		this.running = false;
 		this.options.run = false;
-		logger.info(`raise fields: ${this.options.uuid} stopped`, 'raise fields');
+		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
 	}
 
 	able_to_build(building: Ibuilding, village: Ivillage): boolean {

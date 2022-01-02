@@ -149,15 +149,17 @@ class train_feature extends feature_item {
 		var recruit: any = await api.recruit_units(building_data.locationId, village_id, unit, training_amount);
 		if (recruit.errors) {
 			for (let error of recruit.errors)
-				logger.error(error.message, 'train troops');
+				logger.error(error.message, this.params.name);
 			return;
 		}
-		logger.info(`training ${training_amount} units of type ${unit_name} with a cost of wood: ${total_training_cost[0]}, clay: ${total_training_cost[1]}, iron: ${total_training_cost[2]}`, 'train troops');
+		logger.info(`training ${training_amount} units of type ${unit_name} in village ${village_name} `+
+		`with a cost of wood: ${total_training_cost[0]}, clay: ${total_training_cost[1]}, iron: ${total_training_cost[2]}`,
+		this.params.name);
 		return;
 	}
 
 	async run(): Promise<void> {
-		logger.info(`train troops: ${this.options.uuid} started`, 'train troops');
+		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
 		while (this.options.run) {
 			const { interval_min, interval_max } = this.options;
@@ -167,7 +169,7 @@ class train_feature extends feature_item {
 
 		this.running = false;
 		this.options.run = false;
-		logger.info(`train troops: ${this.options.uuid} stopped`, 'train troops');
+		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
 	}
 
 	building_type(unit: number): number {

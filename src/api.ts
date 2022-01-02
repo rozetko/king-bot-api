@@ -15,7 +15,7 @@ class api {
 	constructor() {
 		this.ax = axios.create();
 		this.ax.defaults.withCredentials = true;
-		this.ax.defaults.headers['User-Agent'] = 'Chrome/51.0.2704.63';
+		this.ax.defaults.headers.common['User-Agent'] = 'Chrome/51.0.2704.63';
 	}
 
 	async login(email: string, password: string, gameworld: string, sitter_type: string, sitter_name: string) {

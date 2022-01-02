@@ -38,7 +38,7 @@ async function manage_login(
 		// get credentials from database
 		const { session_lobby, cookies_lobby, msid } = database.get('account').value();
 
-		axios.defaults.headers['Cookie'] = cookies_lobby;
+		axios.defaults.headers.common['Cookie'] = cookies_lobby;
 
 		if (await test_lobby_connection(axios, session_lobby)) {
 			logger.info('database lobby connection successful', 'login');
@@ -49,7 +49,7 @@ async function manage_login(
 				// get credentials from database
 				const { session_gameworld, cookies_gameworld } = database.get('account').value();
 
-				axios.defaults.headers['Cookie'] += cookies_gameworld;
+				axios.defaults.headers.common['Cookie'] += cookies_gameworld;
 				if (await test_gameworld_connection(axios, gameworld, session_gameworld)) {
 					logger.info('database gameworld connection successful', 'login');
 					return;
@@ -128,7 +128,7 @@ async function login_to_lobby(axios: AxiosInstance, email: string, password: str
 
 	// set lobby cookies
 	let cookies_lobby = parse_cookies(cookies.headers['set-cookie'].slice(2));
-	axios.defaults.headers['Cookie'] = cookies_lobby;
+	axios.defaults.headers.common['Cookie'] = cookies_lobby;
 
 	let sessionLink: string = cookies.headers.location;
 	session_lobby = sessionLink.substring(sessionLink.lastIndexOf('=') + 1);
@@ -202,7 +202,7 @@ async function login_to_gameworld(
 
 	// set gameworld cookies
 	let cookies_gameworld = parse_cookies(res.headers['set-cookie']);
-	axios.defaults.headers['Cookie'] += cookies_gameworld;
+	axios.defaults.headers.common['Cookie'] += cookies_gameworld;
 
 	// get new sessionID
 	let sessionLink = res.headers.location;

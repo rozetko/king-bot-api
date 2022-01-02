@@ -155,7 +155,7 @@ class timed_attack_feature extends feature_item {
 	}
 
 	async run(): Promise<void> {
-		log(`attack timer uuid: ${this.options.uuid} started`);
+		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
 		var { village_name, village_id, target_villageId, target_distance, target_village_name, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, send_hero, date, time } = this.options;
 		const params = [
@@ -232,7 +232,7 @@ class timed_attack_feature extends feature_item {
 
 		}
 
-		log(`attack timer uuid: ${this.options.uuid} stopped`);
+		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
 		this.running = false; //need to figure out how to delete this along with stop.
 		this.options.run = false;
 	}
