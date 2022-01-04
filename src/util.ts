@@ -24,7 +24,10 @@ export function find_state_data(ident: string, data: any[], contains: boolean = 
 	const found_obj = data.find((x: any) => {
 		return contains ? x.name.includes(ident) : x.name == ident;
 	});
-
+	if (!found_obj) {
+		logger.error(found_obj, 'find_state_data');
+		return null;
+	}
 	return found_obj.data;
 }
 

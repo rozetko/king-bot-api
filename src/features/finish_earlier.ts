@@ -1,10 +1,9 @@
 import { Ivillage, Ibuilding_queue } from '../interfaces';
-import { Ifeature, feature_single, Ioptions, Iresponse } from './feature';
-import { log, get_date, clash_obj, find_state_data, sleep } from '../util';
-import api from '../api';
+import { feature_single, Ioptions, Iresponse } from './feature';
+import { get_date, find_state_data, sleep } from '../util';
 import { village } from '../gamedata';
+import api from '../api';
 import uniqid from 'uniqid';
-import database from '../database';
 import logger from '../logger';
 
 class finish_earlier extends feature_single {

@@ -4,6 +4,8 @@ import manage_login from './login';
 import settings from './settings';
 import database from './database';
 import { Iunits } from './interfaces';
+import { default_Iunits } from './data';
+import logger from './logger';
 
 class api {
 	private ax: AxiosInstance;
@@ -130,11 +132,14 @@ class api {
 
 	}
 
-	async check_target(villageId: number, destVillageId: number, movementType: number): Promise<any> {
+	async check_target(villageId: number, destVillageId: number, movementType: number,
+		redeployHero: boolean = false, selectedUnits: Iunits = default_Iunits): Promise<any> {
 		const params = {
 			destVillageId,
 			villageId,
-			movementType
+			movementType,
+			redeployHero,
+			selectedUnits
 		};
 
 		return await this.post('checkTarget', 'troops', params);
@@ -208,8 +213,13 @@ class api {
 
 		const response: any = await this.ax.post(`/?t${get_date()}`, payload);
 
-		if (response.errors) {
-			log(response.errors);
+		if (response.data.error) {
+			logger.debug(response.data, `${controller}.${action}`);
+			return { 'errors': [ response.data.error ] };
+		}
+
+		if (response.data.response.errors) {
+			logger.debug(response.data, `${controller}.${action}`);
 		}
 
 		return this.merge_data(response.data);

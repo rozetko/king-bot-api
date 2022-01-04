@@ -1,12 +1,37 @@
+export enum adventure_type {
+	short = 0,
+	long = 1
+}
+
+export enum hero_status {
+	idle = 0,
+	returning = 1,
+	to_village = 2,
+	to_oasis = 3,
+	to_adventure = 4,
+	supporting = 5,
+	trapped = 6,
+	dead = 7,
+	reviving = 8
+}
+
 export enum tribe {
 	roman = '1',
 	teuton = '2',
-	gaul = '3'
+	gaul = '3',
+	nature = '4'
 }
 
 export enum mission_type {
-	spy = 6
+	attack = 3,
+	raid = 4,
+	support = 5,
+	spy = 6,
+	siege = 47,
+	settle = 10
 }
+
+export const default_Iunits = { 1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0 };
 
 export const buildings: { [index: number]: string } = {
 	1: 'wood',

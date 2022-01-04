@@ -2,7 +2,7 @@ import qs from 'qs';
 import cheerio from 'cheerio';
 import logger from './logger';
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { clash_obj, log } from './util';
+import { clash_obj } from './util';
 import database from './database';
 import settings from './settings';
 

@@ -1,5 +1,5 @@
 import { Ivillage, Ibuilding, Ibuilding_collection, Ibuilding_queue } from './interfaces';
-import { log, get_date, clash_obj, find_state_data } from './util';
+import { get_date, find_state_data } from './util';
 import { sleep } from './util';
 import api from './api';
 import { village } from './gamedata';

@@ -43,7 +43,14 @@ class server {
 
 			for (let feat of this.features) response = [...response, ...feat.get_feature_params()];
 
-			res.send(response);
+			// sort features by group and description
+			var compareFeatures = function (feat1: Ifeature_params, feat2: Ifeature_params) {
+				if (feat1.long_description == feat2.long_description)
+					return feat1.description > feat2.description ? -1 : 1;
+				return feat1.long_description > feat2.long_description ? -1 : 1;
+			};
+
+			res.send(response.sort(compareFeatures));
 		});
 
 		this.app.post('/api/feature', (req: any, res: any) => {

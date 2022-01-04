@@ -112,8 +112,13 @@ class train_feature extends feature_item {
 
 		// get less posible amount of troop for training
 		let training_amount = this.get_training_amount(costs, resources);
-		if (training_amount == 0)
+		if (training_amount == 0) {
+			logger.info(
+				`training units of type ${unit_name} is not possible ` +
+				`in village ${village_name} with the resources available`,
+				this.params.name);
 			return;
+		}
 
 		if (amount < training_amount)
 			training_amount = amount;
@@ -152,9 +157,10 @@ class train_feature extends feature_item {
 				logger.error(error.message, this.params.name);
 			return;
 		}
-		logger.info(`training ${training_amount} units of type ${unit_name} in village ${village_name} `+
-		`with a cost of wood: ${total_training_cost[0]}, clay: ${total_training_cost[1]}, iron: ${total_training_cost[2]}`,
-		this.params.name);
+		logger.info(
+			`training ${training_amount} units of type ${unit_name} in village ${village_name} `+
+			`with a cost of wood: ${total_training_cost[0]}, clay: ${total_training_cost[1]}, iron: ${total_training_cost[2]}`,
+			this.params.name);
 		return;
 	}
 
@@ -190,9 +196,9 @@ class train_feature extends feature_item {
 
 	// less posible amount of troop for training
 	get_training_amount(costs: any, resources: Iresources): number {
-		let total_units_cost_wood = [];  // total wood cost for every unit in units_train
-		let total_units_cost_clay = [];  // total clay cost for every unit in units_train
-		let total_units_cost_iron = [];  // total iron cost for every unit in units_train
+		let total_units_cost_wood = [];  // total wood cost for every unit
+		let total_units_cost_clay = [];  // total clay cost for every unit
+		let total_units_cost_iron = [];  // total iron cost for every unit
 		total_units_cost_wood.push(costs[0]);
 		total_units_cost_clay.push(costs[1]);
 		total_units_cost_iron.push(costs[2]);

@@ -1,6 +1,7 @@
 import { log, find_state_data } from '../util';
 import { Ivillage } from '../interfaces';
 import api from '../api';
+import logger from '../logger';
 
 class village {
 	village_ident: string = 'Collection:Village:';
@@ -16,7 +17,7 @@ class village {
 		const village = villages.find((x: any) => x.data.villageId == id);
 
 		if (!village) {
-			log(`couldn't find village with ID: ${id} !`);
+			logger.error(`couldn't find village with ID: ${id}!`, 'village');
 			return null;
 		}
 

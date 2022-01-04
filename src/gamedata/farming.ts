@@ -1,6 +1,7 @@
 import { log, find_state_data } from '../util';
 import { Ifarmlist } from '../interfaces';
 import api from '../api';
+import logger from '../logger';
 
 class farming {
 	farmlist_ident: string = 'Collection:FarmList:';
@@ -11,7 +12,7 @@ class farming {
 		const farmlist = lists.find((x: any) => x.data.listName.toLowerCase() == name.toLowerCase());
 
 		if (!farmlist) {
-			log(`couldn't find farmlist ${name} !`);
+			logger.error(`couldn't find farmlist ${name}!`, 'farming');
 			return null;
 		}
 
