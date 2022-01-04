@@ -1,5 +1,6 @@
 import { sleep } from '../util';
 import api from '../api';
+import logger from '../logger';
 
 export async function clean_farmlist(farmlist_id: number, losses_farmlist_id: number): Promise<void> {
 	const params = [ `Collection:FarmListEntry:${farmlist_id}` ];
@@ -16,7 +17,7 @@ export async function clean_farmlist(farmlist_id: number, losses_farmlist_id: nu
 		// report is green
 		if (farm.lastReport.notificationType == '1') continue;
 
-		console.log(`moving farm: ${farm.villageName} from list: ${farmlist_id} to list: ${losses_farmlist_id}`);
+		logger.info(`moving farm: ${farm.villageName} from list: ${farmlist_id} to list: ${losses_farmlist_id}`, 'clean_farmlist');
 
 		// copy to other list
 		await api.copy_farmlist_entry(farm.villageId, losses_farmlist_id, farm.entryId);

@@ -1,8 +1,9 @@
 import { Ihero, Iplayer } from '../interfaces';
 import { feature_single, Ioptions, Iresponse } from './feature';
 import { find_state_data, get_diff_time, sleep } from '../util';
-import api from '../api';
+import { adventure_type, hero_status } from '../data';
 import { player } from '../gamedata';
+import api from '../api';
 import database from '../database';
 import uniqid from 'uniqid';
 import logger from '../logger';
@@ -97,7 +98,7 @@ class auto_adventure extends feature_single {
 			const response: any[] = await api.get_cache([ this.hero_ident + player_data.playerId]);
 			const hero: Ihero = find_state_data(this.hero_ident + player_data.playerId, response);
 
-			if (hero.adventurePoints > 0 && !hero.isMoving && hero.status == 0 && Number(hero.health) > min_health){
+			if (hero.adventurePoints > 0 && !hero.isMoving && hero.status == hero_status.idle && Number(hero.health) > min_health){
 				let send: boolean = false;
 
 				if (type == adventure_type.short && Number(hero.adventurePoints) > 0)
@@ -125,11 +126,6 @@ class auto_adventure extends feature_single {
 		this.options.run = false;
 		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
 	}
-}
-
-export enum adventure_type {
-	short = 0,
-	long = 1
 }
 
 export default new auto_adventure();

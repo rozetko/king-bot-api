@@ -49,7 +49,6 @@ class kingbot {
 			return;
 		}
 
-		//console.log(`start login to gameworld ${gameworld} with account ${email} ...`);
 		logger.info('start login...', 'login');
 
 		await api.login(email, password, gameworld, sitter_type, sitter_name);

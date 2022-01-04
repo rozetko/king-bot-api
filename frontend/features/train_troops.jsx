@@ -9,7 +9,7 @@ import { storeKeys } from '../language';
 export default class TrainTroops extends Component {
 	state = {
 		all_villages: [],
-		all_troops: [],
+		troops: '',
 		own_tribe: 0,
 		village_name: '',
 		village_id: '',
@@ -31,8 +31,8 @@ export default class TrainTroops extends Component {
 		});
 
 		axios.get('/api/data?ident=villages').then(res => this.setState({ all_villages: res.data }));
-		axios.get('/api/data?ident=troops').then(res => this.setState({ all_troops: res.data }));
 		axios.get('/api/data?ident=player_tribe').then(res => this.setState({ own_tribe: Number(res.data) }));
+		axios.get('/api/data?ident=troops').then(res => this.setState({ troops: res.data }));
 	}
 
 	async submit() {
@@ -60,43 +60,41 @@ export default class TrainTroops extends Component {
 	}
 
 	render(props) {
-		const {
-			all_villages, all_troops, own_tribe,
-			village_id, village_name, error_village,
-			unit, unit_name, error_unit,
-			amount, error_amount,
-			interval_min, error_interval_min,
-			interval_max, error_interval_max
+		var {
+			all_villages, troops, own_tribe,
+			village_id, village_name,
+			unit, unit_name,
+			amount, interval_min, interval_max,
 		} = this.state;
 
 		const village_select_class = classNames({
 			select: true,
 			'is-radiusless': true,
-			'is-danger': error_village,
+			'is-danger': this.state.error_village,
 		});
 
 		const unit_select_class = classNames({
 			select: true,
 			'is-radiusless': true,
-			'is-danger': error_unit,
+			'is-danger': this.state.error_unit,
 		});
 
 		const input_class_amount = classNames({
 			input: true,
 			'is-radiusless': true,
-			'is-danger': error_amount,
+			'is-danger': this.state.error_amount,
 		});
 
 		const input_class_min = classNames({
 			input: true,
 			'is-radiusless': true,
-			'is-danger': error_interval_min,
+			'is-danger': this.state.error_interval_min,
 		});
 
 		const input_class_max = classNames({
 			input: true,
 			'is-radiusless': true,
-			'is-danger': error_interval_max,
+			'is-danger': this.state.error_interval_max,
 		});
 
 		const villages = all_villages.map(village =>
@@ -108,38 +106,20 @@ export default class TrainTroops extends Component {
 			</option>
 		);
 
-		// TODO: all_troops doesn't work as expected.
-		const tribes = [[{ unit: 0, name: 'Tribe undefined' }],
-			[
-				{ unit: 1, name: 'Legionnaire' },
-				{ unit: 2, name: 'Praetorian' },
-				{ unit: 3, name: 'Imperian' },
-				{ unit: 4, name: 'Equites Legati' },
-				{ unit: 5, name: 'Equites Imperatoris' },
-				{ unit: 6, name: 'Equites Caesaris' },
-				{ unit: 7, name: 'Battering Ram' },
-				{ unit: 8, name: 'Fire Catapult' }
-			],[
-				{ unit: 11, name: 'Clubswinger' },
-				{ unit: 12, name: 'Spearfighter' },
-				{ unit: 13, name: 'Axefighter' },
-				{ unit: 14, name: 'Scout' },
-				{ unit: 15, name: 'Paladin' },
-				{ unit: 16, name: 'Teutonic Knight' },
-				{ unit: 17, name: 'Ram' },
-				{ unit: 18, name: 'Catapult' }
-			],[
-				{ unit: 21, name: 'Phalanx' },
-				{ unit: 22, name: 'Swordsman' },
-				{ unit: 23, name: 'Pathfinder' },
-				{ unit: 24, name: 'Theutates thunder' },
-				{ unit: 25, name: 'Druidrider' },
-				{ unit: 26, name: 'Headuan' },
-				{ unit: 27, name: 'Ram' },
-				{ unit: 28, name: 'Trebuchet' }
-			]];
-
-		const troops = tribes[own_tribe].map(troop =>
+		var tribe_units = [];
+		if (own_tribe != 0 && troops != '') {
+			tribe_units = [
+				{ unit: troops[own_tribe][1].unit, name: troops[own_tribe][1].name },
+				{ unit: troops[own_tribe][2].unit, name: troops[own_tribe][2].name },
+				{ unit: troops[own_tribe][3].unit, name: troops[own_tribe][3].name },
+				{ unit: troops[own_tribe][4].unit, name: troops[own_tribe][4].name },
+				{ unit: troops[own_tribe][5].unit, name: troops[own_tribe][5].name },
+				{ unit: troops[own_tribe][6].unit, name: troops[own_tribe][6].name },
+				{ unit: troops[own_tribe][7].unit, name: troops[own_tribe][7].name },
+				{ unit: troops[own_tribe][8].unit, name: troops[own_tribe][8].name }
+			];
+		}
+		const own_troops = tribe_units.map(troop =>
 			<option
 				value={ troop.unit }
 				unit_name={ troop.name }
@@ -166,7 +146,7 @@ export default class TrainTroops extends Component {
 										})
 										}
 									>
-										{ troops }
+										{ own_troops }
 									</select>
 								</div>
 							</div>

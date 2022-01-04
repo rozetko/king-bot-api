@@ -19,3 +19,9 @@ yarn-error.log*
 # Dependency directories
 node_modules/
 jspm_packages/
+
+# Visual Studio Project
+/.vs
+
+# Visual Studio Code
+/.vscode
