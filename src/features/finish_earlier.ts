@@ -63,7 +63,7 @@ class finish_earlier extends feature_single {
 
 			let params: string[] = [];
 
-			for (let data of find_state_data(village.own_villages_ident, villages_data)) {
+			for (let data of find_state_data(village.collection_own_ident, villages_data)) {
 				const vill: Ivillage = data.data;
 				params.push(this.building_queue_ident + vill.villageId);
 			}
@@ -73,7 +73,7 @@ class finish_earlier extends feature_single {
 
 			let sleep_time: number = null;
 
-			for (let data of find_state_data(village.own_villages_ident, villages_data)) {
+			for (let data of find_state_data(village.collection_own_ident, villages_data)) {
 				const vill: Ivillage = data.data;
 				const queue: Ibuilding_queue = find_state_data(this.building_queue_ident + vill.villageId, response);
 

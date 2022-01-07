@@ -45,7 +45,7 @@ class building_queue {
 			const villages_data: any = await village.get_own();
 
 			let params: string[] = [];
-			for (let data of find_state_data(village.own_villages_ident, villages_data)) {
+			for (let data of find_state_data(village.collection_own_ident, villages_data)) {
 				const vill: Ivillage = data.data;
 				params.push(this.building_queue_ident + vill.villageId);
 			}
@@ -55,7 +55,7 @@ class building_queue {
 
 			let sleep_time: number = null;
 
-			for (let data of find_state_data(village.own_villages_ident, villages_data)) {
+			for (let data of find_state_data(village.collection_own_ident, villages_data)) {
 				const vill: Ivillage = data.data;
 				const queue: Ibuilding_queue = find_state_data(this.building_queue_ident + vill.villageId, response);
 

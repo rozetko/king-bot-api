@@ -1,5 +1,5 @@
 import { Iplayer } from '../interfaces';
-import { log, find_state_data } from '../util';
+import { find_state_data } from '../util';
 import api from '../api';
 import village from './village';
 
@@ -8,7 +8,7 @@ class player {
 
 	async get(): Promise<Iplayer> {
 		const villages_data: any = await village.get_own();
-		const player_id: string = find_state_data(village.own_villages_ident, villages_data)[0].data.playerId;
+		const player_id: string = find_state_data(village.collection_own_ident, villages_data)[0].data.playerId;
 
 		const params = [ this.ident + player_id ];
 

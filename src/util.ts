@@ -89,3 +89,9 @@ export function is_object(val: any) {
 	if (val === null) { return false; }
 	return ((typeof val === 'function') || (typeof val === 'object'));
 }
+
+export function camelcase_to_string(text: string) {
+	if (!text)
+		return '';
+	return text.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase();
+}

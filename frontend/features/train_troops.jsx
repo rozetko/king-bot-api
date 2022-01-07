@@ -9,7 +9,7 @@ import { storeKeys } from '../language';
 export default class TrainTroops extends Component {
 	state = {
 		all_villages: [],
-		troops: '',
+		unit_types: '',
 		own_tribe: 0,
 		village_name: '',
 		village_id: '',
@@ -32,7 +32,7 @@ export default class TrainTroops extends Component {
 
 		axios.get('/api/data?ident=villages').then(res => this.setState({ all_villages: res.data }));
 		axios.get('/api/data?ident=player_tribe').then(res => this.setState({ own_tribe: Number(res.data) }));
-		axios.get('/api/data?ident=troops').then(res => this.setState({ troops: res.data }));
+		axios.get('/api/data?ident=unit_types').then(res => this.setState({ unit_types: res.data }));
 	}
 
 	async submit() {
@@ -61,7 +61,7 @@ export default class TrainTroops extends Component {
 
 	render(props) {
 		var {
-			all_villages, troops, own_tribe,
+			all_villages, unit_types, own_tribe,
 			village_id, village_name,
 			unit, unit_name,
 			amount, interval_min, interval_max,
@@ -107,16 +107,16 @@ export default class TrainTroops extends Component {
 		);
 
 		var tribe_units = [];
-		if (own_tribe != 0 && troops != '') {
+		if (own_tribe != 0 && unit_types != '') {
 			tribe_units = [
-				{ unit: troops[own_tribe][1].unit, name: troops[own_tribe][1].name },
-				{ unit: troops[own_tribe][2].unit, name: troops[own_tribe][2].name },
-				{ unit: troops[own_tribe][3].unit, name: troops[own_tribe][3].name },
-				{ unit: troops[own_tribe][4].unit, name: troops[own_tribe][4].name },
-				{ unit: troops[own_tribe][5].unit, name: troops[own_tribe][5].name },
-				{ unit: troops[own_tribe][6].unit, name: troops[own_tribe][6].name },
-				{ unit: troops[own_tribe][7].unit, name: troops[own_tribe][7].name },
-				{ unit: troops[own_tribe][8].unit, name: troops[own_tribe][8].name }
+				{ unit: unit_types[own_tribe][1].unit, name: unit_types[own_tribe][1].name },
+				{ unit: unit_types[own_tribe][2].unit, name: unit_types[own_tribe][2].name },
+				{ unit: unit_types[own_tribe][3].unit, name: unit_types[own_tribe][3].name },
+				{ unit: unit_types[own_tribe][4].unit, name: unit_types[own_tribe][4].name },
+				{ unit: unit_types[own_tribe][5].unit, name: unit_types[own_tribe][5].name },
+				{ unit: unit_types[own_tribe][6].unit, name: unit_types[own_tribe][6].name },
+				{ unit: unit_types[own_tribe][7].unit, name: unit_types[own_tribe][7].name },
+				{ unit: unit_types[own_tribe][8].unit, name: unit_types[own_tribe][8].name }
 			];
 		}
 		const own_troops = tribe_units.map(troop =>

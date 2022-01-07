@@ -77,7 +77,7 @@ class farm_feature extends feature_item {
 		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
 		const params = [
-			village.own_villages_ident,
+			village.collection_own_ident,
 			farming.farmlist_ident,
 		];
 

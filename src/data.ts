@@ -81,7 +81,7 @@ export const buildings: { [index: number]: string } = {
 	45: 'hidden treasury'
 };
 
-export const troops: any = {
+export const unit_types: any = {
 	// roman units
 	1: {
 		1: {
