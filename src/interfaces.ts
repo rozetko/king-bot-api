@@ -104,6 +104,7 @@ export interface Ivillage {
 	tributeTime: number;
 	tributesRequiredToFetch: number;
 	estimatedWarehouseLevel: number;
+	position: number;
 }
 
 export interface Ibuilding_collection {
@@ -204,4 +205,119 @@ export interface Iplayer {
 	//TODO fill interface
 	playerId: number
 	tribeId: tribe
+}
+
+export interface Itarget {
+	srcVillageId: number,
+	srcVillageName: string,
+	srcVillageTribe: tribe,
+	srcVillageType: number,
+	srcPlayerId: number,
+	srcPlayerName: string,
+	villageId: number,
+	villageName: string,
+	villageTribe: tribe,
+	villageType: number,
+	destPlayerId: number,
+	destPlayerName: string,
+	isOasis: number,
+	isGovernorNPCVillage: boolean,
+	isRobberVillage: boolean,
+	isWorldWonderVillage: boolean,
+	durations: Idurations,
+	distance: number,
+	ownVillage: boolean,
+	warning: []
+}
+
+export interface Idurations {
+	[index: number]: number
+	1: number,
+	2: number,
+	3: number,
+	4: number,
+	5: number,
+	6: number,
+	7: number,
+	8: number,
+	9: number,
+	10: number,
+	11: number,
+	101: number,
+	102: number,
+	103: number,
+	104: number,
+	105: number,
+	106: number,
+	107: number,
+	108: number,
+	109: number,
+	110: number,
+	111: number
+}
+
+export interface Imap_details {
+	isOasis: boolean,
+	oasisType: number,
+	hasVillage: number,
+	hasNPC: number,
+	resType: number,
+	isHabitable: number,
+	landscape: number,
+	npcInfo: Inpc_info,
+	wwZone: number
+}
+
+export interface Inpc_info {
+	villageId: number,
+	name: string,
+	type: number,
+	playerId: number,
+	tribeId: number,
+	loot: Iresources,
+	treasures: number,
+	troops: Itroops
+}
+
+export interface Itroops_collection {
+	name: string
+	data: Itroops
+}
+
+export interface Itroops {
+	troopId: number,
+	tribeId: number,
+	playerId: number,
+	playerName: string,
+	villageId: number,
+	villageName: string,
+	villageIdLocation: number,
+	villageNameLocation: string,
+	playerIdLocation: number,
+	playerNameLocation: string,
+	filter: string,
+	villageIdSupply: number,
+	status: string,
+	units: [],
+	supplyTroops: number,
+	capacity: number,
+	movement: Imovement
+}
+
+export interface Imovement {
+	troopId: number,
+	villageIdStart: number,
+	villageIdTarget: number,
+	playerIdTarget: number,
+	coordinateID: number,
+	timeStart: number,
+	timeFinish: number,
+	movementType: number,
+	resources: Iresources,
+	treasures: number,
+	spyTarget: number,
+	catapultTarget1: number,
+	catapultTarget2: number,
+	orderId: number,
+	merchants: number
 }

@@ -154,7 +154,7 @@ class trade_feature extends feature_item {
 			destination_crop } = this.options;
 
 		const params = [
-			village.own_villages_ident,
+			village.collection_own_ident,
 		];
 
 		const response = await api.get_cache(params);
@@ -178,10 +178,10 @@ class trade_feature extends feature_item {
 			const vill2: Ivillage = village.find(destination_village_id, response);
 			var resources = [0, 0, 0, 0, 0];
 
-			resources[1] = Math.min(send_wood, vill.storage['1']);
-			resources[2] = Math.min(send_clay, vill.storage['2']);
-			resources[3] = Math.min(send_iron, vill.storage['3']);
-			resources[4] = Math.min(send_crop, vill.storage['4']);
+			resources[1] = Math.floor(Math.min(send_wood, vill.storage['1']));
+			resources[2] = Math.floor(Math.min(send_clay, vill.storage['2']));
+			resources[3] = Math.floor(Math.min(send_iron, vill.storage['3']));
+			resources[4] = Math.floor(Math.min(send_crop, vill.storage['4']));
 			//If there are enough merchants
 			if (this.enough_merchants(merchant_response, resources)) {
 				//And source village has more than desired and destination has less than desired

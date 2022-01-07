@@ -1,4 +1,4 @@
-import { log, find_state_data } from '../util';
+import { find_state_data } from '../util';
 import { Ifarmlist } from '../interfaces';
 import api from '../api';
 import logger from '../logger';

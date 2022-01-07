@@ -1,8 +1,8 @@
-import { Ihero, Iplayer } from '../interfaces';
+import { Ihero } from '../interfaces';
 import { feature_single, Ioptions, Iresponse } from './feature';
-import { find_state_data, get_diff_time, sleep } from '../util';
+import { get_diff_time, sleep } from '../util';
 import { adventure_type, hero_status } from '../data';
-import { player } from '../gamedata';
+import { hero } from '../gamedata';
 import api from '../api';
 import database from '../database';
 import uniqid from 'uniqid';
@@ -14,9 +14,6 @@ interface Ioptions_hero extends Ioptions {
 }
 
 class auto_adventure extends feature_single {
-	// idents for state data
-	hero_ident: string = 'Hero:';
-
 	options: Ioptions_hero;
 
 	set_default_options(): void {
@@ -89,21 +86,21 @@ class auto_adventure extends feature_single {
 
 		database.set('hero.options', this.options).write();
 
-		const player_data: Iplayer = await player.get();
+		
 
 		while (this.options.run) {
 			const { type, min_health } = this.options;
 
 			// get hero data
-			const response: any[] = await api.get_cache([ this.hero_ident + player_data.playerId]);
-			const hero: Ihero = find_state_data(this.hero_ident + player_data.playerId, response);
+			const hero_data: Ihero = await hero.get();
 
-			if (hero.adventurePoints > 0 && !hero.isMoving && hero.status == hero_status.idle && Number(hero.health) > min_health){
+			if (hero_data.adventurePoints > 0 && !hero_data.isMoving &&
+				hero_data.status == hero_status.idle && Number(hero_data.health) > min_health) {
+				
 				let send: boolean = false;
-
-				if (type == adventure_type.short && Number(hero.adventurePoints) > 0)
+				if (type == adventure_type.short && Number(hero_data.adventurePoints) > 0)
 					send = true;
-				else if (type == adventure_type.long && Number(hero.adventurePoints > 1))
+				else if (type == adventure_type.long && Number(hero_data.adventurePoints > 1))
 					send = true;
 
 				if (send) {
@@ -112,7 +109,7 @@ class auto_adventure extends feature_single {
 				}
 			}
 
-			const diff_time: number = get_diff_time(hero.untilTime);
+			const diff_time: number = get_diff_time(hero_data.untilTime);
 			let sleep_time: number = 60;
 
 			if (diff_time > 0) sleep_time = diff_time + 5;

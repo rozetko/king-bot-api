@@ -5,6 +5,7 @@ import RaiseFields from './raise_fields';
 import TradeRoute from './trade_route';
 import TimedAttack from './timed_attack';
 import TrainTroops from './train_troops';
+import RobberHideouts from './robber_hideouts';
 
 const features = {
 	hero: {
@@ -34,6 +35,10 @@ const features = {
 	train_troops: {
 		navbar: true,
 		component: TrainTroops,
+	},
+	robber_hideouts: {
+		navbar: true,
+		component: RobberHideouts,
 	}
 };
 

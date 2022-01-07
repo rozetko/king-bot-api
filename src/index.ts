@@ -56,7 +56,7 @@ class kingbot {
 
 	async scout(farmlist_name: string, village_id: number, amount: number = 1, mission: string = 'resources') {
 		const params = [
-			village.own_villages_ident,
+			village.collection_own_ident,
 			farming.farmlist_ident
 		];
 

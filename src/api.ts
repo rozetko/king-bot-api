@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { clash_obj, get_date, log } from './util';
+import { clash_obj, get_date, camelcase_to_string } from './util';
 import manage_login from './login';
 import settings from './settings';
 import database from './database';
@@ -50,6 +50,8 @@ class api {
 		};
 
 		const response = await this.ax.post(`/?c=cache&a=get&t${get_date()}`, payload);
+
+		response.data = this.handle_errors(response.data, 'cache.get');
 
 		return this.merge_data(response.data);
 	}
@@ -167,7 +169,6 @@ class api {
 		return await this.post('send', 'troops', params);
 	}
 
-
 	async send_merchants(sourceVillageId: number, destVillageId: number, resources: number[]): Promise<any> {
 		const params = {
 			destVillageId,
@@ -194,9 +195,9 @@ class api {
 		units[unit] = amount;
 
 		const params = {
+			villageId: village_id,
 			locationId: location_Id,
-			units: units,
-			villageId: village_id
+			units: units
 		};
 		return await this.post('recruitUnits', 'building', params);
 	}
@@ -213,20 +214,40 @@ class api {
 
 		const response: any = await this.ax.post(`/?t${get_date()}`, payload);
 
-		if (response.data.error) {
-			logger.debug(response.data, `${controller}.${action}`);
-			return { 'errors': [ response.data.error ] };
-		}
-
-		if (response.data.response.errors) {
-			logger.debug(response.data, `${controller}.${action}`);
-		}
+		response.data = this.handle_errors(response.data, `${controller}.${action}`);
 
 		return this.merge_data(response.data);
 	}
 
 	// merges data into state object
 	merge_data: any = (data: any) => clash_obj(data, 'cache', 'response');
+
+	handle_errors: any = (data: any, group: string) => {
+		let errors = [];
+		if (data.response.errors) {
+			logger.debug(data, `${group}.handle_errors`);
+			for (let error of data.response.errors) {
+				if (error.message.split(' ').length == 1)
+					error.message = camelcase_to_string(error.message);
+				errors.push({
+					message: error.message,
+					type: error.type,
+					params: error.params
+				});
+			}
+			data.response.errors = errors;
+		}
+
+		if (data.error) {
+			logger.debug(data, `${group}.handle_error`);
+			return {
+				response: {
+					errors: [data.error]
+				}
+			};
+		}
+		return data;
+	};
 }
 
 export default new api();

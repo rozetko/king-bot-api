@@ -6,21 +6,20 @@ import classNames from 'classnames';
 export default class SendTimedAttack extends Component {
 	state = {
 		own_tribe: 0,
-		village_name: '',
-		village_id: '',
 		all_villages: [],
-		target_x: 0,
-		target_y: 0,
-		target_villageId: '',
-		target_village_name: '',
-		target_playerId: '',
-		target_player_name: '',
-		target_tribeId: '',
-		target_distance: '',
-		troops: '',
-		mission_types: '',
-		date: '',
-		time: '',
+		unit_types: [],
+		village_name: null,
+		village_id: 0,
+		target_x: '',
+		target_y: '',
+		target_help: null,
+		target_help_css: 'help',
+		target_villageId: 0,
+		target_village_name: null,
+		target_distance: null,
+		target_player_name: null,
+		date: null,
+		time: null,
 		t1: 0,
 		t2: 0,
 		t3: 0,
@@ -32,8 +31,8 @@ export default class SendTimedAttack extends Component {
 		t9: 0,
 		t10: 0,
 		t11: 0,
-		mission_type: 3,
-		mission_type_name: '',
+		mission_type: 0,
+		mission_type_name: null,
 		error_village: false,
 		error_target_x: false,
 		error_target_y: false,
@@ -47,53 +46,78 @@ export default class SendTimedAttack extends Component {
 
 		axios.get('/api/data?ident=villages').then(res => this.setState({ all_villages: res.data }));
 		axios.get('/api/data?ident=player_tribe').then(res => this.setState({ own_tribe: Number(res.data) }));
-		axios.get('/api/data?ident=troops').then(res => this.setState({ troops: res.data }));
+		axios.get('/api/data?ident=unit_types').then(res => this.setState({ unit_types: res.data }));
 	}
 
 	setTarget = async e => {
 		this.setState({
 			error_village: (this.state.village_id == 0),
-			error_target_x: (this.state.target_x == 0),
-			error_target_y: (this.state.target_y == 0)
+			error_target_x: (this.state.target_x == ''),
+			error_target_y: (this.state.target_y == '')
 		});
 
 		if (this.state.error_village || this.state.error_target_x || this.state.error_target_y)
 			return;
 
+		let { target_help, target_help_css } = this.state;
+
 		const { village_id, target_x, target_y } = this.state;
 		var x = Number(target_x);
 		var y = Number(target_y);
-		const villageID = 536887296 + x + (y * 32768);
+		const target_village_id = 536887296 + x + (y * 32768);
 		var params = {
-			sourceVillage: village_id,
-			destinationVillage: villageID
+			villageId: village_id,
+			destVillageId: target_village_id
 		};
-		var response = await axios.post('/api/checkTarget', params);
-		const check_target_data = response.data;
+		const target_response = await axios.post('/api/checkTarget', params);
+		if (target_response.data.errors) {
+			target_help = `error: ${target_response.data.errors[0].message}`;
+			target_help_css = 'help is-danger';
+			this.setState({
+				target_help, target_help_css,
+				error_target_x: true, error_target_y: true
+			});
+			return;
+		}
+		const target_data = target_response.data;
 
-		params = [
-			`Village: ${villageID}`
-		];
-		response = await axios.post('/api/findvillage', params);
+		const village_response = await axios.post('/api/find', [`Village: ${target_village_id}`]);
+		if (village_response.data.errors) {
+			target_help = `error: ${village_response.data.errors[0].message}`;
+			target_help_css = 'help is-danger';
+			this.setState({
+				target_help, target_help_css,
+				error_target_x: true, error_target_y: true
+			});
+			return;
+		}
+		const village_data = village_response.data[0].data;
+		if (!village_data) {
+			target_help = 'something went wrong, is your target a robber?';
+			target_help_css = 'help is-danger';
+			this.setState({
+				target_help, target_help_css,
+				error_target_x: true, error_target_y: true
+			});
+			return;
+		}
 
-		const destinationVillage = response.data[0].data;
-		if (!destinationVillage) alert('unable to find destination village!');
+		const target_village_name = village_data.name;
+		const target_distance = target_data.distance;
+		const target_player_name = target_data.destPlayerName;
 
-		const target_villageId = destinationVillage.villageId;
-		const target_village_name = destinationVillage.name;
-		const target_distance = check_target_data.distance;
-		const target_playerId = destinationVillage.playerId;
-		const target_tribeId = destinationVillage.tribeId;
-		const target_player_name = check_target_data.destPlayerName;
-		if (target_village_name == null) alert('Something went wrong. Is your target banned?');
-		this.setState({ target_villageId, target_village_name, target_x, target_y, target_playerId, target_player_name, target_tribeId, target_distance });
+		target_help = null;
+		this.setState({
+			target_x, target_y,
+			target_village_id, target_village_name,
+			target_player_name, target_distance, target_help });
 	};
 
 	submit = async e => {
 		this.setState({
 			error_village: (this.state.village_id == 0),
-			error_target_x: (this.state.target_x == 0),
-			error_target_y: (this.state.target_y == 0),
+			error_target_x: (this.state.target_x == ''),
+			error_target_y: (this.state.target_y == ''),
 			error_mission_type: (this.state.mission_type == 0)
 		});
 
@@ -112,11 +136,12 @@ export default class SendTimedAttack extends Component {
 	};
 
 	render(props) {
-		var { all_villages, village_name, village_id,
-			target_x, target_y, target_player_name, target_village_name,
-			target_tribeId, target_distance, own_tribe, troops,
+		var { all_villages, own_tribe, unit_types,
+			village_id,	target_x, target_y,
+			target_help, target_help_css,
+			target_village_name, target_distance, target_player_name,
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11,
-			mission_type, mission_type_name, time, date
+			mission_type, date, time
 		} = this.state;
 
 		const row_style = {
@@ -131,29 +156,29 @@ export default class SendTimedAttack extends Component {
 			case 3: class_name = 'unitSmall gaul unitType'; break;
 		}
 		var new_rows = [];
-		if (own_tribe != 0 && troops != '') {
+		if (own_tribe != 0 && unit_types.length != 0) {
 			new_rows = [
-				<th style={ row_style }> <i class={ class_name + 1 } title={ troops[own_tribe][1].name }></i> </th>,
-				<th style={ row_style }> <i class={ class_name + 2 } title={ troops[own_tribe][2].name }></i> </th>,
-				<th style={ row_style }> <i class={ class_name + 3 } title={ troops[own_tribe][3].name }></i> </th>,
-				<th style={ row_style }> <i class={ class_name + 4 } title={ troops[own_tribe][4].name }></i> </th>,
-				<th style={ row_style }> <i class={ class_name + 5 } title={ troops[own_tribe][5].name }></i> </th>,
-				<th style={ row_style }> <i class={ class_name + 6 } title={ troops[own_tribe][6].name }></i> </th>,
-				<th style={ row_style }> <i class={ class_name + 7 } title={ troops[own_tribe][7].name }></i> </th>,
-				<th style={ row_style }> <i class={ class_name + 8 } title={ troops[own_tribe][8].name }></i> </th>,
-				<th style={ row_style }> <i class={ class_name + 9 } title={ troops[own_tribe][9].name }></i> </th>,
-				<th style={ row_style }> <i class={ class_name + 10 } title={ troops[own_tribe][10].name }></i> </th>,
+				<th style={ row_style }> <i class={ class_name + 1 } title={ unit_types[own_tribe][1].name }></i> </th>,
+				<th style={ row_style }> <i class={ class_name + 2 } title={ unit_types[own_tribe][2].name }></i> </th>,
+				<th style={ row_style }> <i class={ class_name + 3 } title={ unit_types[own_tribe][3].name }></i> </th>,
+				<th style={ row_style }> <i class={ class_name + 4 } title={ unit_types[own_tribe][4].name }></i> </th>,
+				<th style={ row_style }> <i class={ class_name + 5 } title={ unit_types[own_tribe][5].name }></i> </th>,
+				<th style={ row_style }> <i class={ class_name + 6 } title={ unit_types[own_tribe][6].name }></i> </th>,
+				<th style={ row_style }> <i class={ class_name + 7 } title={ unit_types[own_tribe][7].name }></i> </th>,
+				<th style={ row_style }> <i class={ class_name + 8 } title={ unit_types[own_tribe][8].name }></i> </th>,
+				<th style={ row_style }> <i class={ class_name + 9 } title={ unit_types[own_tribe][9].name }></i> </th>,
+				<th style={ row_style }> <i class={ class_name + 10 } title={ unit_types[own_tribe][10].name }></i> </th>,
 				<th style={ row_style }> <i class={ 'unitSmall hero_illu' } title={ 'Hero' }></i> </th>
 			];
 		}
 
-		if (date == '') {
+		if (!date) {
 			var curDate = new Date();
 			curDate = curDate.toJSON();
 			date = curDate.split('T')[0];
 			this.setState({ date });
 		}
-		if (this.state.time == '') {
+		if (!time) {
 			var curUTCTime = new Date();
 			curUTCTime = curUTCTime.toJSON();
 			time = curUTCTime.split('T')[1].substring(0, 5);
@@ -228,7 +253,7 @@ export default class SendTimedAttack extends Component {
 							<label style={{ marginTop: '2rem' }} class='label'>target (x / y)</label>
 							<input
 								class={ input_class_x }
-								style={{ width: '150px', marginRight: '10px' }}
+								style={{ width: '80px', marginRight: '10px' }}
 								type='text'
 								value={ target_x }
 								placeholder= "x"
@@ -236,15 +261,16 @@ export default class SendTimedAttack extends Component {
 							/>
 							<input
 								class={ input_class_y }
-								style={{ width: '150px' }}
+								style={{ width: '80px', marginRight: '10px' }}
 								type='text'
 								value={ target_y }
 								placeholder="y"
 								onChange={ e => this.setState({ target_y: e.target.value }) }
 							/>
-							<button className='button is-radiusless is-success' style='margin-left: 1rem' onClick={ this.setTarget }>
+							<button className='button is-radiusless is-success' onClick={ this.setTarget }>
 								set target
 							</button>
+							<p class={ target_help_css }>{target_help}</p>
 						</div>
 					</div>
 

@@ -5,14 +5,14 @@ import api from './api';
 import settings from './settings';
 import logger from './logger';
 import { inactive_finder } from './extras';
-import { buildings, tribe, troops } from './data';
+import { buildings, tribe, unit_types } from './data';
 import { Ifeature_params, feature } from './features/feature';
 import { Ivillage, Ibuilding, Iplayer } from './interfaces';
 import { find_state_data } from './util';
 import {
 	raise_fields, building_queue,
 	finish_earlier, auto_adventure, send_farmlist,
-	trade_route, timed_attack, train_troops
+	trade_route, timed_attack, train_troops, robber_hideouts
 } from './features';
 import { farming, village, player } from './gamedata';
 import database from './database';
@@ -28,7 +28,8 @@ class server {
 		raise_fields,
 		trade_route,
 		timed_attack,
-		train_troops
+		train_troops,
+		robber_hideouts
 	];
 
 	constructor() {
@@ -45,6 +46,8 @@ class server {
 
 			// sort features by group and description
 			var compareFeatures = function (feat1: Ifeature_params, feat2: Ifeature_params) {
+				if (feat1.long_description == 'hero' || feat2.long_description == 'hero')
+					return 1;
 				if (feat1.long_description == feat2.long_description)
 					return feat1.description > feat2.description ? -1 : 1;
 				return feat1.long_description > feat2.long_description ? -1 : 1;
@@ -74,7 +77,7 @@ class server {
 
 			if (ident == 'villages') {
 				const villages = await village.get_own();
-				const data = find_state_data(village.own_villages_ident, villages);
+				const data = find_state_data(village.collection_own_ident, villages);
 
 				res.send(data);
 				return;
@@ -133,8 +136,8 @@ class server {
 				return;
 			}
 
-			if (ident == 'troops') {
-				res.send(troops);
+			if (ident == 'unit_types') {
+				res.send(unit_types);
 				return;
 			}
 
@@ -168,13 +171,13 @@ class server {
 			res.send({ status: 'ok' });
 		});
 
-		this.app.post('/api/findvillage', async (req: any, res: any) => {
+		this.app.post('/api/find', async (req: any, res: any) => {
 			const response = await api.get_cache(req.body);
 			res.send(response);
 		});
 
 		this.app.post('/api/checkTarget', async (req: any, res: any) => {
-			const response = await api.check_target(req.body.sourceVillage, req.body.destinationVillage, 4);
+			const response = await api.check_target(req.body.villageId, req.body.destVillageId, 4);
 			res.send(response);
 		});
 

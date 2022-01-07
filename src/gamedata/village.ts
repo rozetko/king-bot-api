@@ -4,15 +4,18 @@ import api from '../api';
 import logger from '../logger';
 
 class village {
-	village_ident: string = 'Collection:Village:';
-	own_villages_ident: string = this.village_ident + 'own';
+	ident: string = 'Village:';
+	collection_ident: string = 'Collection:Village:';
+	collection_own_ident: string = this.collection_ident + 'own';
 
 	building_collection_ident: string = 'Collection:Building:';
 	building_ident: string = 'Building:';
 	building_queue_ident: string = 'BuildingQueue:';
 
+	map_details_ident: string = 'MapDetails:';
+
 	find(id: number, data: any): Ivillage {
-		const villages = find_state_data(this.own_villages_ident, data);
+		const villages = find_state_data(this.collection_own_ident, data);
 
 		const village = villages.find((x: any) => x.data.villageId == id);
 
@@ -25,7 +28,7 @@ class village {
 	}
 
 	async get_own(): Promise<any> {
-		return await api.get_cache([this.own_villages_ident]);
+		return await api.get_cache([this.collection_own_ident]);
 	}
 }
 

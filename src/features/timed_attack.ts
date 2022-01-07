@@ -1,22 +1,20 @@
-import { find_state_data, sleep } from '../util';
-import { Iunits, Ihero, Iplayer } from '../interfaces';
+import { sleep } from '../util';
+import { Iunits, Ihero, Iplayer, Itarget, Idurations } from '../interfaces';
 import { feature_collection, feature_item, Ioptions } from './feature';
-import { village, player } from '../gamedata';
-import { troops, tribe, hero_status, mission_type } from '../data';
+import { player, hero } from '../gamedata';
+import { unit_types, tribe, hero_status, mission_type } from '../data';
 import api from '../api';
 import logger from '../logger';
 
 interface Ioptions_timed_attack extends Ioptions {
 	village_name: string,
 	village_id: number,
-	target_x: number,
-	target_y: number,
+	target_x: string,
+	target_y: string,
 	target_villageId: number,
 	target_village_name: string,
-	target_playerId: string,
+	target_distance: string,
 	target_player_name: string,
-	target_tribeId: number,
-	target_distance: number,
 	mission_type: mission_type,
 	mission_type_name: string,
 	t1: number,
@@ -46,18 +44,16 @@ class timed_attack extends feature_collection {
 	get_default_options(options: Ioptions): Ioptions_timed_attack {
 		return {
 			...options,
-			village_name: '',
+			village_name: null,
 			village_id: 0,
-			target_x: 0,
-			target_y: 0,
+			target_x: '',
+			target_y: '',
 			target_villageId: 0,
-			target_village_name: '',
-			target_playerId: '',
-			target_player_name: '',
-			target_distance: 0,
-			target_tribeId: 0,
-			mission_type: mission_type.raid,
-			mission_type_name: '',
+			target_village_name: null,
+			target_distance: null,
+			target_player_name: null,
+			mission_type: 0,
+			mission_type_name: null,
 			t1: 0,
 			t2: 0,
 			t3: 0,
@@ -69,16 +65,13 @@ class timed_attack extends feature_collection {
 			t9: 0,
 			t10: 0,
 			t11: 0,
-			date: '',
-			time: ''
+			date: null,
+			time: null
 		};
 	}
 }
 
 class timed_attack_feature extends feature_item {
-	// idents for state data
-	hero_ident: string = 'Hero:';
-
 	options: Ioptions_timed_attack;
 
 	set_options(options: Ioptions_timed_attack): void {
@@ -88,10 +81,8 @@ class timed_attack_feature extends feature_item {
 			target_y,
 			target_villageId,
 			target_village_name,
-			target_playerId,
-			target_player_name,
-			target_tribeId,
 			target_distance,
+			target_player_name,
 			mission_type,
 			mission_type_name,
 			t1,
@@ -119,10 +110,8 @@ class timed_attack_feature extends feature_item {
 			target_y,
 			target_villageId,
 			target_village_name,
-			target_playerId,
-			target_player_name,
-			target_tribeId,
 			target_distance,
+			target_player_name,
 			mission_type,
 			mission_type_name,
 			t1,
@@ -158,18 +147,18 @@ class timed_attack_feature extends feature_item {
 	}
 
 	get_long_description(): string {
-		return null;
+		// key in the frontend language.js file
+		return 'timed_attack';
 	}
 
 	async run(): Promise<void> {
 		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
-		var { village_name, village_id, target_villageId, target_village_name,
+		var { village_id, village_name,
+			target_villageId, target_village_name,
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11,
-			mission_type, mission_type_name, date, time } = this.options;
-		const params = [
-			village.own_villages_ident,
-		];
+			mission_type, mission_type_name,
+			date, time } = this.options;
 
 		const units: Iunits = {
 			1: Number(t1),
@@ -185,10 +174,10 @@ class timed_attack_feature extends feature_item {
 			11: Number(t11)
 		};
 
-		const send_hero: boolean = t11 > 0;
-
 		// check units
-		if (t1==0 && t2==0 && t3==0 && t4==0 && t5==0 && t6==0 && t7==0 && t8==0 && t9==0 && t10==0 && t11==0)
+		if (units[1]==0 && units[2]==0 && units[3]==0 && units[4]==0 &&
+			units[5]==0 && units[6]==0 && units[7]==0 && units[8]==0 &&
+			units[9]==0 && units[10]==0 && units[11]==0)
 		{
 			logger.error(`aborted timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
 			'because no units have been defined', this.params.name);
@@ -202,12 +191,6 @@ class timed_attack_feature extends feature_item {
 		const player_data: Iplayer = await player.get();
 		const own_tribe: tribe = player_data.tribeId;
 
-		let hero: Ihero = null;
-		if (send_hero) {
-			// get hero data
-			const response: any[] = await api.get_cache([ this.hero_ident + player_data.playerId]);
-			hero = find_state_data(this.hero_ident + player_data.playerId, response);
-		}
 		const attack_time = new Date(date + 'T' + time + 'Z');
 		const attack_time_ms = attack_time.getTime();
 
@@ -216,30 +199,31 @@ class timed_attack_feature extends feature_item {
 			this.set_options(this.options);
 			loop++;
 
-			// check the target
-			var response = await api.check_target(village_id, target_villageId, mission_type);
-			const target_durations = response.durations;
+			// check target
+			const target_data: Itarget = await api.check_target(village_id, target_villageId, mission_type);
+			let target_durations: Idurations = target_data.durations;
 
 			// set duration by the lowest speed
 			var speed = 100;
 			var duration = 0;
 			for (var key in units) {
-				if (units.hasOwnProperty(Number(key))) {
+				if (Object.prototype.hasOwnProperty.call(units, Number(key))) {
 					if (units[key] > 0) {
 						// hero speed
 						if (key == '11') {
-							if (hero.speed < speed) {
+							let hero_speed = (await hero.get()).speed;
+							if (hero_speed < speed) {
 								duration = target_durations[key];
 								duration = duration * 1000; // to ms
-								speed = hero.speed;
+								speed = hero_speed;
 							}
 							continue;
 						}
 						// unit speed
-						if (Number(troops[own_tribe][key].speed) < speed) {
+						if (Number(unit_types[own_tribe][key].speed) < speed) {
 							duration = target_durations[key];
 							duration = duration * 1000; // to ms
-							speed = Number(troops[own_tribe][key].speed);
+							speed = Number(unit_types[own_tribe][key].speed);
 							continue;
 						}
 					}
@@ -263,19 +247,19 @@ class timed_attack_feature extends feature_item {
 				if (sendTime_ms <= currentTime_ms) {
 
 					// check hero
+					let send_hero: boolean = t11 > 0;
 					if (send_hero) {
 
-						// refresh hero data
-						const response: any[] = await api.get_cache([ this.hero_ident + player_data.playerId]);
-						hero = find_state_data(this.hero_ident + player_data.playerId, response);
+						// get hero data
+						const hero_data: Ihero = await hero.get();
 
-						if (hero.isMoving || hero.status != hero_status.idle)
+						if (hero_data.isMoving || hero_data.status != hero_status.idle)
 						{
 							logger.error(`aborted timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
-							`because the hero is ${this.get_hero_status(hero.status)}`, this.params.name);
+							`because the hero is ${hero.get_hero_status(hero_data.status)}`, this.params.name);
 							break; // stop
 						}
-						if (hero.villageId != village_id) {
+						if (hero_data.villageId != village_id) {
 							logger.error(`aborted timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
 							'because the hero is not from this village', this.params.name);
 							break; // stop
@@ -317,14 +301,6 @@ class timed_attack_feature extends feature_item {
 		return `${(hours < 10) ? '0' + hours : hours}:` +
 			`${(minutes < 10) ? '0' + minutes : minutes}:` +
 			`${(seconds < 10) ? '0' + seconds : seconds}`;
-	}
-
-	get_hero_status(status: number): string {
-		var values = Object.values(hero_status).filter((x) => Number.isNaN(Number(x)));
-		var text = values[status].toString();
-		if ([2,3,4].includes(status))
-			return 'going ' + text.replace('_', ' ');
-		return text;
 	}
 }
 

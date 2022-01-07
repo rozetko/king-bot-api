@@ -2,7 +2,7 @@ import { find_state_data, sleep, get_random_int } from '../util';
 import { Ivillage, Ibuilding_collection, Ibuilding, Iresources } from '../interfaces';
 import { feature_collection, feature_item, Ioptions } from './feature';
 import { village } from '../gamedata';
-import { troops, tribe } from '../data';
+import { unit_types, tribe } from '../data';
 import api from '../api';
 import logger from '../logger';
 
@@ -95,25 +95,25 @@ class train_feature extends feature_item {
 		// get tribe
 		const own_tribe: tribe = village_obj.tribeId;
 
-		// get troop
-		let troop: any = {};
+		// get unit_data
+		let unit_data: any = {};
 		for (var i = 1; i < 11; i++) {
-			if (troops[own_tribe][i].unit == unit) {
-				troop = troops[own_tribe][i];
+			if (unit_types[own_tribe][i].unit == unit) {
+				unit_data = unit_types[own_tribe][i];
 				break;
 			}
 		}
 
 		// get resources cost
-		let costs = troop.costs;
+		let costs = unit_data.costs;
 
 		// get village resources
 		let resources = village_obj.storage;
 
-		// get less posible amount of troop for training
+		// get less posible amount of unit for training
 		let training_amount = this.get_training_amount(costs, resources);
 		if (training_amount == 0) {
-			logger.info(
+			logger.error(
 				`training units of type ${unit_name} is not possible ` +
 				`in village ${village_name} with the resources available`,
 				this.params.name);
@@ -124,7 +124,7 @@ class train_feature extends feature_item {
 			training_amount = amount;
 
 		// get total cost
-		let total_training_cost = [];  // amount of troop * costs
+		let total_training_cost = [];  // amount of units * costs
 		for (var unit_cost of costs) {
 			total_training_cost.push(unit_cost * training_amount);
 		}
@@ -137,6 +137,7 @@ class train_feature extends feature_item {
 
 		// get building type
 		const building_type: number = this.building_type(unit);
+		logger.warn(`building_type: ${building_type}`, this.params.name);
 
 		// get building data
 		let building_data: Ibuilding = null;
@@ -144,17 +145,18 @@ class train_feature extends feature_item {
 			const bd: Ibuilding = building.data;
 
 			if (bd.buildingType != building_type) continue;
-			if (!building_data) {
-				building_data = bd;
-				break;
-			}
+
+			logger.debug(building_data, this.params.name);
+
+			building_data = bd;
+			break;
 		}
 
 		// recruit units
 		var recruit: any = await api.recruit_units(building_data.locationId, village_id, unit, training_amount);
 		if (recruit.errors) {
 			for (let error of recruit.errors)
-				logger.error(error.message, this.params.name);
+				logger.error(`training units of type ${unit_name} in village ${village_name} failed: ${error.message}`, this.params.name);
 			return;
 		}
 		logger.info(
@@ -194,7 +196,7 @@ class train_feature extends feature_item {
 		return 0;
 	}
 
-	// less posible amount of troop for training
+	// less posible amount of units for training
 	get_training_amount(costs: any, resources: Iresources): number {
 		let total_units_cost_wood = [];  // total wood cost for every unit
 		let total_units_cost_clay = [];  // total clay cost for every unit
@@ -219,7 +221,7 @@ class train_feature extends feature_item {
 			var train_amount = Math.floor(resources[3] / cost);
 			training_amount_iron.push(train_amount);
 		});
-		let training_amount: number = training_amount_wood[0];  // less posible amount of troop for training
+		let training_amount: number = training_amount_wood[0];  // less posible amount of units for training
 		for (let i = 0; i < training_amount_wood.length; i++) {
 			training_amount = Math.min(training_amount, training_amount_wood[i]);
 		}
