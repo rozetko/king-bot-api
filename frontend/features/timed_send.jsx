@@ -3,7 +3,7 @@ import { route } from 'preact-router';
 import axios from 'axios';
 import classNames from 'classnames';
 
-export default class SendTimedAttack extends Component {
+export default class TimedSend extends Component {
 	state = {
 		own_tribe: 0,
 		all_villages: [],
@@ -241,7 +241,7 @@ export default class SendTimedAttack extends Component {
 
 					<div className="column">
 						<div class='field'>
-							<label class="label">attack date / time (UTC)</label>
+							<label class="label">arrival date / time (UTC)</label>
 							<input type="date" id="start" name="trip-start"
 								value={ date } onChange={ (e) => this.setState({ date: e.target.value }) }
 							></input>

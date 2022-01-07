@@ -3,7 +3,7 @@ import SendFarmlist from './send_farmlist';
 import BuildingQueue from './building_queue';
 import RaiseFields from './raise_fields';
 import TradeRoute from './trade_route';
-import TimedAttack from './timed_attack';
+import TimedSend from './timed_send';
 import TrainTroops from './train_troops';
 import RobberHideouts from './robber_hideouts';
 
@@ -28,9 +28,9 @@ const features = {
 		navbar: true,
 		component: TradeRoute,
 	},
-	timed_attack: {
+	timed_send: {
 		navbar: true,
-		component: TimedAttack,
+		component: TimedSend,
 	},
 	train_troops: {
 		navbar: true,

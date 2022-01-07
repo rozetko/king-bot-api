@@ -6,7 +6,7 @@ import { unit_types, tribe, hero_status, mission_type } from '../data';
 import api from '../api';
 import logger from '../logger';
 
-interface Ioptions_timed_attack extends Ioptions {
+interface Ioptions_timed_send extends Ioptions {
 	village_name: string,
 	village_id: number,
 	target_x: string,
@@ -32,16 +32,16 @@ interface Ioptions_timed_attack extends Ioptions {
 	time: string
 }
 
-class timed_attack extends feature_collection {
+class timed_send extends feature_collection {
 	get_ident(): string {
-		return 'timed_attack';
+		return 'timed_send';
 	}
 
-	get_new_item(options: Ioptions_timed_attack): timed_attack_feature {
-		return new timed_attack_feature({ ...options });
+	get_new_item(options: Ioptions_timed_send): timed_send_feature {
+		return new timed_send_feature({ ...options });
 	}
 
-	get_default_options(options: Ioptions): Ioptions_timed_attack {
+	get_default_options(options: Ioptions): Ioptions_timed_send {
 		return {
 			...options,
 			village_name: null,
@@ -71,10 +71,10 @@ class timed_attack extends feature_collection {
 	}
 }
 
-class timed_attack_feature extends feature_item {
-	options: Ioptions_timed_attack;
+class timed_send_feature extends feature_item {
+	options: Ioptions_timed_send;
 
-	set_options(options: Ioptions_timed_attack): void {
+	set_options(options: Ioptions_timed_send): void {
 		const { uuid, run, error, village_name,
 			village_id,
 			target_x,
@@ -130,14 +130,14 @@ class timed_attack_feature extends feature_item {
 		};
 	}
 
-	get_options(): Ioptions_timed_attack {
+	get_options(): Ioptions_timed_send {
 		return { ...this.options };
 	}
 
 	set_params(): void {
 		this.params = {
-			ident: 'timed_attack',
-			name: 'timed attack'
+			ident: 'timed_send',
+			name: 'timed send'
 		};
 	}
 
@@ -148,7 +148,7 @@ class timed_attack_feature extends feature_item {
 
 	get_long_description(): string {
 		// key in the frontend language.js file
-		return 'timed_attack';
+		return 'timed_send';
 	}
 
 	async run(): Promise<void> {
@@ -191,8 +191,8 @@ class timed_attack_feature extends feature_item {
 		const player_data: Iplayer = await player.get();
 		const own_tribe: tribe = player_data.tribeId;
 
-		const attack_time = new Date(date + 'T' + time + 'Z');
-		const attack_time_ms = attack_time.getTime();
+		const arrival_time = new Date(date + 'T' + time + 'Z');
+		const arrival_time_ms = arrival_time.getTime();
 
 		let loop = 0;
 		while (this.options.run) {
@@ -231,20 +231,20 @@ class timed_attack_feature extends feature_item {
 			}
 
 			// set times
-			var sendTime_ms = attack_time_ms - duration;
-			var currentTime_ms = Date.now();
-			var diff_time_ms = sendTime_ms - currentTime_ms;
+			var send_time_ms = arrival_time_ms - duration;
+			var current_time_ms = Date.now();
+			var diff_time_ms = send_time_ms - current_time_ms;
 			var duration_short = this.get_duration(duration);
 
 			// debug
-			logger.debug(`[${loop}] attack time: ${logger.get_timestamp(new Date(attack_time_ms))} | ` +
+			logger.debug(`[${loop}] arrival time: ${logger.get_timestamp(new Date(arrival_time_ms))} | ` +
 			`duration: ${duration_short} | ` +
-			`send: ${logger.get_timestamp(new Date(sendTime_ms))} | ` +
+			`send: ${logger.get_timestamp(new Date(send_time_ms))} | ` +
 			`left: ${Math.floor(diff_time_ms / 1000)} seconds`, this.params.name);
 
-			if (sendTime_ms < currentTime_ms + 2000) {
+			if (send_time_ms < current_time_ms + 2000) {
 
-				if (sendTime_ms <= currentTime_ms) {
+				if (send_time_ms <= current_time_ms) {
 
 					// check hero
 					let send_hero: boolean = t11 > 0;
@@ -274,7 +274,7 @@ class timed_attack_feature extends feature_item {
 						break; // stop
 					}
 					logger.info(`sent timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
-					`arriving on ${logger.get_timestamp(new Date(attack_time_ms))} ` +
+					`arriving on ${logger.get_timestamp(new Date(arrival_time_ms))} ` +
 					`(duration: ${duration_short})`, this.params.name);
 					break; // stop
 				}
@@ -304,4 +304,4 @@ class timed_attack_feature extends feature_item {
 	}
 }
 
-export default new timed_attack();
+export default new timed_send();

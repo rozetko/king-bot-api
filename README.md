@@ -71,7 +71,9 @@ after configuring you can close the browser window and the bot keeps running unt
 -   inactive finder
 -   easy scout
 -   custom trade routes
--   timed attack
+-   timed send
+-   train troops
+-   robber hideouts
 -   available in different languages
 
 ## screenshots
@@ -119,6 +121,7 @@ beeing active since the first day of this project **[@didadadida93](https://gith
 keeping the issue page alive **[@OneManDevz](https://github.com/OneManDevz)**  
 programming auto adventure **[@Tom-Boyd](https://github.com/Tom-Boyd)**  
 programming trade routes / timed attack **[@tmfoltz](https://github.com/tmfoltz)**  
+programming train troops / robber hideouts, bug fixes and improving general aspects **[@skunk1](https://github.com/pkeweloh)**  
 
 # contact
 
