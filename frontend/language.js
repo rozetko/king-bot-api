@@ -25,7 +25,7 @@ const languages = {
 		lang_feature_queue: 'building queue',
 		lang_feature_raise_fields: 'raise fields',
 		lang_feature_trade_route: 'trade route',
-		lang_feature_timed_attack: 'timed attack',
+		lang_feature_timed_send: 'timed send',
 		lang_feature_train_troops: 'train troops',
 		lang_feature_robber_hideouts: 'robber hideouts',
 
@@ -157,7 +157,7 @@ const languages = {
 		lang_feature_queue: 'endlose bauschleife',
 		lang_feature_raise_fields: 'ressourcenfelder ausbau',
 		lang_feature_trade_route: 'handelsroute',
-		lang_feature_timed_attack: 'pünktlicher angriff',
+		lang_feature_timed_send: 'pünktlicher angriff',
 		lang_feature_train_troops: 'truppen trainieren',
 		lang_feature_robber_hideouts: 'räuberverstecke',
 
@@ -291,7 +291,7 @@ const languages = {
 		lang_feature_queue: 'أوامر البناء',
 		lang_feature_raise_fields: 'رفع الحقول',
 		lang_feature_trade_route: 'الطريق التجاري',
-		lang_feature_timed_attack: 'إرسال الهجمات',
+		lang_feature_timed_send: 'إرسال الهجمات',
 
 		lang_feature_desc_hero: 'هذة الميزة تمكنك من ارسال البطل للغامرات بشكل تلقائي في حال كانت صحة البطل فوق النسبة المدخلة.',
 		lang_feature_desc_queue: 'نقدم لك قائمة مهام لا نهائيه. اذا كنت تريد تغير القرية المراد تطويرها فقط قم بإدخال امر بناء إضافي في قائمة الإنتظار.',
@@ -417,7 +417,7 @@ const languages = {
 		lang_feature_queue: 'coda di costruzione',
 		lang_feature_raise_fields: 'aumenta campi',
 		lang_feature_trade_route: 'percorso di scambio',
-		lang_feature_timed_attack: 'attacco a tempo',
+		lang_feature_timed_send: 'attacco a tempo',
 
 		lang_feature_desc_hero: 'questa opzione invia automaticamente l\'eroe in avventura se la sua salute è superiore alla percentuale data.',
 		lang_feature_desc_queue: 'questa è la coda di costruzione infinita. non cambiare villaggio una volta impostato. se vuoi cambiare villaggio, aggiungi una nuova coda di costruzione con il villaggio desiderato.',
@@ -544,7 +544,7 @@ const languages = {
 		lang_feature_queue: 'pastatu eilė',
 		lang_feature_raise_fields: 'kelti laukus',
 		lang_feature_trade_route: 'prekybos keliai',
-		lang_feature_timed_attack: 'atakos paskirtu laiku',
+		lang_feature_timed_send: 'atakos paskirtu laiku',
 
 		lang_feature_desc_hero: 'Ši funkcija automatiškai siunčia herojų į nuotykį, kai sveikata viršija nurodytą procentą.',
 		lang_feature_desc_queue: 'Ši funkcija yra nesibaigianti statybų eilė. Pasirinkę kaimą, jo nekeiskite. Jei norite pakeisti kaimą, pridekite dar vieną pastato eilės funkciją su norimu kaimu.',
@@ -671,7 +671,7 @@ const languages = {
 		lang_feature_queue: 'stavebná fronta',
 		lang_feature_raise_fields: 'stavba polí',
 		lang_feature_trade_route: 'obchodná cesta',
-		lang_feature_timed_attack: 'časovaný útok',
+		lang_feature_timed_send: 'časovaný útok',
 
 		lang_feature_desc_hero: 'táto funkcia automaticky posiela hrdinu na dobrodružstvo pokiaľ má viac života ako zadané percento.',
 		lang_feature_desc_queue: 'toto je nekonečná stavebná fronta. Po nastavení nemeň dedinu. Ak chceš zmeniť dedinu pridaj novú stavebnú frontu s touto dedinou',
