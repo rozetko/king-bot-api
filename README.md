@@ -3,16 +3,8 @@
 this is a really high performance based bot for [travian kingdoms](https://www.kingdoms.com/) written in typescript.  
 it's designed to run in a console for better server support.
 
-feel free to join the [official discord channel](https://discord.gg/5n2btF7) or **[contact me! (:](mailto:f.breuer94@gmail.com)**
-
-i made a video tutorial on how to setup the bot with it's features ! **[click me !](https://youtu.be/h6XJ56CT6XQ)**
-
-you want to run the bot **24/7**, but don't want to use your computer? **[contact me aswell! (:](mailto:f.breuer94@gmail.com)**
-
-[![ko-fi](https://img.shields.io/badge/buy%20me%20a-coffee-yellowgreen.svg)](https://ko-fi.com/Y8Y6KZHJ)
-[![Build Status](https://travis-ci.org/breuerfelix/king-bot-api.svg?branch=master)](https://travis-ci.org/breuerfelix/king-bot-api)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1143396b01b944b28252861dc3762d7a)](https://www.codacy.com/app/breuerfelix/king-bot-api?utm_source=github.com&utm_medium=referral&utm_content=breuerfelix/king-bot-api&utm_campaign=Badge_Grade)
-[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/breuerfelix/king-bot/blob/master/LICENSE)
+[![Build Status](https://travis-ci.com/pkeweloh/king-bot-api.svg?branch=master)](https://travis-ci.com/pkeweloh/king-bot-api)
+[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/pkeweloh/king-bot-api/blob/master/LICENSE)
 
 # table of contents <!-- omit in toc -->
 
@@ -117,16 +109,11 @@ create a file names `own_main.js` which is going to be ignore by git, you can mo
 
 # thank you for
 
-beeing active since the first day of this project **[@didadadida93](https://github.com/didadadida93)**  
-keeping the issue page alive **[@OneManDevz](https://github.com/OneManDevz)**  
-programming auto adventure **[@Tom-Boyd](https://github.com/Tom-Boyd)**  
-programming trade routes / timed attack **[@tmfoltz](https://github.com/tmfoltz)**  
-programming train troops / robber hideouts, bug fixes and improving general aspects **[@skunk1](https://github.com/pkeweloh)**  
-
-# contact
-
-**discord:** _felixbreuer#9641_  
-**email:** _f.breuer94@gmail.com_
+created the project and developed the whole thing **[@breuerfelix](https://github.com/breuerfelix)**
+beeing active since the first day of this project **[@didadadida93](https://github.com/didadadida93)**
+keeping the issue page alive **[@OneManDevz](https://github.com/OneManDevz)**
+programming auto adventure **[@Tom-Boyd](https://github.com/Tom-Boyd)**
+programming trade routes / timed attack **[@tmfoltz](https://github.com/tmfoltz)**
 
 ---
 
