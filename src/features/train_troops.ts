@@ -137,17 +137,13 @@ class train_feature extends feature_item {
 
 		// get building type
 		const building_type: number = this.building_type(unit);
-		logger.warn(`building_type: ${building_type}`, this.params.name);
 
 		// get building data
 		let building_data: Ibuilding = null;
 		for (let building of building_collection) {
 			const bd: Ibuilding = building.data;
-
-			if (bd.buildingType != building_type) continue;
-
-			logger.debug(building_data, this.params.name);
-
+			if (bd.buildingType != building_type)
+				continue;
 			building_data = bd;
 			break;
 		}
@@ -184,13 +180,13 @@ class train_feature extends feature_item {
 		const barracks_units: number[] = [1,2,3,11,12,13,14,21,22];
 		const stable_units: number[] = [4,5,6,15,16,23,24,25,26];
 		const workshop_units: number[] = [7,8,17,18,27,28];
-		if (barracks_units.filter(type => { return type == unit;})){
+		if (barracks_units.find(type => type == unit)){
 			return 19; // Barracks
 		}
-		else if (stable_units.filter(type => { return type == unit;})) {
+		else if (stable_units.find(type => type == unit)) {
 			return 20; // Stable
 		}
-		else if (workshop_units.filter(type => { return type == unit;})) {
+		else if (workshop_units.find(type => type == unit)) {
 			return 21; // Workshop
 		}
 		return 0;
