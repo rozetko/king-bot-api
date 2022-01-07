@@ -109,11 +109,11 @@ create a file names `own_main.js` which is going to be ignore by git, you can mo
 
 # thank you for
 
-created the project and developed the whole thing **[@breuerfelix](https://github.com/breuerfelix)**
-beeing active since the first day of this project **[@didadadida93](https://github.com/didadadida93)**
-keeping the issue page alive **[@OneManDevz](https://github.com/OneManDevz)**
-programming auto adventure **[@Tom-Boyd](https://github.com/Tom-Boyd)**
-programming trade routes / timed attack **[@tmfoltz](https://github.com/tmfoltz)**
+created the project and developed the whole thing **[@breuerfelix](https://github.com/breuerfelix)**  
+beeing active since the first day of this project **[@didadadida93](https://github.com/didadadida93)**  
+keeping the issue page alive **[@OneManDevz](https://github.com/OneManDevz)**  
+programming auto adventure **[@Tom-Boyd](https://github.com/Tom-Boyd)**  
+programming trade routes / timed attack **[@tmfoltz](https://github.com/tmfoltz)**  
 
 ---
 
