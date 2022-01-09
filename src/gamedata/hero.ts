@@ -22,7 +22,7 @@ class hero {
 	get_hero_status(status: number): string {
 		var values = Object.values(hero_status).filter((x) => Number.isNaN(Number(x)));
 		var text = values[status].toString();
-		if ([2,3,4].includes(status))
+		if ([2,3,4].includes(Number(status)))
 			return 'going ' + text.replace('_', ' ');
 		return text;
 	}

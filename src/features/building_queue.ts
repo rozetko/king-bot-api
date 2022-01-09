@@ -86,22 +86,20 @@ class queue extends feature_item {
 		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
 		while (this.options.run) {
-			const { village_name, village_id, queue } = this.options;
+			const { village_id, queue } = this.options;
 			if (queue.length < 1) break;
 			const queue_item: Iqueue = queue[0];
 
-			let params: string[] = [];
-
 			const villages_data: any = await village.get_own();
-
 			const village_obj: Ivillage = village.find(village_id, villages_data);
-
-			params.push(village.building_queue_ident + village_id);
+			const village_name = village_obj.name;
 
 			// fetch latest data needed
+			let params: string[] = [ village.building_queue_ident + village_id ];
 			let response: any[] = await api.get_cache(params);
 
 			let sleep_time: number = null;
+			const five_minutes: number = 5 * 60;
 
 			const queue_data: Ibuilding_queue = find_state_data(village.building_queue_ident + village_id, response);
 
@@ -133,23 +131,26 @@ class queue extends feature_item {
 				// upgrade building here
 				if (this.able_to_build(queue_item.costs, village_obj)) {
 					const res: any = await api.upgrade_building(queue_item.type, queue_item.location, village_id);
-					logger.info(`upgrade building ${queue_item.location} on village ${village_name}`, this.params.name);
+					if (res.errors) {
+						for (let error of res.errors)
+							logger.error(`upgrade building ${buildings[queue_item.type]} on village ${village_name} failed: ${error.message}`, this.params.name);
+						break;
+					}
+					logger.info(`upgrade building ${buildings[queue_item.type]} on village ${village_name}`, this.params.name);
 
 					// TODO save new options to database
 					this.options.queue.shift();
 
 					const upgrade_time: number = Number(queue_item.upgrade_time);
-					const five_minutes: number = 5 * 60;
 
-					// add 2 seconds for safety
-					if (get_diff_time(upgrade_time) <= (five_minutes - 2)) {
+					if (get_diff_time(upgrade_time) < (five_minutes)) {
 						if (finish_earlier.running) {
 							await api.finish_now(village_id, 2);
 							logger.info(`upgrade time less 5 min on village ${village_name}, instant finish!`, this.params.name);
-						}
 
-						// only wait one second to build next building
-						sleep_time = 1;
+							// only wait one second to build next building
+							sleep_time = 1;
+						}
 					}
 
 					if (!sleep_time) sleep_time = upgrade_time;
@@ -160,8 +161,8 @@ class queue extends feature_item {
 				}
 			}
 
-			if (sleep_time && sleep_time > ((5 * 60) + 10) && finish_earlier.running)
-				sleep_time = sleep_time - (5 * 60) + 10;
+			if (sleep_time && sleep_time > five_minutes && finish_earlier.running)
+				sleep_time = sleep_time - five_minutes;
 
 			// set save sleep time
 			if (!sleep_time || sleep_time <= 0) sleep_time = 120;
