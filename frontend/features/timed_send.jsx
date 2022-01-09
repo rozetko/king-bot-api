@@ -160,7 +160,7 @@ export default class TimedSend extends Component {
 					break;
 				case '1': // local time
 					arrival_date = datetime.toJSON().split('T')[0];
-					arrival_time = datetime.toJSON().split('T')[1].substring(0, 5);
+					arrival_time = datetime.toJSON().split('T')[1].substring(0, 8);
 					this.setState({ arrival_date });
 					this.setState({ arrival_time });
 					break;

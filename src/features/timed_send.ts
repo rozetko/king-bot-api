@@ -176,7 +176,7 @@ class timed_send_feature extends feature_item {
 		const format_options: any = { weekday: 'long', month: 'long', day: 'numeric' };
 		const date_string = new Date(`${date} ${time}`).toLocaleDateString(lang, format_options);
 
-		return `${village_name} -> ${mission_type_name} ${target_village_name}:
+		return `${village_name} -> ${mission_type_name} ${target_village_name}:\n
 				${date_string}, ${time} (${timetype_name}${timezone_name})`;
 	}
 
