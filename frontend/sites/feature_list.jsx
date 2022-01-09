@@ -34,7 +34,9 @@ export default class FeatureList extends Component {
 					<thead>
 						<tr>
 							<th style={ rowStyle }>{props.lang_home_name}</th>
-							<th style={ rowStyle }>{props.lang_home_description}</th>
+							<th style={{ verticalAlign: 'middle', textAlign: 'left' }}>
+								{props.lang_home_description}
+							</th>
 							<th style={ rowStyle }>{props.lang_home_status}</th>
 							<th style={ rowStyle }>{props.lang_home_off_on}</th>
 							<th style={ rowStyle }>{props.lang_home_options}</th>
