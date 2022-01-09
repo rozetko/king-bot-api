@@ -20,7 +20,7 @@ class village {
 		const village = villages.find((x: any) => x.data.villageId == id);
 
 		if (!village) {
-			logger.error(`couldn't find village with ID: ${id}!`, 'village');
+			logger.error(`couldn't find village with id: ${id}!`, 'village');
 			return null;
 		}
 

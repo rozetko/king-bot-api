@@ -194,6 +194,12 @@ class timed_send_feature extends feature_item {
 			arrival_date, arrival_time,
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 } = this.options;
 
+		if (!village_id) {
+			logger.error('aborted feature because is not configured', this.params.name);
+			this.options.error = true;
+			return this.exit();
+		}
+
 		const units: Iunits = {
 			1: Number(t1),
 			2: Number(t2),
@@ -208,12 +214,6 @@ class timed_send_feature extends feature_item {
 			11: Number(t11)
 		};
 
-		// feature check
-		if (!village_id) {
-			logger.error('aborted timed send because the feature is not configured', this.params.name);
-			return this.exit();
-		}
-
 		// check units
 		if (units[1]==0 && units[2]==0 && units[3]==0 && units[4]==0 &&
 			units[5]==0 && units[6]==0 && units[7]==0 && units[8]==0 &&
@@ -221,6 +221,7 @@ class timed_send_feature extends feature_item {
 		{
 			logger.error(`aborted timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
 			'because no units have been defined', this.params.name);
+			this.options.error = true;
 			return this.exit();
 		}
 

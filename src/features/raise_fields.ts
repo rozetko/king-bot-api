@@ -86,7 +86,8 @@ class raise extends feature_item {
 	get_description(): string {
 		const { village_name } = this.options;
 
-		if (!village_name) return '-';
+		if (!village_name)
+			return '<not configured>';
 
 		return village_name;
 	}
@@ -98,6 +99,12 @@ class raise extends feature_item {
 
 	async upgrade_field(): Promise<number> {
 		const { village_id } = this.options;
+
+		if (!village_id) {
+			logger.error('aborted feature because is not configured', this.params.name);
+			this.options.error = true;
+			return null;
+		}
 
 		const villages_data: any = await village.get_own();
 		const village_obj: Ivillage = village.find(village_id, villages_data);
@@ -204,6 +211,7 @@ class raise extends feature_item {
 			if (res.errors) {
 				for (let error of res.errors)
 					logger.error(`upgrade building ${buildings[upgrade_building.buildingType]} on village ${village_name} failed: ${error.message}`, this.params.name);
+				this.options.error = true;
 				return null;
 			}
 			logger.info(`upgrade building ${buildings[upgrade_building.buildingType]} on village ${village_name}`, this.params.name);

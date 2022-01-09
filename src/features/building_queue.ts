@@ -70,11 +70,10 @@ class queue extends feature_item {
 	get_description(): string {
 		const { village_name } = this.options;
 
-		let des: string = village_name;
+		if (!village_name)
+			return '<not configured>';
 
-		if (!village_name) return '-';
-
-		return des;
+		return village_name;
 	}
 
 	get_long_description(): string {
@@ -87,7 +86,15 @@ class queue extends feature_item {
 
 		while (this.options.run) {
 			const { village_id, queue } = this.options;
+
+			if (!village_id) {
+				logger.error('aborted feature because is not configured', this.params.name);
+				this.options.error = true;
+				break;
+			}
+
 			if (queue.length < 1) break;
+
 			const queue_item: Iqueue = queue[0];
 
 			const villages_data: any = await village.get_own();
