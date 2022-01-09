@@ -19,7 +19,8 @@ export enum tribe {
 	roman = '1',
 	teuton = '2',
 	gaul = '3',
-	nature = '4'
+	nature = '4',
+	natars = '5'
 }
 
 export enum mission_type {
@@ -29,6 +30,19 @@ export enum mission_type {
 	spy = 6,
 	siege = 47,
 	settle = 10
+}
+
+export enum time_type {
+	utc = 0,
+	local_time = 1,
+	gameworld_time = 2
+}
+
+export enum time_format {
+	default = 0,
+	us = 1,
+	uk = 2,
+	iso = 3
 }
 
 export const default_Iunits = { 1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0 };

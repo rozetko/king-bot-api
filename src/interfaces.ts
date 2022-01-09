@@ -1,4 +1,4 @@
-import { tribe } from './data';
+import { tribe, hero_status, time_type, time_format } from './data';
 
 export interface Ifarmlist {
 	listId: number;
@@ -168,7 +168,7 @@ export interface Ihero {
 	destVillageName: string;
 	destPlayerName: string;
 	destPlayerId: number;
-	status: number;
+	status: hero_status;
 	health: number;
 	lastHealthTime: number;
 	baseRegenerationRate: number;
@@ -202,9 +202,62 @@ export interface Ihero {
 }
 
 export interface Iplayer {
-	//TODO fill interface
-	playerId: number
-	tribeId: tribe
+	playerId: number,
+	name: string,
+	tribeId: tribe,
+	kingdomId: number,
+	kingdomTag: string,
+	kingdomRole: number,
+	isKing: false,
+	kingId: number,
+	kingstatus: number,
+	villages: Ivillage[],
+	population: number,
+	active: boolean,
+	prestige: number,
+	level: number,
+	stars: {
+		bronzeBadge:number,
+		bronze: number,
+		silver: number,
+		gold: number
+	},
+	nextLevelPrestige: number,
+	hasNoobProtection: boolean,
+	filterInformation: boolean,
+	signupTime: number,
+	vacationState: number,
+	uiLimitations: number,
+	gold: number,
+	silver: number,
+	deletionTime: number,
+	coronationDuration: number,
+	brewCelebration: number,
+	uiStatus: number,
+	hintStatus: number,
+	spawnedOnMap: number,
+	isActivated: boolean,
+	isInstant: boolean,
+	productionBonusTime: number,
+	cropProductionBonusTime: number,
+	premiumFeatureAutoExtendFlags: number,
+	plusAccountTime: number,
+	limitedPremiumFeatureFlags: number,
+	lastPaymentTime: number,
+	isPunished: boolean,
+	limitationFlags: number,
+	limitation: number,
+	isBannedFromMessaging: boolean,
+	bannedFromMessaging: number,
+	questVersion: number,
+	nextDailyQuestTime: number,
+	dailyQuestsExchanged: number,
+	avatarIdentifier: number,
+	vacationStateStart: number,
+	vacationStateEnd: number,
+	usedVacationDays: number,
+	halloweenBoostTime: number,
+	winterPackageBoughtAmount: number
 }
 
 export interface Itarget {
@@ -320,4 +373,33 @@ export interface Imovement {
 	catapultTarget2: number,
 	orderId: number,
 	merchants: number
+}
+
+export interface Isettings {
+	playerId: number,
+	premiumConfirmation: number,
+	lang: string,
+	onlineStatusFilter: number,
+	extendedSimulator: number,
+	musicVolume: number,
+	soundVolume: number,
+	uiSoundVolume: number,
+	muteAll: boolean,
+	timeType: time_type,
+	timeZone: number,
+	timeZoneString: string,
+	timeZoneSwitcher:number,
+	timeFormat: time_format,
+	attacksFilter: number,
+	mapFilter: number,
+	disableTabNotifications: number,
+	enableTabNotifications: boolean,
+	disableAnimations: boolean,
+	notpadsVisible: boolean,
+	disableHelpNotifications: true,
+	enableHelpNotifications: boolean,
+	enableWelcomeScreen: boolean,
+	showPopulationWarning: boolean,
+	showSeasonalTheme: boolean,
+	showSnowfall: boolean
 }

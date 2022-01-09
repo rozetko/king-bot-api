@@ -86,8 +86,6 @@ class auto_adventure extends feature_single {
 
 		database.set('hero.options', this.options).write();
 
-		
-
 		while (this.options.run) {
 			const { type, min_health } = this.options;
 
@@ -96,7 +94,7 @@ class auto_adventure extends feature_single {
 
 			if (hero_data.adventurePoints > 0 && !hero_data.isMoving &&
 				hero_data.status == hero_status.idle && Number(hero_data.health) > min_health) {
-				
+
 				let send: boolean = false;
 				if (type == adventure_type.short && Number(hero_data.adventurePoints) > 0)
 					send = true;

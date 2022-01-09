@@ -5,8 +5,9 @@ import classNames from 'classnames';
 
 export default class TimedSend extends Component {
 	state = {
-		own_tribe: 0,
 		all_villages: [],
+		player_settings: '',
+		own_tribe: 0,
 		unit_types: [],
 		village_name: null,
 		village_id: 0,
@@ -14,12 +15,20 @@ export default class TimedSend extends Component {
 		target_y: '',
 		target_help: null,
 		target_help_css: 'help',
-		target_villageId: 0,
+		target_village_id: 0,
 		target_village_name: null,
 		target_distance: null,
 		target_player_name: null,
+		mission_type: 0,
+		mission_type_name: null,
+		arrival_date: null,
+		arrival_time: null,
 		date: null,
 		time: null,
+		timetype: '',
+		timetype_name: null,
+		timezone: '',
+		timezone_name: null,
 		t1: 0,
 		t2: 0,
 		t3: 0,
@@ -31,8 +40,6 @@ export default class TimedSend extends Component {
 		t9: 0,
 		t10: 0,
 		t11: 0,
-		mission_type: 0,
-		mission_type_name: null,
 		error_village: false,
 		error_target_x: false,
 		error_target_y: false,
@@ -45,6 +52,7 @@ export default class TimedSend extends Component {
 		});
 
 		axios.get('/api/data?ident=villages').then(res => this.setState({ all_villages: res.data }));
+		axios.get('/api/data?ident=player_settings').then(res => this.setState({ player_settings: res.data }));
 		axios.get('/api/data?ident=player_tribe').then(res => this.setState({ own_tribe: Number(res.data) }));
 		axios.get('/api/data?ident=unit_types').then(res => this.setState({ unit_types: res.data }));
 	}
@@ -113,16 +121,62 @@ export default class TimedSend extends Component {
 			target_player_name, target_distance, target_help });
 	};
 
+	format_date = function(date) {
+		const day = ('0' + date.getDate()).slice(-2);
+		const month = ('0' + (date.getMonth() + 1)).slice(-2);
+		const year = date.getFullYear();
+		return year + '-' + month + '-' + day;
+	};
+
+	format_time = function(date) {
+		const hours = `${date.getHours()}`.padStart(2, '0');
+		const minutes = `${date.getMinutes()}`.padStart(2, '0');
+		const seconds = `${date.getSeconds()}`.padStart(2, '0');
+		return hours + ':' + minutes + ':' + seconds;
+	};
+
 	submit = async e => {
 		this.setState({
 			error_village: (this.state.village_id == 0),
-			error_target_x: (this.state.target_x == ''),
-			error_target_y: (this.state.target_y == ''),
+			error_target_x: (this.state.target_village_id == 0),
+			error_target_y: (this.state.target_village_id == 0),
 			error_mission_type: (this.state.mission_type == 0)
 		});
 
 		if (this.state.error_village || this.state.error_mission_type ||
 			this.state.error_target_x || this.state.error_target_y) return;
+
+		if (this.state.date != '' && this.state.time != '') {
+			var { date, time, timetype, timezone } = this.state;
+			const datetime = new Date(date + ' ' + time);
+			switch (timetype) {
+				case '0': // utc
+					var offset = (timezone * 60) * 60 * 1000;
+					var dateUTC = new Date(datetime.getTime() - offset);
+					var arrival_date = this.format_date(dateUTC);
+					var arrival_time = this.format_time(dateUTC);
+					this.setState({ arrival_date });
+					this.setState({ arrival_time });
+					break;
+				case '1': // local time
+					arrival_date = datetime.toJSON().split('T')[0];
+					arrival_time = datetime.toJSON().split('T')[1].substring(0, 5);
+					this.setState({ arrival_date });
+					this.setState({ arrival_time });
+					break;
+				case '2': // gameworld time
+					var gt_timezine = 1; // Servers located in Germany
+					offset = (gt_timezine * 60) * 60 * 1000;
+					var dateGT = new Date(datetime.getTime() - offset);
+					arrival_date = this.format_date(dateGT);
+					arrival_time = this.format_time(dateGT);
+					this.setState({ arrival_date });
+					this.setState({ arrival_time });
+					break;
+				default:
+					return;
+			}
+		}
 
 		this.props.submit({ ...this.state });
 	};
@@ -136,12 +190,13 @@ export default class TimedSend extends Component {
 	};
 
 	render(props) {
-		var { all_villages, own_tribe, unit_types,
-			village_id,	target_x, target_y,
-			target_help, target_help_css,
+		var { all_villages, player_settings, own_tribe, unit_types,
+			village_id,	target_x, target_y, target_help, target_help_css,
 			target_village_name, target_distance, target_player_name,
-			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11,
-			mission_type, date, time
+			mission_type, date, time,
+			timetype, timetype_name,
+			timezone, timezone_name,
+			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11
 		} = this.state;
 
 		const row_style = {
@@ -172,17 +227,66 @@ export default class TimedSend extends Component {
 			];
 		}
 
-		if (!date) {
-			var curDate = new Date();
-			curDate = curDate.toJSON();
-			date = curDate.split('T')[0];
-			this.setState({ date });
+		if (timetype == '') {
+			if (player_settings) {
+				timetype = Number(player_settings.timeType).toString();
+				switch (timetype) {
+					case '0': timetype_name = 'UTC'; break;
+					case '1': timetype_name = 'LOC'; break;
+					case '2': timetype_name = 'GT';	break;
+				}
+				this.setState({ timetype, timetype_name });
+				if (timetype == '0') {
+					timezone = player_settings.timeZone;
+					timezone_name = player_settings.timeZoneString;
+					this.setState({ timezone, timezone_name });
+				}
+			}
 		}
-		if (!time) {
-			var curUTCTime = new Date();
-			curUTCTime = curUTCTime.toJSON();
-			time = curUTCTime.split('T')[1].substring(0, 5);
-			this.setState({ time });
+
+		if (timetype) {
+			const curDate = new Date();
+			switch (timetype) {
+				case '0': // utc
+					if (!date) {
+						var offset = (curDate.getTimezoneOffset() + (timezone * 60)) * 60 * 1000;
+						var curUTCDate = new Date(curDate.getTime() + offset);
+						date = this.format_date(curUTCDate);
+						this.setState({ date });
+					}
+					if (!time) {
+						offset = (curDate.getTimezoneOffset() + (timezone * 60)) * 60 * 1000;
+						var curUTCTime = new Date(curDate.getTime() + offset);
+						time = this.format_time(curUTCTime);
+						this.setState({ time });
+					}
+					break;
+				case '1': // local time
+					if (!date) {
+						date = this.format_date(curDate);
+						this.setState({ date });
+					}
+					if (!time) {
+						time = this.format_time(curDate);
+						this.setState({ time });
+					}
+					break;
+				case '2': // gameworld time
+					var gt_timezine = 1; // Servers located in Germany
+					if (!date) {
+						offset = (curDate.getTimezoneOffset() + (gt_timezine * 60)) * 60 * 1000;
+						curUTCDate = new Date(curDate.getTime() + offset);
+						date = this.format_date(curUTCDate);
+						this.setState({ date });
+					}
+					if (!time) {
+						offset = (curDate.getTimezoneOffset() + (gt_timezine * 60)) * 60 * 1000;
+						curUTCTime = new Date(curDate.getTime() + offset);
+						time = this.format_time(curUTCTime);
+						this.setState({ time });
+					}
+					break;
+			}
 		}
 
 		const input_class_x = classNames({
@@ -241,7 +345,7 @@ export default class TimedSend extends Component {
 
 					<div className="column">
 						<div class='field'>
-							<label class="label">arrival date / time (UTC)</label>
+							<label class="label">arrival date / time ({ timetype_name }{ timezone_name })</label>
 							<input type="date" id="start" name="trip-start"
 								value={ date } onChange={ (e) => this.setState({ date: e.target.value }) }
 							></input>
