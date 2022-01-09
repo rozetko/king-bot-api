@@ -240,11 +240,11 @@ class api {
 
 		if (data.error) {
 			logger.debug(data, `${group}.handle_error`);
-			return {
+			return this.handle_errors({
 				response: {
 					errors: [data.error]
 				}
-			};
+			});
 		}
 		return data;
 	};

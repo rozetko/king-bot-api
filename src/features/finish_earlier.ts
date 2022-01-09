@@ -1,6 +1,6 @@
 import { Ivillage, Ibuilding_queue } from '../interfaces';
 import { feature_single, Ioptions, Iresponse } from './feature';
-import { get_date, find_state_data, sleep } from '../util';
+import { get_diff_time, find_state_data, sleep } from '../util';
 import { village } from '../gamedata';
 import api from '../api';
 import uniqid from 'uniqid';
@@ -56,8 +56,6 @@ class finish_earlier extends feature_single {
 	async run(): Promise<void> {
 		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
-		const five_minutes: number = 5 * 60;
-
 		while (this.options.run) {
 			const villages_data: any = await village.get_own();
 
@@ -72,6 +70,7 @@ class finish_earlier extends feature_single {
 			let response: any[] = await api.get_cache(params);
 
 			let sleep_time: number = null;
+			const five_minutes: number = 5 * 60;
 
 			for (let data of find_state_data(village.collection_own_ident, villages_data)) {
 				const vill: Ivillage = data.data;
@@ -88,13 +87,11 @@ class finish_earlier extends feature_single {
 
 					const first_item: any = actual_queue[0];
 					const finished: number = first_item.finished;
-					const now: number = get_date();
 
-					const rest_time: number = finished - now;
+					const rest_time: number = get_diff_time(finished);
 
 					// finish building instant
-					// add 2 seconds for safety
-					if (rest_time < (five_minutes - 2)) {
+					if (rest_time < five_minutes) {
 						const res = await api.finish_now(vill.villageId, qu);
 						logger.info(`finished building earlier for free on village ${vill.name}`, this.params.name);
 						continue;
@@ -105,11 +102,11 @@ class finish_earlier extends feature_single {
 				}
 			}
 
-			// sleep 5 seconds longer
-			if (sleep_time) sleep_time = sleep_time - five_minutes + 5;
+			if (sleep_time && sleep_time > five_minutes)
+				sleep_time = sleep_time - five_minutes;
 
 			if (!sleep_time || sleep_time <= 0) sleep_time = 60;
-			if (sleep_time > 120) sleep_time = 120;
+			if (sleep_time > 300) sleep_time = 300;
 
 			await sleep(sleep_time);
 		}
