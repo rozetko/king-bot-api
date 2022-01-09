@@ -4,6 +4,7 @@ import { feature_collection, feature_item, Ioptions } from './feature';
 import { player, hero } from '../gamedata';
 import { unit_types, tribe, hero_status, mission_type } from '../data';
 import api from '../api';
+import database from '../database';
 import logger from '../logger';
 
 interface Ioptions_timed_send extends Ioptions {
@@ -11,12 +12,20 @@ interface Ioptions_timed_send extends Ioptions {
 	village_id: number,
 	target_x: string,
 	target_y: string,
-	target_villageId: number,
+	target_village_id: number,
 	target_village_name: string,
 	target_distance: string,
 	target_player_name: string,
 	mission_type: mission_type,
 	mission_type_name: string,
+	arrival_date: string,
+	arrival_time: string,
+	date: string,
+	time: string,
+	timetype: string,
+	timetype_name: string,
+	timezone: string,
+	timezone_name: string,
 	t1: number,
 	t2: number,
 	t3: number,
@@ -27,9 +36,7 @@ interface Ioptions_timed_send extends Ioptions {
 	t8: number,
 	t9: number,
 	t10: number,
-	t11: number,
-	date: string,
-	time: string
+	t11: number
 }
 
 class timed_send extends feature_collection {
@@ -48,12 +55,20 @@ class timed_send extends feature_collection {
 			village_id: 0,
 			target_x: '',
 			target_y: '',
-			target_villageId: 0,
+			target_village_id: 0,
 			target_village_name: null,
 			target_distance: null,
 			target_player_name: null,
 			mission_type: 0,
 			mission_type_name: null,
+			arrival_date: null,
+			arrival_time: null,
+			date: null,
+			time: null,
+			timetype: '',
+			timetype_name: '',
+			timezone: '',
+			timezone_name: '',
 			t1: 0,
 			t2: 0,
 			t3: 0,
@@ -64,9 +79,7 @@ class timed_send extends feature_collection {
 			t8: 0,
 			t9: 0,
 			t10: 0,
-			t11: 0,
-			date: null,
-			time: null
+			t11: 0
 		};
 	}
 }
@@ -79,12 +92,20 @@ class timed_send_feature extends feature_item {
 			village_id,
 			target_x,
 			target_y,
-			target_villageId,
+			target_village_id,
 			target_village_name,
 			target_distance,
 			target_player_name,
 			mission_type,
 			mission_type_name,
+			arrival_date,
+			arrival_time,
+			date,
+			time,
+			timetype,
+			timetype_name,
+			timezone,
+			timezone_name,
 			t1,
 			t2,
 			t3,
@@ -95,9 +116,7 @@ class timed_send_feature extends feature_item {
 			t8,
 			t9,
 			t10,
-			t11,
-			date,
-			time } = options;
+			t11 } = options;
 
 		this.options = {
 			...this.options,
@@ -108,12 +127,20 @@ class timed_send_feature extends feature_item {
 			village_id,
 			target_x,
 			target_y,
-			target_villageId,
+			target_village_id,
 			target_village_name,
 			target_distance,
 			target_player_name,
 			mission_type,
 			mission_type_name,
+			arrival_date,
+			arrival_time,
+			date,
+			time,
+			timetype,
+			timetype_name,
+			timezone,
+			timezone_name,
 			t1,
 			t2,
 			t3,
@@ -124,9 +151,7 @@ class timed_send_feature extends feature_item {
 			t8,
 			t9,
 			t10,
-			t11,
-			date,
-			time
+			t11
 		};
 	}
 
@@ -142,8 +167,17 @@ class timed_send_feature extends feature_item {
 	}
 
 	get_description(): string {
-		const { village_name, mission_type_name, target_village_name } = this.options;
-		return `${village_name} -> ${mission_type_name} ${target_village_name}: ${this.options.time}`;
+		const { village_name, mission_type_name, target_village_name, date, time, timetype_name, timezone_name } = this.options;
+
+		if (!village_name)
+			return '<not configured>';
+
+		const lang = database.get('language').value();
+		const format_options: any = { weekday: 'long', month: 'long', day: 'numeric' };
+		const date_string = new Date(`${date} ${time}`).toLocaleDateString(lang, format_options);
+
+		return `${village_name} -> ${mission_type_name} ${target_village_name}:
+				${date_string}, ${time} (${timetype_name}${timezone_name})`;
 	}
 
 	get_long_description(): string {
@@ -155,10 +189,10 @@ class timed_send_feature extends feature_item {
 		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
 		var { village_id, village_name,
-			target_villageId, target_village_name,
-			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11,
+			target_village_id, target_village_name,
 			mission_type, mission_type_name,
-			date, time } = this.options;
+			arrival_date, arrival_time,
+			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 } = this.options;
 
 		const units: Iunits = {
 			1: Number(t1),
@@ -174,6 +208,12 @@ class timed_send_feature extends feature_item {
 			11: Number(t11)
 		};
 
+		// feature check
+		if (!village_id) {
+			logger.error('aborted timed send because the feature is not configured', this.params.name);
+			return this.exit();
+		}
+
 		// check units
 		if (units[1]==0 && units[2]==0 && units[3]==0 && units[4]==0 &&
 			units[5]==0 && units[6]==0 && units[7]==0 && units[8]==0 &&
@@ -181,18 +221,13 @@ class timed_send_feature extends feature_item {
 		{
 			logger.error(`aborted timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
 			'because no units have been defined', this.params.name);
-
-			logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
-			this.running = false;
-			this.options.run = false;
-			return;
+			return this.exit();
 		}
 
 		const player_data: Iplayer = await player.get();
 		const own_tribe: tribe = player_data.tribeId;
 
-		const arrival_time = new Date(date + 'T' + time + 'Z');
-		const arrival_time_ms = arrival_time.getTime();
+		const arrival_time_ms = new Date(arrival_date + 'T' + arrival_time + 'Z').getTime();
 
 		let loop = 0;
 		while (this.options.run) {
@@ -200,7 +235,7 @@ class timed_send_feature extends feature_item {
 			loop++;
 
 			// check target
-			const target_data: Itarget = await api.check_target(village_id, target_villageId, mission_type);
+			const target_data: Itarget = await api.check_target(village_id, target_village_id, mission_type);
 			let target_durations: Idurations = target_data.durations;
 
 			// set duration by the lowest speed
@@ -267,7 +302,7 @@ class timed_send_feature extends feature_item {
 					}
 
 					// send units
-					var response: any = await api.send_units(village_id, target_villageId, units, mission_type);
+					var response: any = await api.send_units(village_id, target_village_id, units, mission_type);
 					if (response.errors) {
 						for (let error of response.errors)
 							logger.error(`timed ${mission_type_name} from ${village_name} to ${target_village_name} failed: ${error.message}`, this.params.name);
@@ -288,8 +323,12 @@ class timed_send_feature extends feature_item {
 			}
 		}
 
+		this.exit();
+	}
+
+	exit(): void {
 		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
-		this.running = false; //need to figure out how to delete this along with stop.
+		this.running = false;
 		this.options.run = false;
 	}
 
