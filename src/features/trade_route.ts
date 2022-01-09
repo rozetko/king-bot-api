@@ -122,6 +122,10 @@ class trade_feature extends feature_item {
 
 	get_description(): string {
 		const { source_village_name, destination_village_name, interval_min, interval_max } = this.options;
+
+		if (!source_village_name)
+			return '<not configured>';
+
 		return `${source_village_name} -> ${destination_village_name} | ${interval_min} - ${interval_max}s`;
 	}
 
@@ -153,19 +157,22 @@ class trade_feature extends feature_item {
 			destination_iron,
 			destination_crop } = this.options;
 
+		if (!source_village_id || !destination_village_id) {
+			logger.error('aborted feature because is not configured', this.params.name);
+
+			logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
+			this.running = false;
+			this.options.run = false;
+			this.options.error = true;
+			return;
+		}
+
 		const params = [
 			village.collection_own_ident,
 		];
-
 		const response = await api.get_cache(params);
 		const vill: Ivillage = village.find(source_village_id, response);
 		const vill2: Ivillage = village.find(destination_village_id, response);
-
-
-		if (!vill || !vill2) {
-			this.running = false;
-			return;
-		}
 
 		const sourceVillage_id: number = vill.villageId;
 		const destVillage_id: number = vill2.villageId;

@@ -65,6 +65,10 @@ class farm_feature extends feature_item {
 
 	get_description(): string {
 		const { interval_min, interval_max } = this.options;
+
+		if (!interval_min)
+			return '<not configured>';
+
 		return `Farmlist: ${interval_min} - ${interval_max}s`;
 	}
 
@@ -87,6 +91,18 @@ class farm_feature extends feature_item {
 		while (this.options.run) {
 
 			const { interval_min, interval_max, farmlists, losses_farmlist } = this.options;
+
+			if (!interval_min) {
+				logger.error('aborted feature because is not configured', this.params.name);
+				this.options.error = true;
+				break;
+			}
+
+			if (farmlists.length == 0) {
+				logger.error('aborted because farmlist is empty', this.params.name);
+				this.options.error = true;
+				break;
+			}
 
 			const farmlists_to_send: any = {};
 
@@ -116,7 +132,7 @@ class farm_feature extends feature_item {
 			}
 
 			for (var village_id in farmlists_to_send) {
-				if (farmlists_to_send.hasOwnProperty(village_id)) {
+				if (Object.prototype.hasOwnProperty.call(farmlists_to_send, village_id)) {
 					var farmlist_ids = farmlists_to_send[village_id];
 					const village_id_num: number = parseInt(village_id);
 					await api.send_farmlists(farmlist_ids, village_id_num);

@@ -131,6 +131,10 @@ class robber_feature extends feature_item {
 
 	get_description(): string {
 		const { village_name, interval_min, interval_max } = this.options;
+
+		if (!village_name)
+			return '<not configured>';
+
 		return `${village_name} | ${interval_min} - ${interval_max}s`;
 	}
 
@@ -143,6 +147,16 @@ class robber_feature extends feature_item {
 		var { village_name, village_id,
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11,
 			mission_type, mission_type_name } = this.options;
+
+		if (!village_id) {
+			logger.error('aborted feature because is not configured', this.params.name);
+
+			logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
+			this.running = false;
+			this.options.run = false;
+			this.options.error = true;
+			return;
+		}
 
 		const units: Iunits = {
 			1: Number(t1),

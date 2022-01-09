@@ -77,6 +77,10 @@ class train_feature extends feature_item {
 
 	get_description(): string {
 		const { village_name, unit_name, amount, interval_min, interval_max } = this.options;
+
+		if (!village_name)
+			return '<not configured>';
+
 		return `${village_name} -> ${unit_name} (${amount > 0 ? amount : 'max'}) | ${interval_min} - ${interval_max}s`;
 	}
 
@@ -87,6 +91,16 @@ class train_feature extends feature_item {
 
 	async train_troops(): Promise<void> {
 		const { village_id, village_name, unit, unit_name, amount } = this.options;
+
+		if (!village_id) {
+			logger.error('aborted feature because is not configured', this.params.name);
+
+			logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
+			this.running = false;
+			this.options.run = false;
+			this.options.error = true;
+			return;
+		}
 
 		// get village
 		const villages_data: any = await village.get_own();
