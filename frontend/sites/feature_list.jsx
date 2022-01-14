@@ -13,12 +13,13 @@ const rowStyle = {
 @connect(storeKeys)
 export default class FeatureList extends Component {
 	state = {
-		features: [],
+		gameworld: '',
+		features: []
 	};
 
 	async componentDidMount() {
-		const res = await axios.get('/api/allfeatures');
-		this.setState({ features: res.data });
+		await axios.get('/api/data?ident=settings').then(({ data }) => this.setState({ gameworld: data.gameworld }));
+		await axios.get('/api/allfeatures').then(({ data }) => this.setState({ features: data }));
 	}
 
 	render(props, state) {
@@ -27,8 +28,8 @@ export default class FeatureList extends Component {
 
 		return (
 			<div>
-				<h1 className='subtitle is-4' align='center'>
-					{props.lang_navbar_king_bot_api}
+				<h1 className='title is-2' align='left'>
+					{props.lang_navbar_king_bot_api} <span class="subtitle is-3">{state.gameworld}</span>
 				</h1>
 				<table className='table is-hoverable is-fullwidth'>
 					<thead>

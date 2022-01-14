@@ -191,7 +191,7 @@ class timed_send_feature extends feature_item {
 		var { village_id, village_name,
 			target_village_id, target_village_name,
 			mission_type, mission_type_name,
-			arrival_date, arrival_time,
+			arrival_date, arrival_time, date, time,
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 } = this.options;
 
 		if (!village_id) {
@@ -229,6 +229,7 @@ class timed_send_feature extends feature_item {
 		const own_tribe: tribe = player_data.tribeId;
 
 		const arrival_time_ms = new Date(arrival_date + 'T' + arrival_time + 'Z').getTime();
+		const player_time_ms = new Date(date + 'T' + time + 'Z').getTime();
 
 		let loop = 0;
 		while (this.options.run) {
@@ -310,7 +311,7 @@ class timed_send_feature extends feature_item {
 						break; // stop
 					}
 					logger.info(`sent timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
-					`arriving on ${logger.get_timestamp(new Date(arrival_time_ms))} ` +
+					`arriving on ${logger.get_timestamp(new Date(player_time_ms))} ` +
 					`(duration: ${duration_short})`, this.params.name);
 					break; // stop
 				}

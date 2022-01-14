@@ -1,7 +1,9 @@
 const kingbot = require('./dist').default;
 const settings = require('./dist/settings').default;
 
-const { app, BrowserWindow } = require('electron');
+// http://electron.atom.io/docs/api
+const { app, BrowserWindow, Tray, Menu } = require('electron');
+
 const path = require('path');
 const express = require('express');
 
@@ -9,7 +11,23 @@ let server = express();
 let port = 3001;
 let running_server;
 
-let win;
+let window = null;
+let tray = null; // https://electronjs.org/docs/api/tray
+let menu_template = null;
+
+if (!app.requestSingleInstanceLock()) {
+	app.exit();
+}
+app.on('second-instance', (event, argv, cwd) => {
+	// Someone tried to run a second instance, we should focus our window.
+	if (window) {
+		if (window.isMinimized())
+			window.restore();
+		if (!window.isVisible())
+			window.show();
+		window.focus();
+	}
+});
 
 server.use(express.json());
 
@@ -22,7 +40,7 @@ server.post('/api/login', (req, res) => {
 
 	settings.write_credentials(gameworld, email, password, ingameName);
 	kingbot.start_server().then(() => {
-		win.loadURL('http://localhost:3000');
+		window.loadURL('http://localhost:3000');
 	});
 
 });
@@ -30,7 +48,7 @@ server.post('/api/login', (req, res) => {
 server.get('/api/start', (req, res) => {
 	running_server.close();
 	kingbot.start_server().then(() => {
-		win.loadURL('http://localhost:3000');
+		window.loadURL('http://localhost:3000');
 	});
 });
 
@@ -38,34 +56,98 @@ server.get('*', (req, res) => {
 	res.sendFile(path.resolve(__dirname, './electron-dist', 'index.html'));
 });
 
-// start login server
+// Start login server.
 running_server = server.listen(port, () => console.log(`login server listening on port ${port}!`));
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 
 function createWindow () {
+	// Create a new tray.
+	tray = new Tray(path.join(__dirname, 'public/images/icons/app.png'));
+
+	// Set default tooltip.
+	tray.setToolTip(app.name);
+
+	// Create the menu.
+	menu_template = [
+		{ label: 'Hide', type: 'normal', click: toggleWindow },
+		{ label: 'Exit', type: 'normal', click: () => { app.exit(); } }
+	];
+	const contextMenu = Menu.buildFromTemplate(menu_template);
+	tray.setContextMenu(contextMenu); // Overrides 'right-click' event
+	tray.on('click', (event, arg) => {
+		toggleWindow();
+	});
+	/*
+	tray.displayBalloon({
+		//icon: 'info' ,
+		title: 'test title',
+		content: 'text etxtaedasdas d',
+		largeIcon: true
+	});
+	tray.on('double-click', (event, arg) => {
+		tray.displayBalloon({
+			//icon: 'info' ,
+			title: 'test title',
+			content: 'text etxtaedasdas d',
+			largeIcon: true
+		});
+	});*/
+	//tray.on('double-click', toggleWindow);
 
 	// Create the browser window.
-	win = new BrowserWindow({ width: 1200, height: 800 });
+	window = new BrowserWindow({
+		width: 1200,
+		height: 800,
+		//webPreferences: {
+		//	backgroundThrottling: false
+		//}
+	});
 
-	// and load the index.html of the app.
-	win.loadURL('http://localhost:3001');
+	// Load the index.html of the app.
+	window.loadURL('http://localhost:3001');
+
+	// Change menu label on hide.
+	window.on('hide', (event) => {
+		menu_template[0].label = 'Show';
+		tray.setContextMenu(Menu.buildFromTemplate(menu_template));
+	});
+
+	// Change menu label on show.
+	window.on('show', (event) => {
+		menu_template[0].label = 'Hide';
+		tray.setContextMenu(Menu.buildFromTemplate(menu_template));
+	});
+
+	// Minimize to tray when close.
+	window.on('close', (event) => {
+		if (window.isVisible())
+			window.hide();
+		event.preventDefault();
+	});
 
 	// Emitted when the window is closed.
-	win.on('closed', () => {
-		// Dereference the window object, usually you would store windows
-		// in an array if your app supports multi windows, this is the time
-		// when you should delete the corresponding element.
+	window.on('closed', () => {
 		running_server.close();
 
 		server = null;
 		port = null;
 		running_server = null;
-		win = null;
+		window = null;
 
 		process.exit();
 	});
 }
+
+// toggle window
+const toggleWindow = () => {
+	if (window.isVisible()) {
+		window.hide();
+	} else {
+		window.show();
+		window.focus();
+	}
+};
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
