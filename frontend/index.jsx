@@ -22,6 +22,8 @@ lang.store = store;
 // get stored language from server
 axios.get('/api/data?ident=language')
 	.then(({ data }) => lang.changeLanguage(data.language, false));
+axios.get('/api/data?ident=settings')
+	.then(({ data }) => document.title = `${data.gameworld} - ${document.title}`);
 
 const App = () => (
 	<div>

@@ -49,7 +49,7 @@ module.exports = {
 
 	plugins: [
 		new HtmlWebpackPlugin({
-			title: 'automate kingdoms',
+			title: 'king-bot-api',
 			template: path.join(__dirname, 'frontend/index.html')
 		}),
 		new webpack.HotModuleReplacementPlugin()

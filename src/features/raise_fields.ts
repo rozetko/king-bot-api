@@ -139,10 +139,14 @@ class raise extends feature_item {
 			}
 
 			// remove 5 min to be able to finish earlier
-			finished = finished - five_minutes;
+			finished -= five_minutes;
 
 			logger.info('queue for raise field is not free for ' + String(get_diff_time(finished)) + ' seconds on village ' + village_name, this.params.name);
-			return get_diff_time(finished);
+
+			sleep_time = get_diff_time(finished);
+			if (sleep_time == 0)
+				sleep_time = 5;
+			return sleep_time;
 		}
 
 		// village got free res slot
@@ -212,7 +216,7 @@ class raise extends feature_item {
 				for (let error of res.errors)
 					logger.error(`upgrade building ${buildings[upgrade_building.buildingType]} on village ${village_name} failed: ${error.message}`, this.params.name);
 				this.options.error = true;
-				return null;
+				return five_minutes;
 			}
 			logger.info(`upgrade building ${buildings[upgrade_building.buildingType]} on village ${village_name}`, this.params.name);
 
