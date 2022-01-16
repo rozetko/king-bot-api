@@ -2,7 +2,7 @@ import { feature_collection, feature_item, Ioptions } from './feature';
 import { find_state_data, sleep, get_diff_time } from '../util';
 import { village } from '../gamedata';
 import { Ivillage, Ibuilding, Ibuilding_queue, Ibuilding_collection, Iresources } from '../interfaces';
-import { building_types, tribe } from '../data';
+import { building_types } from '../data';
 import api from '../api';
 import logger from '../logger';
 import finish_earlier from './finish_earlier';
@@ -99,117 +99,137 @@ class queue extends feature_item {
 		const queue_type = queue_item.type > 4
 			? 1  // 1: building slot
 			: 2; // 2: resource slot
+		const building_type = building_types[queue_item.type];
 
 		const villages_data: any = await village.get_own();
 		const village_obj: Ivillage = village.find(village_id, villages_data);
 		village_name = village_obj.name;
 
 		// fetch latest data needed
-		let params: string[] = [
+		const params: string[] = [
 			village.building_collection_ident + village_id,
 			village.building_queue_ident + village_id
 		];
-		let response: any[] = await api.get_cache(params);
-
+		const response: any[] = await api.get_cache(params);
 		const queue_data: Ibuilding_queue = find_state_data(village.building_queue_ident + village_id, response);
 
-		let free: boolean = queue_data.freeSlots[queue_type] == 1;
-		let queue_free: boolean = queue_data.freeSlots[4] == 1;
+		const free: boolean = queue_data.freeSlots[queue_type] == 1;
+		const queue_free: boolean = queue_data.freeSlots[4] == 1;
+		const canUseInstant: boolean =
+			queue_data.canUseInstantConstruction || queue_data.canUseInstantConstructionOnlyInVillage;
 
-		if (free || queue_free) {
-			// check building data
-			let building: Ibuilding = null;
-			const collection_data: Ibuilding_collection[] = find_state_data(village.building_collection_ident + village_id, response);
-			for (let bd of collection_data) {
-				if (Number(bd.data.buildingType) == queue_item.type) {
-					building = bd.data;
-					break;
-				}
-			}
-			if (building == null) {
-				logger.error(`could not get building ${building_types[queue_item.type]} data on village ${village_name}`, this.params.name);
+		// skip if resource slot is used
+		if (!free && !queue_free) {
+			// get queue finish time
+			let finished: number = null;
+			if (queue_data.queues[2].length) {
+				finished = queue_data.queues[2][0].finished;
+			} else if (queue_data.queues[1].length) {
+				finished = queue_data.queues[1][0].finished;
 			} else {
-				if (!this.able_to_build(building.upgradeCosts, village_obj)) {
-					// check again later if there might be enough res
-					sleep_time = 60;
-				} else {
-					// upgrade building
-					if (free) { // use free slot
-						const res: any = await api.upgrade_building(queue_item.type, queue_item.location, village_id);
-						if (res.errors) {
-							for (let error of res.errors)
-								logger.error(`upgrade building ${building_types[queue_item.type]} on village ${village_name} failed: ${error.message}`, this.params.name);
+				logger.error('error calculating queue time! queue object:', this.params.name);
+				logger.error(queue_data.queues, this.params.name);
+			}
 
-							// check again later if it might be possible
-							return 60;
-						} else {
-							logger.info(`upgrade building ${building_types[queue_item.type]} on village ${village_name}`, this.params.name);
-							// delete queue item
-							this.options.queue.shift();
+			if (finished) {
+				// set sleep time until its finished
+				const res_time: number = get_diff_time(finished);
+				if (res_time > 0)
+					sleep_time = res_time;
+			}
 
-							const upgrade_time: number = Number(building.upgradeTime);
-							if (upgrade_time < five_minutes) {
-								if (finish_earlier.running) {
-									const res: any = await api.finish_now(village_id, queue_type);
-									if (!res.data) {
-										logger.error(`instant finish on village ${village_name} failed`, this.params.name);
+			if (!sleep_time)
+				sleep_time = 60;
+			if (sleep_time <= 0)
+				sleep_time = 5;
+			return sleep_time;
+		}
 
-										// check again later if it might be possible
-										return 60;
-									}
-									else {
-										logger.info(`upgrade time less 5 min on village ${village_name}, instant finish!`, this.params.name);
-
-										// only wait one second to build next building
-										return 1;
-									}
-								}
-							}
-							else if (queue_free) {
-								return 1;
-							}
-
-							if (!sleep_time)
-								sleep_time = upgrade_time;
-							else if (upgrade_time < sleep_time)
-								sleep_time = upgrade_time;
-						}
-					}
-					else if (queue_free) { // use queue slot
-						const res: any = await api.queue_building(queue_item.type, queue_item.location, village_id, true);
-						if (res.errors) {
-							for (let error of res.errors)
-								logger.error(`upgrade building ${building_types[queue_item.type]} on village ${village_name} failed: ${error.message}`, this.params.name);
-
-							// check again later if it might be possible
-							return 60;
-						} else {
-							logger.info(`queue building ${building_types[queue_item.type]} on village ${village_name}`, this.params.name);
-							// delete queue item
-							this.options.queue.shift();
-						}
-					}
-				}
+		// check building data
+		let building: Ibuilding = null;
+		const collection_data: Ibuilding_collection[] = find_state_data(village.building_collection_ident + village_id, response);
+		for (let bd of collection_data) {
+			if (Number(bd.data.buildingType) == queue_item.type) {
+				building = bd.data;
+				break;
 			}
 		}
-		else {
-			// get queue finish time
-			if (queue_data.queues[queue_type][0]) {
-				const finished: number = queue_data.queues[queue_type][0].finished;
-				if (finished) {
-					// sleep until its finished
-					const res_time: number = get_diff_time(finished);
-					if (res_time > 0)
-						sleep_time = res_time;
+		if (building == null) {
+			logger.error(`could not get building ${building_type} data on village ${village_name}`, this.params.name);
+			return five_minutes;
+		}
+
+		if (building.isMaxLvl) {
+			logger.info(`building ${building_type} on village ${village_name} is already at the maximum level, removed from queue`, this.params.name);
+			// delete queue item
+			this.options.queue.shift();
+			return 1;
+		}
+
+		if (!this.able_to_build(building.upgradeCosts, village_obj)) {
+			// check again later if there might be enough res
+			return five_minutes;
+		}
+
+		// upgrade building using free slot
+		if (free) {
+			const res: any = await api.upgrade_building(queue_item.type, queue_item.location, village_id);
+			if (res.errors) {
+				for (let error of res.errors)
+					logger.error(`upgrade building ${building_type} on village ${village_name} failed: ${error.message}`, this.params.name);
+
+				// check again later if it might be possible
+				return 60;
+			}
+
+			logger.info(`upgrade building ${building_type} on village ${village_name}`, this.params.name);
+
+			// delete queue item
+			this.options.queue.shift();
+
+			const upgrade_time: number = Number(building.upgradeTime);
+			// check if building time is less than 5 min
+			if (upgrade_time < five_minutes && finish_earlier.running && canUseInstant) {
+				const res: any = await api.finish_now(village_id, queue_type);
+				if (!res.data) {
+					logger.error(`instant finish on village ${village_name} failed`, this.params.name);
+
+					// check again later if it might be possible
+					return 60;
 				}
+				logger.info(`upgrade time less 5 min on village ${village_name}, instant finish!`, this.params.name);
+
+				// only wait one second to build next building
+				return 1;
+			}
+			else if (queue_free) {
+				return 1;
+			}
+
+			if (!sleep_time)
+				sleep_time = upgrade_time;
+			else if (upgrade_time < sleep_time)
+				sleep_time = upgrade_time;
+		}
+
+		// upgrade building using queue slot
+		else if (queue_free) {
+			const res: any = await api.queue_building(queue_item.type, queue_item.location, village_id, true);
+			if (res.errors) {
+				for (let error of res.errors)
+					logger.error(`upgrade building ${building_type} on village ${village_name} failed: ${error.message}`, this.params.name);
+
+				// check again later if it might be possible
+				return 60;
+			} else {
+				logger.info(`queue building ${building_type} on village ${village_name}`, this.params.name);
+				// delete queue item
+				this.options.queue.shift();
 			}
 		}
 
 		if (!sleep_time || sleep_time <= 0)
 			sleep_time = 60;
-
-		if (sleep_time && sleep_time > five_minutes && finish_earlier.running)
-			sleep_time = sleep_time - five_minutes;
 
 		return sleep_time;
 	}
