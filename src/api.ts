@@ -120,6 +120,18 @@ class api {
 		return await this.post('upgrade', 'building', params);
 	}
 
+	async queue_building(buildingType: number, locationId: number, villageId: number, reserveResources: boolean, count: number = 1): Promise<any> {
+		const params = {
+			villageId,
+			locationId,
+			buildingType,
+			reserveResources,
+			count
+		};
+
+		return await this.post('useMasterBuilder', 'building', params);
+	}
+
 	async finish_now(villageId: number, queueType: number): Promise<any> {
 		const params = {
 			featureName: 'finishNow',

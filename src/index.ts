@@ -54,7 +54,7 @@ class kingbot {
 		await api.login(email, password, gameworld, sitter_type, sitter_name);
 	}
 
-	async scout(farmlist_name: string, village_id: number, amount: number = 1, mission: string = 'resources') {
+	async scout(farmlist_name: string, village_id: number, amount: number = 1, spy_mission: string = 'resources') {
 		const params = [
 			village.collection_own_ident,
 			farming.farmlist_ident
@@ -93,7 +93,7 @@ class kingbot {
 
 		// send scouts
 		for (let target of list_obj.villageIds) {
-			await api.send_units(village_id, target, units, 6, mission);
+			await api.send_units(village_id, target, units, 6, spy_mission);
 		}
 	}
 }

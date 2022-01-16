@@ -2,66 +2,54 @@ import { h, render, Component } from 'preact';
 import { route } from 'preact-router';
 import axios from 'axios';
 import classNames from 'classnames';
-import { connect } from 'unistore/preact';
-
 import actions from '../actions';
-import InfoTitle from '../components/info_title';
-import Input from '../components/input';
+import { connect } from 'unistore/preact';
 import { storeKeys } from '../language';
+import InfoTitle from '../components/info_title';
+import { Input, Select, Button } from '../components/form';
 
 @connect(storeKeys, actions)
 export default class EasyScout extends Component {
 	state = {
-		farmlists: [],
-		selected_farmlist: '',
-		village_name: '',
+		farmlist: '',
 		village_id: 0,
-		amount: '1',
-		mission: 'resources',
+		amount: 1,
+		spy_mission: 'resources',
 		all_farmlists: [],
 		all_villages: [],
 		error_village: false,
 		error_farmlist: false,
-		error_amount: false,
+		error_amount: false
 	};
 
 	componentDidMount() {
-		axios.get('/api/data?ident=villages')
-			.then(res => this.setState({
-				all_villages: res.data,
-				village_id: res.data[0].data.villageId,
-				village_name: res.data[0].data.name,
-			}));
-
-		axios.get('/api/data?ident=farmlists')
-			.then(res => this.setState({ all_farmlists: res.data }));
-	}
-
-	handle_multi(e) {
 		this.setState({
-			selected_farmlist: e.target.value,
-			farmlists: [ e.target.value ],
+			...this.props.feature
 		});
+
+		axios.get('/api/data?ident=villages').then(res => this.setState({ all_villages: res.data }));
+		axios.get('/api/data?ident=farmlists').then(res => this.setState({ all_farmlists: res.data }));
 	}
 
 	async submit() {
 		this.setState({
-			error_farmlist: (this.state.selected_farmlist == ''),
+			error_farmlist: (this.state.farmlist == ''),
 			error_village: (this.state.village_id == 0),
-			error_amount: (this.state.amount == ''),
+			error_amount: (this.state.amount ==  0)
 		});
 
 		if (this.state.error_village || this.state.error_farmlist || this.state.error_amount) return;
 
 		const payload = {
-			list_name: this.state.selected_farmlist,
+			list_name: this.state.farmlist,
 			village_id: this.state.village_id,
 			amount: this.state.amount,
-			mission: this.state.mission,
+			spy_mission: this.state.spy_mission,
 		};
 
 		const response = await axios.post('/api/easyscout', payload);
-		if (response.data == 'success') route('/');
+		if (response.data == 'success')
+			route('/');
 	}
 
 	async cancel() {
@@ -69,33 +57,45 @@ export default class EasyScout extends Component {
 	}
 
 	render(props, {
-		all_villages, all_farmlists, village_name,
-		village_id, selected_farmlist, amount, mission,
+		all_villages, all_farmlists,
+		farmlist, village_id, amount, spy_mission,
 	}) {
-		const village_select_class = classNames({
-			select: true,
-			'is-danger': this.state.error_village,
-		});
-
 		const farmlist_select_class = classNames({
 			select: true,
 			'is-danger': this.state.error_farmlist,
 		});
 
-		const villages = all_villages
-			.map(village =>
-				<option
-					value={ village.data.villageId }
-					village_name={ village.data.name }
-				>
-					({village.data.coordinates.x}|{village.data.coordinates.y}) {village.data.name}
-				</option>
-			);
+		const village_select_class = classNames({
+			select: true,
+			'is-danger': this.state.error_village,
+		});
 
-		const farmlist_opt = all_farmlists
+		const input_class_amount = classNames({
+			input: true,
+			'is-radiusless': true,
+			'is-danger': this.state.error_amount,
+		});
+
+		const villages = all_villages.map(village =>
+			<option
+				value={ village.data.villageId }
+				village_name={ village.data.name }
+			>
+				({village.data.coordinates.x}|{village.data.coordinates.y}) {village.data.name}
+			</option>
+		);
+
+		const farmlists = all_farmlists
 			.map(farmlist =>
 				<option value={ farmlist.data.listName }>{ farmlist.data.listName }</option>
 			);
+
+		const spy_missions = [
+			{ value: 'resources', name: this.props.lang_label_ressources },
+			{ value: 'defence', name: this.props.lang_label_defence }
+		].map(option =>
+			<option value={ option.value }>{ option.name }</option>
+		);
 
 		return (
 			<div>
@@ -108,90 +108,70 @@ export default class EasyScout extends Component {
 
 					<div className='column'>
 
-						<div className='field'>
-							<label class='label'>{this.props.lang_combo_box_select_farmlist}</label>
-							<div className='control'>
-								<div class={ farmlist_select_class }>
-									<select
-										class='is-radiusless'
-										value={ selected_farmlist }
-										onChange={ this.handle_multi.bind(this) }
-									>
-										{ farmlist_opt }
-									</select>
-								</div>
-							</div>
-						</div>
+						<Select
+							label = { props.lang_combo_box_select_farmlist }
+							value = { farmlist }
+							onChange = { e => this.setState({ farmlist: e.target.value }) }
+							options = { farmlists }
+							className = { farmlist_select_class }
+							icon = 'fa-cow'
+						/>
 
-						<div class='field'>
-							<label class='label'>{this.props.lang_label_spy_for}</label>
-							<div class='control'>
-								<div class='select'>
-									<select
-										class='is-radiusless'
-										value={ mission }
-										onChange={ e => this.setState({ mission: e.target.value }) }
-									>
-										<option value='resources'>{this.props.lang_label_ressources}</option>
-										<option value='defence'>{this.props.lang_label_defence}</option>
-									</select>
-								</div>
-							</div>
-						</div>
+
+						<Select
+							label = { props.lang_label_spy_for }
+							value = { spy_mission }
+							onChange = { e => this.setState({ spy_mission: e.target.value }) }
+							options = { spy_missions }
+							icon = 'fa-user-secret'
+						/>
 
 					</div>
 
 					<div className='column'>
 
-						<div class='field'>
-							<label class='label'>{this.props.lang_combo_box_select_village}</label>
-							<div class='control'>
-								<div class={ village_select_class }>
-									<select
-										class='is-radiusless'
-										value={ village_id }
-										onChange={ e => this.setState({
-											village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
-											village_id: e.target.value,
-										}) }
-									>
-										{ villages }
-									</select>
-								</div>
-							</div>
-						</div>
+						<Select
+							label = { props.lang_combo_box_select_village }
+							value = { village_id }
+							onChange = { e => this.setState({
+								village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
+								village_id: e.target.value
+							}) }
+							options = { villages }
+							className = { village_select_class }
+							icon='fa-home'
+						/>
 
 						<Input
 							label={ props.lang_easy_scout_amount }
 							placeholder={ props.lang_finder_default + ': 1' }
 							value={ amount }
 							onChange={ e => this.setState({ amount: e.target.value }) }
+							className={ input_class_amount }
+							width= '7.5em'
+							icon = 'fa-sort-amount-up'
 						/>
 
 					</div>
 
 				</div>
 
-				<div className='columns'>
-					<div className='column'>
-						<button
-							className='button is-success is-radiusless'
-							onClick={ this.submit.bind(this) }
-							style={{ marginRight: '1rem' }}
-						>
-							{this.props.lang_button_submit}
-						</button>
-						<button
-							className='button is-radiusless'
-							onClick={ this.cancel.bind(this) }
-							style={{ marginRight: '1rem' }}
-						>
-							{this.props.lang_button_cancel}
-						</button>
+				<div className="columns">
+
+					<div className="column">
+
+						<div class="buttons">
+							<Button action='send' onClick={ this.submit.bind(this) } className="is-success" icon='fa-share' />
+							<Button action={ props.lang_button_cancel } onClick={ this.cancel.bind(this) } icon='fa-times' />
+						</div>
+
 					</div>
-					<div className='column'>
+
+					<div className="column">
 					</div>
+
 				</div>
+
 			</div>
 		);
 	}

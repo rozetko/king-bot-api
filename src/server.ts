@@ -5,7 +5,7 @@ import api from './api';
 import settings from './settings';
 import logger from './logger';
 import { inactive_finder } from './extras';
-import { buildings, tribe, unit_types } from './data';
+import { building_types, tribe, unit_types } from './data';
 import { Ifeature_params, feature } from './features/feature';
 import { Ivillage, Ibuilding, Iplayer } from './interfaces';
 import { find_state_data } from './util';
@@ -143,8 +143,8 @@ class server {
 				return;
 			}
 
-			if (ident == 'buildingdata') {
-				res.send(buildings);
+			if (ident == 'building_types') {
+				res.send(building_types);
 				return;
 			}
 
@@ -194,17 +194,17 @@ class server {
 		});
 
 		this.app.post('/api/easyscout', (req: any, res: any) => {
-			const { village_id, list_name, amount, mission } = req.body;
+			const { village_id, list_name, amount, spy_mission } = req.body;
 
-			kingbot.scout(list_name, village_id, amount, mission);
+			kingbot.scout(list_name, village_id, amount, spy_mission);
 
 			res.send('success');
 		});
 
 		this.app.post('/api/login', async (req: any, res: any) => {
-			const { gameworld, email, password, ingameName } = req.body;
+			const { gameworld, email, password, sitter_type, sitter_name } = req.body;
 
-			settings.write_credentials(gameworld, email, password, ingameName);
+			settings.write_credentials(gameworld, email, password, sitter_type, sitter_name);
 			process.exit();
 
 			res.send('this wont be send anyways...');

@@ -3,14 +3,14 @@ import { route } from 'preact-router';
 import classNames from 'classnames';
 import { connect } from 'unistore/preact';
 import { storeKeys } from '../language';
-
+import { Input, Select, Button } from '../components/form';
 
 @connect(storeKeys)
 export default class Adventure extends Component {
 	state = {
 		type: 0,
 		min_health: '',
-		error_input: false,
+		error_min_health: false,
 	};
 
 	componentWillMount() {
@@ -18,18 +18,25 @@ export default class Adventure extends Component {
 	}
 
 	async submit() {
-		this.setState({ error_input: (this.state.min_health == '') });
+		this.setState({ error_min_health: (this.state.min_health == '') });
 
-		if (this.state.error_input) return;
+		if (this.state.error_min_health) return;
 
 		this.props.submit({ ...this.state });
 	}
 
-	render(props, { type, min_health, error_input }) {
-		const input_class = classNames({
+	render(props, { type, min_health }) {
+		const input_class_min_health = classNames({
 			input: true,
-			'is-danger': error_input,
+			'is-danger': this.state.error_min_health,
 		});
+
+		const adventure_types = [
+			{ value: 0, name: props.lang_adventure_short },
+			{ value: 1, name: props.lang_adventure_long }
+		].map(option =>
+			<option	value={ option.value }>{option.name}</option>
+		);
 
 		return (
 			<div>
@@ -37,27 +44,18 @@ export default class Adventure extends Component {
 
 					<div className='column'>
 
-						<div class='field'>
-							<label class='label'>
-								{props.lang_adventure_adventure_type}
-							</label>
-							<div class='control'>
-								<div class='select'>
-									<select
-										value={ type }
-										onChange={ e => this.setState({ type: e.target.value }) }
-										className='is-radiusless'
-									>
-										<option value='0'>{props.lang_adventure_short}</option>
-										<option value='1'>{props.lang_adventure_long}</option>
-									</select>
-								</div>
-							</div>
-						</div>
+						<Select
+							label = { props.lang_adventure_adventure_type }
+							value = { type }
+							onChange = { e => this.setState({ type: e.target.value }) }
+							options = { adventure_types }
+							icon = 'fa-compass'
+						/>
 
 					</div>
 
 					<div className='column'>
+
 						<label class='label'>{props.lang_adventure_min_health}</label>
 						<div class='field has-addons'>
 							<p class='control'>
@@ -65,39 +63,37 @@ export default class Adventure extends Component {
 									{props.lang_common_min}
 								</a>
 							</p>
-							<div class='control'>
-								<input
-									class={ input_class }
-									type='text'
-									value={ min_health }
-									placeholder={ props.lang_adventure_health }
-									onChange={ e => this.setState({ min_health: e.target.value }) }
-								/>
-							</div>
+							<Input
+								placeholder = { props.lang_adventure_health }
+								value = { min_health }
+								onChange = { e => this.setState({ min_health: e.target.value }) }
+								className = { input_class_min_health }
+								parent_field = { false }
+							/>
 							<p class='control'>
 								<a class='button is-static is-radiusless'>%</a>
 							</p>
 						</div>
 						<p class='help'>{props.lang_common_prov_number}</p>
+
 					</div>
 
 				</div>
 
-				<div className='columns'>
-					<div className='column'>
-						<button
-							className='button is-success is-radiusless'
-							onClick={ this.submit.bind(this) }
-							style={{ marginRight: '1rem' }}
-						>
-							{props.lang_button_submit}
-						</button>
-						<button className='button is-radiusless' onClick={ e => route('/', true) }>
-							{props.lang_button_cancel}
-						</button>
+				<div className="columns">
+
+					<div className="column">
+
+						<div class="buttons">
+							<Button action={ props.lang_button_submit } onClick={ this.submit.bind(this) } className="is-success" icon='fa-check' />
+							<Button action={ props.lang_button_cancel } onClick={ e => route('/', true) } icon='fa-times' />
+						</div>
+
 					</div>
-					<div className='column'>
+
+					<div className="column">
 					</div>
+
 				</div>
 
 			</div>

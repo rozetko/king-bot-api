@@ -4,6 +4,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { connect } from 'unistore/preact';
 import { storeKeys } from '../language';
+import { Input, DoubleInput, Select, Button } from '../components/form';
 
 @connect(storeKeys)
 export default class TrainTroops extends Component {
@@ -40,8 +41,8 @@ export default class TrainTroops extends Component {
 			error_village: (this.state.village_id == 0),
 			error_unit: (this.state.unit == 0),
 			error_amount: (this.state.amount == 0),
-			error_interval_min: (this.state.interval_min == ''),
-			error_interval_max: (this.state.interval_max == '')
+			error_interval_min: (this.state.interval_min == 0),
+			error_interval_max: (this.state.interval_max == 0)
 		});
 
 		if (this.state.error_village || this.state.error_unit || this.state.error_amount ||
@@ -62,20 +63,17 @@ export default class TrainTroops extends Component {
 	render(props) {
 		var {
 			all_villages, unit_types, own_tribe,
-			village_id, village_name,
-			unit, unit_name,
-			amount, interval_min, interval_max,
+			village_id,	unit, amount,
+			interval_min, interval_max,
 		} = this.state;
 
 		const village_select_class = classNames({
 			select: true,
-			'is-radiusless': true,
 			'is-danger': this.state.error_village,
 		});
 
 		const unit_select_class = classNames({
 			select: true,
-			'is-radiusless': true,
 			'is-danger': this.state.error_unit,
 		});
 
@@ -133,103 +131,77 @@ export default class TrainTroops extends Component {
 				<div className="columns">
 
 					<div className='column'>
-						<div class='field'>
-							<label class='label'>select unit</label>
-							<div class='control'>
-								<div class={ unit_select_class }>
-									<select
-										class='is-radiusless'
-										value={ unit }
-										onChange={ e => this.setState({
-											unit_name: e.target[e.target.selectedIndex].attributes.unit_name.value,
-											unit: e.target.value,
-										})
-										}
-									>
-										{ own_troops }
-									</select>
-								</div>
-							</div>
-						</div>
-						<div class='field'>
-							<label class='label'>{ props.lang_easy_scout_amount }</label>
-							<input
-								class={ input_class_amount }
-								style={{ width: '150px' }}
-								type='text'
-								value={ amount }
-								placeholder="0: max"
-								onChange={ e => this.setState({ amount: e.target.value }) }
-							/>
-						</div>
-						<div class='field'>
-							<label style={{ marginTop: '2rem' }} class='label'>{props.lang_farmlist_interval}</label>
-							<input
-								class={ input_class_min }
-								style={{ width: '150px', marginRight: '10px' }}
-								type='text'
-								value={ interval_min }
-								placeholder={ props.lang_common_min }
-								onChange={ e => this.setState({ interval_min: e.target.value }) }
-							/>
-							<input
-								class={ input_class_max }
-								style={{ width: '150px' }}
-								type='text'
-								value={ interval_max }
-								placeholder={ props.lang_common_max }
-								onChange={ e => this.setState({ interval_max: e.target.value }) }
-							/>
-						</div>
+
+						<Select
+							label = 'select unit'
+							value = { unit }
+							onChange = { e => this.setState({
+								unit_name: e.target[e.target.selectedIndex].attributes.unit_name.value,
+								unit: e.target.value,
+							}) }
+							options = { own_troops }
+							className = { unit_select_class }
+							icon = 'fa-helmet-battle'
+						/>
+
+						<Input
+							label={ props.lang_easy_scout_amount }
+							placeholder='0: max'
+							value={ amount }
+							onChange={ e => this.setState({ amount: e.target.value }) }
+							className={ input_class_amount }
+							width= '7.5em'
+							icon = 'fa-sort-amount-up'
+						/>
+
+						<DoubleInput
+							label = { props.lang_farmlist_interval }
+							placeholder1 = { props.lang_common_min }
+							placeholder2 = { props.lang_common_max }
+							value1 = { interval_min }
+							value2 = { interval_max }
+							onChange1 = { e => this.setState({ interval_min: e.target.value }) }
+							onChange2 = { e => this.setState({ interval_max: e.target.value }) }
+							class1 = { input_class_min }
+							class2 = { input_class_max }
+							icon = 'fa-stopwatch'
+						/>
+
 					</div>
 
 					<div className="column">
-						<div class='field'>
-							<label class='label'>{props.lang_combo_box_select_village}</label>
-							<div class='control'>
-								<div class={ village_select_class }>
-									<select
-										class='is-radiusless'
-										value={ village_id }
-										onChange={ e => this.setState({
-											village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
-											village_id: e.target.value,
-										})
-										}
-									>
-										{ villages }
-									</select>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div className='columns'>
-					<div className='column'>
-						<button
-							className='button is-success is-radiusless'
-							onClick={ this.submit.bind(this) }
-							style={{ marginRight: '1rem' }}
-						>
-							{props.lang_button_submit}
-						</button>
-						<button
-							className='button is-radiusless'
-							onClick={ this.cancel.bind(this) }
-							style={{ marginRight: '1rem' }}
-						>
-							{props.lang_button_cancel}
-						</button>
 
-						<button
-							className='button is-danger is-radiusless'
-							onClick={ this.delete.bind(this) }
-						>
-							{props.lang_button_delete}
-						</button>
+						<Select
+							label = { props.lang_combo_box_select_village }
+							value = { village_id }
+							onChange = { e => this.setState({
+								village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
+								village_id: e.target.value,
+							}) }
+							options = { villages }
+							className = { village_select_class }
+							icon='fa-home'
+						/>
+
 					</div>
-					<div className='column'>
+
+				</div>
+
+				<div className="columns">
+
+					<div className="column">
+
+						<div class="buttons">
+							<Button action={ props.lang_button_submit } onClick={ this.submit.bind(this) } className="is-success" icon='fa-check' />
+							<Button action={ props.lang_button_cancel } onClick={ this.cancel.bind(this) } icon='fa-times' />
+							<Button action={ props.lang_button_delete } onClick={ this.delete.bind(this) } className="is-danger" icon='fa-trash-alt' />
+						</div>
+
 					</div>
+
+					<div className="column">
+					</div>
+
 				</div>
 
 			</div>

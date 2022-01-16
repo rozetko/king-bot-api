@@ -5,7 +5,7 @@ import { village } from '../gamedata';
 import { Ibuilding, Ivillage, Ibuilding_queue, Iresources, Iplayer, Ibuilding_collection } from '../interfaces';
 import api from '../api';
 import finish_earlier from './finish_earlier';
-import { buildings } from '../data';
+import { building_types } from '../data';
 
 interface Ioptions_raise extends Ioptions {
 	[index: string]: any
@@ -214,18 +214,26 @@ class raise extends feature_item {
 			const res: any = await api.upgrade_building(upgrade_building.buildingType, upgrade_building.locationId, village_id);
 			if (res.errors) {
 				for (let error of res.errors)
-					logger.error(`upgrade building ${buildings[upgrade_building.buildingType]} on village ${village_name} failed: ${error.message}`, this.params.name);
+					logger.error(`upgrade building ${building_types[upgrade_building.buildingType]} on village ${village_name} failed: ${error.message}`, this.params.name);
 				this.options.error = true;
-				return five_minutes;
+
+				// check again later if it might be possible
+				return 60;
 			}
-			logger.info(`upgrade building ${buildings[upgrade_building.buildingType]} on village ${village_name}`, this.params.name);
+			logger.info(`upgrade building ${building_types[upgrade_building.buildingType]} on village ${village_name}`, this.params.name);
 
 			let upgrade_time: number = Number(upgrade_building.upgradeTime);
 
 			// check if building time is less than 5 min
-			if (get_diff_time(upgrade_time) < (five_minutes)) {
+			if (upgrade_time < five_minutes) {
 				if (finish_earlier.running) {
-					await api.finish_now(village_id, 2);
+					const res: any = await api.finish_now(village_id, 2);
+					if (!res.data) {
+						logger.error(`instant finish on village ${village_name} failed`, this.params.name);
+
+						// check again later if it might be possible
+						return 60;
+					}
 					logger.info(`upgrade time less 5 min on village ${village_name}, instant finish!`, this.params.name);
 
 					// only wait one second to build next building
@@ -234,8 +242,10 @@ class raise extends feature_item {
 			}
 
 			// set sleep time
-			if (!sleep_time) sleep_time = upgrade_time;
-			else if (upgrade_time < sleep_time) sleep_time = upgrade_time;
+			if (!sleep_time)
+				sleep_time = upgrade_time;
+			else if (upgrade_time < sleep_time)
+				sleep_time = upgrade_time;
 		}
 
 		if (sleep_time && sleep_time > five_minutes && finish_earlier.running)
@@ -250,7 +260,7 @@ class raise extends feature_item {
 		while (this.options.run) {
 			let sleep_time: number = await this.upgrade_field();
 
-			// all fields are raised
+			// all fields are raised or error raised
 			if (!sleep_time)
 				break;
 
@@ -268,8 +278,8 @@ class raise extends feature_item {
 
 	able_to_build(building: Ibuilding, village: Ivillage): boolean {
 		for (let res in village.storage)
-			if (Number(village.storage[res]) < Number(building.upgradeCosts[res])) return false;
-
+			if (Number(village.storage[res]) < Number(building.upgradeCosts[res]))
+				return false;
 		return true;
 	}
 

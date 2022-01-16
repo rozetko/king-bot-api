@@ -2,6 +2,7 @@ import { h, render, Component } from 'preact';
 import classNames from 'classnames';
 import { connect } from 'unistore/preact';
 import { storeKeys } from '../language';
+import { Input, Button } from '../components/form';
 
 @connect(storeKeys)
 export default class Login extends Component {
@@ -9,25 +10,29 @@ export default class Login extends Component {
 		gameworld: '',
 		email: '',
 		password: '',
-		ingameName: '',
-
-		errorGameworld: false,
-		errorEmail: false,
-		errorPassword: false,
+		sitter_type: '',
+		sitter_name: '',
+		sitter_style: { display: 'none' },
+		error_gameworld: false,
+		error_email: false,
+		error_password: false,
+		error_sitter: false
 	};
 
 	submit() {
-		const { gameworld, email, password, ingameName } = this.state;
+		const { gameworld, email, password, sitter_type, sitter_name } = this.state;
 
 		this.setState({
-			errorGameworld: !gameworld,
-			errorEmail: !email,
-			errorPassword: !password,
+			error_gameworld: !gameworld,
+			error_email: !email,
+			error_password: !password,
+			error_sitter: sitter_type != '' && !sitter_name
 		});
 
-		const { errorGameworld, errorEmail, errorPassword } = this.state;
+		const {
+			error_gameworld, error_email, error_password, error_sitter } = this.state;
 
-		if (errorGameworld || errorEmail || errorPassword) return;
+		if (error_gameworld || error_email || error_password || error_sitter) return;
 
 		alert(this.props.lang_login_notification);
 		fetch('/api/login', {
@@ -40,44 +45,66 @@ export default class Login extends Component {
 				gameworld,
 				email,
 				password,
-				ingameName,
+				sitter_type,
+				sitter_name
 			})
 		});
+	}
+
+	setSitter(sitter_type) {
+		var sitter_style = '';
+		if (sitter_type == '')
+			sitter_style = { display: 'none' };
+		this.setState({ sitter_type, sitter_style });
 	}
 
 	render(props, {
 		gameworld,
 		email,
 		password,
-		ingameName,
-		errorGameworld,
-		errorEmail,
-		errorPassword,
+		sitter_type,
+		sitter_name,
+		sitter_style,
+		error_gameworld,
+		error_email,
+		error_password,
+		error_sitter
 	}) {
 
-		const gameworldClass = classNames({
+		const input_class_gameworld = classNames({
 			'input': true,
 			'is-radiusless': true,
-			'is-danger': errorGameworld,
+			'is-danger': error_gameworld,
 		});
 
-		const emailClass = classNames({
+		const input_class_email = classNames({
 			'input': true,
 			'is-radiusless': true,
-			'is-danger': errorEmail,
+			'is-danger': error_email,
 		});
 
-		const passwordClass = classNames({
+		const input_class_password = classNames({
 			'input': true,
 			'is-radiusless': true,
-			'is-danger': errorPassword,
+			'is-danger': error_password,
 		});
+
+		const input_class_sitter = classNames({
+			'input': true,
+			'is-radiusless': true,
+			'is-danger': error_sitter,
+		});
+
+		const sitter_types = ['', 'sitter', 'dual'].map(option =>
+			<option	value={ option }>{option}</option>
+		);
 
 		return (
 			<div class='columns is-centered'>
+
 				<div className='column is-half'>
 
-					<div class='notification is-info'>
+					<div class='notification is-danger'>
 						{props.lang_login_reset_features}
 					</div>
 
@@ -85,87 +112,81 @@ export default class Login extends Component {
 						<article class='media'>
 							<div class='media-content'>
 								<div class='content'>
-									<strong>{props.lang_login_login}</strong>
-									<br />
-									<br />
+									<h1 class="title is-3">login</h1>
 
 									<Input
 										label={ props.lang_login_gameworld }
-										placeholder='com1'
+										placeholder='gameworld'
 										value={ gameworld }
 										onChange={ e => this.setState({ gameworld: e.target.value }) }
-										classes={ gameworldClass }
+										className={ input_class_gameworld }
+										icon='fa-crown'
 									/>
 
 									<Input
 										label={ props.lang_login_email }
-										placeholder='fairplay@gmail.com'
+										placeholder='email'
+										type='email'
 										value={ email }
 										onChange={ e => this.setState({ email: e.target.value }) }
-										classes={ emailClass }
+										className={ input_class_email }
+										icon='fa-envelope'
 									/>
 
 									<Input
 										label={ props.lang_login_password }
-										placeholder='topsecret123'
+										placeholder='password'
 										type='password'
 										value={ password }
 										onChange={ e => this.setState({ password: e.target.value }) }
-										classes={ passwordClass }
+										className={ input_class_password }
+										icon='fa-lock'
 									/>
 
-									<br />
-									<strong>{props.lang_login_sitter_dual}</strong>
-									<i style={{ paddingLeft: '10px' }} >{props.lang_login_optional}</i>
-
-									<br />
-									<small>{props.lang_login_sitter_description}</small>
-									<br />
-									<br />
-
-									<Input
-										label={ props.lang_login_ingame_name }
-										placeholder='IrockThisServer'
-										value={ ingameName }
-										onChange={ e => this.setState({ ingameName: e.target.value }) }
-									/>
-
-									<br />
-									<div className='control'>
-										<button
-											className='button is-radiusless is-success'
-											onClick={ this.submit.bind(this) }
-										>
-											{props.lang_button_submit}
-										</button>
+									<div class='field'>
+										<label class="label">
+											{props.lang_login_sitter_dual}
+											<i style={{ paddingLeft: '0.7em', fontWeight: 'normal' }}>{props.lang_login_optional}</i>
+										</label>
+										<p class='control'>
+											<div class='select is-radiusless'>
+												<select
+													value={ sitter_type }
+													onChange={ e => this.setSitter(e.target.value) }
+												>
+													{sitter_types}
+												</select>
+											</div>
+										</p>
 									</div>
+
+									<div style={ sitter_style }>
+										<p><small>{props.lang_login_sitter_description}</small></p>
+										<Input
+											label={ props.lang_login_ingame_name }
+											placeholder='player name'
+											value={ sitter_name }
+											onChange={ e => this.setState({ sitter_name: e.target.value }) }
+											className={ input_class_sitter }
+											icon='fa-user-crown'
+										/>
+									</div>
+
+									<div className='control' style={{ marginTop: '30px' }}>
+										<Button action='change login' className='is-success' onClick={ this.submit } icon='fa-edit' />
+									</div>
+
 								</div>
+
 							</div>
+
 						</article>
+
 					</div>
+
 				</div>
+
 			</div>
 		);
 	}
 }
-
-const Input = ({
-	label,
-	placeholder,
-	onChange,
-	classes = 'input is-radiusless',
-	type = 'text'
-}) => (
-
-	<div class="field">
-		<label class="label">{ label }</label>
-		<div class="control">
-			<input
-				class={ classes }
-				type={ type }
-				placeholder={ placeholder }
-				onChange={ onChange }
-			/>
-		</div>
-	</div>
-);

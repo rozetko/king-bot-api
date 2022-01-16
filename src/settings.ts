@@ -49,12 +49,13 @@ class settings {
 		};
 	}
 
-	write_credentials(gameworld: string, email: string, password: string, ingameName: string): void {
+	write_credentials(gameworld: string, email: string, password: string, sitter_type: string, sitter_name: string): void {
 		// change credentials
 		const filename: string = this.assets_folder + this.credentials_name;
 
 		let credString: string = `${email};${password};${gameworld}`;
-		if (ingameName) credString += `;dual;${ingameName}`;
+		if (sitter_type && sitter_name)
+			credString += `;${sitter_type};${sitter_name}`;
 
 		fs.writeFileSync(filename, credString);
 
