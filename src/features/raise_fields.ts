@@ -138,13 +138,13 @@ class raise extends feature_item {
 				return null;
 			}
 
+			logger.info('queue for raise field is not free for ' + String(get_diff_time(finished)) + ' seconds on village ' + village_name, this.params.name);
+
 			// remove 5 min to be able to finish earlier
 			finished -= five_minutes;
 
-			logger.info('queue for raise field is not free for ' + String(get_diff_time(finished)) + ' seconds on village ' + village_name, this.params.name);
-
 			sleep_time = get_diff_time(finished);
-			if (sleep_time == 0)
+			if (sleep_time <= 0)
 				sleep_time = 5;
 			return sleep_time;
 		}
@@ -248,6 +248,9 @@ class raise extends feature_item {
 				sleep_time = upgrade_time;
 		}
 
+		if (!sleep_time || sleep_time <= 0)
+			sleep_time = 60;
+
 		if (sleep_time && sleep_time > five_minutes && finish_earlier.running)
 			sleep_time = sleep_time - five_minutes;
 
@@ -265,8 +268,8 @@ class raise extends feature_item {
 				break;
 
 			// set save sleep time
-			if (!sleep_time || sleep_time <= 0) sleep_time = 60;
-			if (sleep_time > 300) sleep_time = 300;
+			if (sleep_time > 300)
+				sleep_time = 300;
 
 			await sleep(sleep_time);
 		}

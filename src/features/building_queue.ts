@@ -205,6 +205,9 @@ class queue extends feature_item {
 			}
 		}
 
+		if (!sleep_time || sleep_time <= 0)
+			sleep_time = 60;
+
 		if (sleep_time && sleep_time > five_minutes && finish_earlier.running)
 			sleep_time = sleep_time - five_minutes;
 
@@ -222,8 +225,8 @@ class queue extends feature_item {
 				break;
 
 			// set save sleep time
-			if (!sleep_time || sleep_time <= 0) sleep_time = 120;
-			if (sleep_time > 300) sleep_time = 300;
+			if (sleep_time > 300)
+				sleep_time = 300;
 
 			await sleep(sleep_time);
 		}
