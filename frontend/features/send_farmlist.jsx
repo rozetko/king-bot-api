@@ -3,27 +3,26 @@ import { route } from 'preact-router';
 import axios from 'axios';
 import classNames from 'classnames';
 import { connect } from 'unistore/preact';
-
 import { storeKeys } from '../language';
 import FarmlistTable from '../components/farmlist_table';
+import { DoubleInput, Select, Button } from '../components/form';
 
 @connect(storeKeys)
 export default class SendFarmlist extends Component {
 	state = {
-		selected_farmlist: '',
-		farmlists: [],
-		losses_farmlist: '',
+		farmlist: '',
 		village_name: '',
 		village_id: 0,
+		farmlists: [],
+		losses_farmlist: '',
 		interval_min: '',
 		interval_max: '',
 		all_farmlists: [],
 		all_villages: [],
-		error_input_min: false,
-		error_input_max: false,
 		error_farmlist: false,
-		error_farmlists: false,
 		error_village: false,
+		error_interval_min: false,
+		error_interval_max: false
 	};
 
 	componentWillMount() {
@@ -34,53 +33,50 @@ export default class SendFarmlist extends Component {
 	}
 
 	async add_farmlist() {
-		const { selected_farmlist, village_name, village_id, farmlists } = this.state;
+		const { farmlist, village_name, village_id, farmlists } = this.state;
 
 		this.setState({
-			error_farmlist: !this.state.selected_farmlist,
+			error_farmlist: (this.state.farmlist == ''),
+			error_village: (this.state.village_id == 0)
 		});
 
 		if (this.state.error_village || this.state.error_farmlist) return;
 
-		const farmlist = {
-			farmlist: selected_farmlist,
+		const selected_farmlist = {
+			farmlist: farmlist,
 			village_name,
 			village_id,
 		};
 
-		// farmlist already added
-		if (farmlists.indexOf(farmlist) > -1) return;
-
-		farmlists.push(farmlist);
-
+		if (farmlists.indexOf(selected_farmlist) > -1)
+			return; // farmlist already added
+		farmlists.push(selected_farmlist);
 		this.setState({ farmlists });
 	}
 
 	remove_farmlist(e) {
 		const { farmlists } = this.state;
-
 		farmlists.splice(farmlists.indexOf(e), 1);
-
 		this.setState({ farmlists });
 	}
 
-	submit(e) {
+	submit() {
 		this.setState({
-			error_input_min: (this.state.interval_min == ''),
-			error_input_max: (this.state.interval_max == ''),
-			error_farmlists: this.state.farmlists.length < 1,
+			error_farmlist: (this.state.farmlists.length < 1),
+			error_village: (this.state.village_id == 0),
+			error_interval_min: (this.state.interval_min == 0),
+			error_interval_max: (this.state.interval_max == 0)
 		});
 
-		if (this.state.error_input_min || this.state.error_input_max || this.state.error_farmlists) return;
+		if (this.state.error_farmlist || this.state.error_village ||
+			this.state.error_interval_min || this.state.error_interval_max)
+			return;
 
-		const { ident, uuid, farmlists, losses_farmlist, interval_min, interval_max } = this.state;
-		this.props.submit({ ident, uuid, farmlists, losses_farmlist, interval_min, interval_max });
+		this.props.submit({ ...this.state });
 	}
 
-
 	delete() {
-		const { ident, uuid, village_name, village_id, farmlists, losses_farmlist, interval_min, interval_max } = this.state;
-		this.props.delete({ ident, uuid, village_name, village_id, farmlists, losses_farmlist, interval_min, interval_max, });
+		this.props.delete({ ...this.state });
 	}
 
 	cancel() {
@@ -89,37 +85,31 @@ export default class SendFarmlist extends Component {
 
 	render(props) {
 		const {
-			interval_min, interval_max,
-			all_villages, all_farmlists, village_name, village_id,
-			selected_farmlist, farmlists, losses_farmlist,
-			error_input_min, error_input_max, error_village,
-			error_farmlist,
-		} = this.state;
+			all_farmlists, all_villages,
+			farmlist, village_id,
+			farmlists, losses_farmlist,
+			interval_min, interval_max } = this.state;
+
+		const village_select_class = classNames({
+			select: true,
+			'is-danger': this.state.error_village,
+		});
+
+		const farmlist_select_class = classNames({
+			select: true,
+			'is-danger': this.state.error_farmlist,
+		});
 
 		const input_class_min = classNames({
 			input: true,
 			'is-radiusless': true,
-			'is-danger': error_input_min,
+			'is-danger': this.state.error_interval_min
 		});
 
 		const input_class_max = classNames({
 			input: true,
 			'is-radiusless': true,
-			'is-danger': error_input_max,
-		});
-
-		const village_select_class = classNames({
-			select: true,
-			'is-danger': error_village,
-		});
-
-		const farmlist_select_class = classNames({
-			select: true,
-			'is-danger': error_farmlist,
-		});
-
-		const farmlist_losses_select_class = classNames({
-			select: true,
+			'is-danger': this.state.error_interval_min,
 		});
 
 		const villages = all_villages.map(village =>
@@ -138,118 +128,88 @@ export default class SendFarmlist extends Component {
 		return (
 			<div>
 				<div className='columns'>
+
 					<div className='column'>
-						<div>
-							<label class='label'>{props.lang_combo_box_select_farmlist}</label>
-							<div class={ farmlist_select_class }>
-								<select
-									class='is-radiusless'
-									value={ selected_farmlist }
-									onChange={ e => this.setState({ selected_farmlist: e.target.value }) }
-								>
-									{farmlist_opt}
-								</select>
-							</div>
 
-							<button
-								className='button is-radiusless is-success'
-								onClick={ this.add_farmlist.bind(this) }
-								style={{ marginRight: '1rem' }}
-							>
-								{props.lang_farmlist_add}
-							</button>
+						<label class='label'>{props.lang_combo_box_select_farmlist}</label>
+						<Select
+							value = { farmlist }
+							onChange = { e => this.setState({ farmlist: e.target.value }) }
+							options = { farmlist_opt }
+							className = { farmlist_select_class }
+							button = { <Button action = { props.lang_farmlist_add } className = 'is-success' onClick = { this.add_farmlist.bind(this) } icon = 'fa-plus' /> }
+							icon = 'fa-cow'
+						/>
 
-							<label style={{ marginTop: '2rem' }} class='label'>
-								{props.lang_farmlist_interval}
-							</label>
-							<input
-								class={ input_class_min }
-								style={{ width: '150px', marginRight: '10px' }}
-								type='text'
-								value={ interval_min }
-								placeholder={ props.lang_adventure_min }
-								onChange={ e => this.setState({ interval_min: e.target.value }) }
-							/>
-							<input
-								class={ input_class_max }
-								style={{ width: '150px' }}
-								type='text'
-								value={ interval_max }
-								placeholder={ props.lang_adventure_max }
-								onChange={ e => this.setState({ interval_max: e.target.value }) }
-							/>
-							<p class='help'>{props.lang_adventure_prov_number}</p>
-						</div>
+						<DoubleInput
+							label = { props.lang_farmlist_interval }
+							placeholder1 = { props.lang_common_min }
+							placeholder2 = { props.lang_common_max }
+							value1 = { interval_min }
+							value2 = { interval_max }
+							onChange1 = { e => this.setState({ interval_min: e.target.value }) }
+							onChange2 = { e => this.setState({ interval_max: e.target.value }) }
+							class1 = { input_class_min }
+							class2 = { input_class_max }
+							icon = 'fa-stopwatch'
+						/>
+
 					</div>
 
 					<div className='column'>
 
-						<div class='field'>
-							<label class='label'>{props.lang_combo_box_select_village}</label>
-							<div class='control'>
-								<div class={ village_select_class }>
-									<select
-										class='is-radiusless'
-										value={ village_id }
-										onChange={ e => this.setState({
-											village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
-											village_id: e.target.value,
-										}) }
-									>
-										{villages}
-									</select>
-								</div>
-							</div>
-						</div>
+						<Select
+							label = { props.lang_combo_box_select_village }
+							value = { village_id }
+							onChange = { e => this.setState({
+								village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
+								village_id: e.target.value,
+							}) }
+							options = { villages }
+							className = { village_select_class }
+							icon='fa-home'
+						/>
 
-						<div style={{ marginTop: '2rem' }}>
-							<label class='label'>{props.lang_farmlist_losses}</label>
-							<div class={ farmlist_losses_select_class }>
-								<select
-									class='is-radiusless'
-									value={ losses_farmlist }
-									onChange={ e => this.setState({ losses_farmlist: e.target.value }) }
-								>
-									{farmlist_opt}
-								</select>
-							</div>
-						</div>
+						<Select
+							label = { props.lang_farmlist_losses }
+							value = { losses_farmlist }
+							onChange = { e => this.setState({ losses_farmlist: e.target.value }) }
+							options = { farmlist_opt }
+							icon='fa-skull'
+						/>
 
 					</div>
 
 				</div>
 
-				<FarmlistTable
-					content={ farmlists }
-					clicked={ this.remove_farmlist.bind(this) }
-				/>
+				<div className="columns">
 
-				<div style={{ marginTop: '2rem' }} className='columns'>
-					<div className='column'>
-						<button
-							className='button is-radiusless is-success'
-							onClick={ this.submit.bind(this) }
-							style={{ marginRight: '1rem' }}
-						>
-							{props.lang_button_submit}
-						</button>
-						<button
-							className='button is-radiusless'
-							onClick={ this.cancel.bind(this) }
-							style={{ marginRight: '1rem' }}
-						>
-							{props.lang_button_cancel}
-						</button>
+					<div className="column">
 
-						<button
-							className='button is-danger is-radiusless'
-							onClick={ this.delete.bind(this) }
-						>
-							{props.lang_button_delete}
-						</button>
+						<FarmlistTable
+							content={ farmlists }
+							clicked={ this.remove_farmlist.bind(this) }
+						/>
+
 					</div>
-					<div className='column'>
+
+				</div>
+
+				<div className="columns">
+
+					<div className="column">
+
+						<div class="buttons">
+							<Button action={ props.lang_button_submit } onClick={ this.submit.bind(this) } className="is-success" icon='fa-check' />
+							<Button action={ props.lang_button_cancel } onClick={ this.cancel.bind(this) } icon='fa-times' />
+							<Button action={ props.lang_button_delete } onClick={ this.delete.bind(this) } className="is-danger" icon='fa-trash-alt' />
+						</div>
+
 					</div>
+
+					<div className="column">
+					</div>
+
 				</div>
 
 			</div>

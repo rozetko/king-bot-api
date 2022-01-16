@@ -2,7 +2,11 @@ import { h, render, Component } from 'preact';
 import { route } from 'preact-router';
 import axios from 'axios';
 import classNames from 'classnames';
+import { connect } from 'unistore/preact';
+import { storeKeys } from '../language';
+import { DoubleInput, Select, Button, Help } from '../components/form';
 
+@connect(storeKeys)
 export default class TimedSend extends Component {
 	state = {
 		all_villages: [],
@@ -111,7 +115,7 @@ export default class TimedSend extends Component {
 		}
 
 		const target_village_name = village_data.name;
-		const target_distance = target_data.distance;
+		const target_distance = Math.round(target_data.distance);
 		const target_player_name = target_data.destPlayerName;
 
 		target_help = null;
@@ -303,13 +307,11 @@ export default class TimedSend extends Component {
 
 		const village_select_class = classNames({
 			select: true,
-			'is-radiusless': true,
 			'is-danger': this.state.error_village
 		});
 
 		const missiontype_select_class = classNames({
 			select: true,
-			'is-radiusless': true,
 			'is-danger': this.state.error_mission_type
 		});
 
@@ -348,240 +350,224 @@ export default class TimedSend extends Component {
 							<label class="label">arrival date / time ({ timetype_name }{ timezone_name })</label>
 							<input type="date" id="start" name="trip-start"
 								value={ date } onChange={ (e) => this.setState({ date: e.target.value }) }
-							></input>
-							<input type="time" id="meeting-time" step="1"
-								name="meeting-time" value={ time } onChange={ (e) => this.setState({ time: e.target.value }) }
+							/>
+							<input type="time" id="meeting-time" name="meeting-time" step="1"
+								value={ time } onChange={ (e) => this.setState({ time: e.target.value }) }
 							/>
 						</div>
-						<div class='field'>
-							<label style={{ marginTop: '2rem' }} class='label'>target (x / y)</label>
-							<input
-								class={ input_class_x }
-								style={{ width: '80px', marginRight: '10px' }}
-								type='text'
-								value={ target_x }
-								placeholder= "x"
-								onChange={ e => this.setState({ target_x: e.target.value }) }
-							/>
-							<input
-								class={ input_class_y }
-								style={{ width: '80px', marginRight: '10px' }}
-								type='text'
-								value={ target_y }
-								placeholder="y"
-								onChange={ e => this.setState({ target_y: e.target.value }) }
-							/>
-							<button className='button is-radiusless is-success' onClick={ this.setTarget }>
-								set target
-							</button>
-							<p class={ target_help_css }>{target_help}</p>
-						</div>
+
+						<DoubleInput
+							label = 'target (x / y)'
+							placeholder1 = { 'x' }
+							placeholder2 = { 'y' }
+							value1 = { target_x }
+							value2 = { target_y }
+							onChange1 = { e => this.setState({ target_x: e.target.value }) }
+							onChange2 = { e => this.setState({ target_y: e.target.value }) }
+							class1 = { input_class_x }
+							class2 = { input_class_y }
+							button = { <Button action = 'set target' className = 'is-success' onClick = { this.setTarget } icon = 'fa-bullseye-pointer' /> }
+							help = { <Help className = { target_help_css } content = { target_help } /> }
+							icon = 'fa-map-marker-alt'
+						/>
 					</div>
 
 					<div className="column">
 
-						<div class="field">
-							<label class="label">select village</label>
-							<div class="control">
-								<div class={ village_select_class }>
-									<select
-										class="is-radiusless"
-										value={ village_id }
-										onChange={ (e) => this.setState({
-											village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
-											village_id: e.target.value
-										})
-										}
-									>
-										{villages}
-									</select>
-								</div>
-							</div>
-						</div>
+						<Select
+							label = { props.lang_combo_box_select_village }
+							value = { village_id }
+							onChange = { e => this.setState({
+								village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
+								village_id: e.target.value,
+							}) }
+							options = { villages }
+							className = { village_select_class }
+							icon='fa-home'
+						/>
 
-						<div class='field'>
-							<label class='label'>mission type</label>
-							<div class='control'>
-								<div class={ missiontype_select_class }>
-									<select
-										class='is-radiusless'
-										value={ mission_type }
-										onChange={ e => this.setState({
-											mission_type_name: e.target[e.target.selectedIndex].attributes.mission_type_name.value,
-											mission_type: e.target.value,
-										})
-										}
-									>
-										{mission_types}
-									</select>
-								</div>
-							</div>
-						</div>
+						<Select
+							label = { 'mission type' }
+							value = { mission_type }
+							onChange = { e => this.setState({
+								mission_type_name: e.target[e.target.selectedIndex].attributes.mission_type_name.value,
+								mission_type: e.target.value,
+							}) }
+							options = { mission_types }
+							className = { missiontype_select_class }
+							icon = 'fa-bullseye-arrow'
+						/>
 
 					</div>
 
 				</div>
 
-				<div>
-					<table className="table is-hoverable is-fullwidth">
-						<thead>
-							<tr>
-								<th style={ row_style }>distance</th>
-								<th style={ row_style }>player</th>
-								<th style={ row_style }>village</th>
-								{new_rows}
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td style={ row_style }>
-									{target_distance}
-								</td>
-								<td style={ row_style }>
-									{target_player_name}
-								</td>
-								<td style={ row_style }>
-									{target_village_name}
-								</td>
-								<td style={ row_style }>
-									<input
-										style="width: 30px;"
-										type="text"
-										value={ t1 }
-										placeholder="t1"
-										onChange={ async e => {
-											this.setState({ t1: e.target.value });
-										} }
-									/>
-								</td>
-								<td style={ row_style }>
-									<input
-										style="width: 30px;"
-										type="text"
-										value={ t2 }
-										placeholder="t2"
-										onChange={ async e => {
-											this.setState({ t2: e.target.value });
-										} }
-									/>
-								</td>
-								<td style={ row_style }>
-									<input
-										style="width: 30px;"
-										type="text"
-										value={ t3 }
-										placeholder="t3"
-										onChange={ async e => {
-											this.setState({ t3: e.target.value });
-										} }
-									/>
-								</td>
-								<td style={ row_style }>
-									<input
-										style="width: 30px;"
-										type="text"
-										value={ t4 }
-										placeholder="t4"
-										onChange={ async e => {
-											this.setState({ t4: e.target.value });
-										} }
-									/>
-								</td>
-								<td style={ row_style }>
-									<input
-										style="width: 30px;"
-										type="text"
-										value={ t5 }
-										placeholder="t5"
-										onChange={ async e => {
-											this.setState({ t5: e.target.value });
-										} }
-									/>
-								</td>
-								<td style={ row_style }>
-									<input
-										style="width: 30px;"
-										type="text"
-										value={ t6 }
-										placeholder="t6"
-										onChange={ async e => {
-											this.setState({ t6: e.target.value });
-										} }
-									/>
-								</td>
-								<td style={ row_style }>
-									<input
-										style="width: 30px;"
-										type="text"
-										value={ t7 }
-										placeholder="t7"
-										onChange={ async e => {
-											this.setState({ t7: e.target.value });
-										} }
-									/>
-								</td>
-								<td style={ row_style }>
-									<input
-										style="width: 30px;"
-										type="text"
-										value={ t8 }
-										placeholder="t8"
-										onChange={ async e => {
-											this.setState({ t8: e.target.value });
-										} }
-									/>
-								</td>
-								<td style={ row_style }>
-									<input
-										style="width: 30px;"
-										type="text"
-										value={ t9 }
-										placeholder="t9"
-										onChange={ async e => {
-											this.setState({ t9: e.target.value });
-										} }
-									/>
-								</td>
-								<td style={ row_style }>
-									<input
-										style="width: 30px;"
-										type="text"
-										value={ t10 }
-										placeholder="t10"
-										onChange={ async e => {
-											this.setState({ t10: e.target.value });
-										} }
-									/>
-								</td>
-								<td style={ row_style }>
-									<input
-										type="checkbox"
-										value={ t11 }
-										onChange={ async e => {
-											this.setState({ t11: e.target.checked ? 1 : 0 });
-										} }
-									/>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+				<div class="columns">
+
+					<div class="column">
+
+						<table className="table is-hoverable is-fullwidth">
+							<thead>
+								<tr>
+									<th style={ row_style }>distance</th>
+									<th style={ row_style }>player</th>
+									<th style={ row_style }>village</th>
+									{new_rows}
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td style={ row_style }>
+										{target_distance}
+									</td>
+									<td style={ row_style }>
+										{target_player_name}
+									</td>
+									<td style={ row_style }>
+										{target_village_name}
+									</td>
+									<td style={ row_style }>
+										<input
+											style="width: 30px;"
+											type="text"
+											value={ t1 }
+											placeholder="t1"
+											onChange={ async e => {
+												this.setState({ t1: e.target.value });
+											} }
+										/>
+									</td>
+									<td style={ row_style }>
+										<input
+											style="width: 30px;"
+											type="text"
+											value={ t2 }
+											placeholder="t2"
+											onChange={ async e => {
+												this.setState({ t2: e.target.value });
+											} }
+										/>
+									</td>
+									<td style={ row_style }>
+										<input
+											style="width: 30px;"
+											type="text"
+											value={ t3 }
+											placeholder="t3"
+											onChange={ async e => {
+												this.setState({ t3: e.target.value });
+											} }
+										/>
+									</td>
+									<td style={ row_style }>
+										<input
+											style="width: 30px;"
+											type="text"
+											value={ t4 }
+											placeholder="t4"
+											onChange={ async e => {
+												this.setState({ t4: e.target.value });
+											} }
+										/>
+									</td>
+									<td style={ row_style }>
+										<input
+											style="width: 30px;"
+											type="text"
+											value={ t5 }
+											placeholder="t5"
+											onChange={ async e => {
+												this.setState({ t5: e.target.value });
+											} }
+										/>
+									</td>
+									<td style={ row_style }>
+										<input
+											style="width: 30px;"
+											type="text"
+											value={ t6 }
+											placeholder="t6"
+											onChange={ async e => {
+												this.setState({ t6: e.target.value });
+											} }
+										/>
+									</td>
+									<td style={ row_style }>
+										<input
+											style="width: 30px;"
+											type="text"
+											value={ t7 }
+											placeholder="t7"
+											onChange={ async e => {
+												this.setState({ t7: e.target.value });
+											} }
+										/>
+									</td>
+									<td style={ row_style }>
+										<input
+											style="width: 30px;"
+											type="text"
+											value={ t8 }
+											placeholder="t8"
+											onChange={ async e => {
+												this.setState({ t8: e.target.value });
+											} }
+										/>
+									</td>
+									<td style={ row_style }>
+										<input
+											style="width: 30px;"
+											type="text"
+											value={ t9 }
+											placeholder="t9"
+											onChange={ async e => {
+												this.setState({ t9: e.target.value });
+											} }
+										/>
+									</td>
+									<td style={ row_style }>
+										<input
+											style="width: 30px;"
+											type="text"
+											value={ t10 }
+											placeholder="t10"
+											onChange={ async e => {
+												this.setState({ t10: e.target.value });
+											} }
+										/>
+									</td>
+									<td style={ row_style }>
+										<input
+											type="checkbox"
+											value={ t11 }
+											onChange={ async e => {
+												this.setState({ t11: e.target.checked ? 1 : 0 });
+											} }
+										/>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+
+					</div>
+
 				</div>
 
-				<div className="columns" style='margin-top: 1rem;'>
-					<div className="column">
-						<button className="button is-radiusless is-success" onClick={ this.submit } style='margin-right: 1rem'>
-							submit
-						</button>
-						<button className="button is-radiusless" onClick={ this.cancel } style='margin-right: 1rem'>
-							cancel
-						</button>
+				<div className="columns">
 
-						<button className="button is-danger is-radiusless" onClick={ this.delete }>
-							delete
-						</button>
+					<div className="column">
+
+						<div class="buttons">
+							<Button action={ props.lang_button_submit } onClick={ this.submit } className="is-success" icon='fa-check' />
+							<Button action={ props.lang_button_cancel } onClick={ this.cancel } icon='fa-times' />
+							<Button action={ props.lang_button_delete } onClick={ this.delete } className="is-danger" icon='fa-trash-alt' />
+						</div>
+
 					</div>
+
 					<div className="column">
 					</div>
+
 				</div>
 
 			</div>

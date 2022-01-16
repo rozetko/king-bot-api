@@ -135,7 +135,7 @@ export interface Ibuilding {
 
 export interface Ibuilding_queue {
 	villageId: number
-	tribeId: number
+	tribeId: tribe
 	freeSlots: {
 		[index: number]: number
 		1: number // buildings

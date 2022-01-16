@@ -2,13 +2,11 @@ import { h, render, Component } from 'preact';
 import axios from 'axios';
 import classNames from 'classnames';
 import { connect } from 'unistore/preact';
-
-import Input from '../components/input';
-import DoubleInput from '../components/double_input';
+import { storeKeys } from '../language';
 import { handle_response } from '../actions';
 import InactiveTable from '../components/inactive_table';
 import InfoTitle from '../components/info_title';
-import { storeKeys } from '../language';
+import { DoubleInput, Select, Button } from '../components/form';
 
 @connect(`notifications,${storeKeys}`, handle_response)
 export default class InactiveFinder extends Component {
@@ -80,7 +78,7 @@ export default class InactiveFinder extends Component {
 		if (this.state.loading) return;
 
 		this.setState({
-			error_village: (this.state.village_id == 0)
+			error_village: (!this.state.village_id)
 		});
 
 		if (this.state.error_village) return;
@@ -131,10 +129,12 @@ export default class InactiveFinder extends Component {
 	}
 
 	render(props, {
-		name, inactives, message, min_player_pop, max_player_pop,
-		min_village_pop, max_village_pop, min_distance,
-		max_distance, inactive_for, loading, all_villages,
-		all_farmlists, village_name, village_id, selected_farmlist
+		selected_farmlist, village_id,
+		all_villages, all_farmlists,
+		min_player_pop, max_player_pop,
+		min_village_pop, max_village_pop,
+		min_distance, max_distance,
+		inactive_for, inactives, loading, message
 	}) {
 		const village_select_class = classNames({
 			select: true,
@@ -179,70 +179,59 @@ export default class InactiveFinder extends Component {
 
 					<div className='column'>
 
-						<div class='field'>
-							<label class='label'>{props.lang_finder_distance_to}</label>
-							<div class='control'>
-								<div class={ village_select_class }>
-									<select
-										class='is-radiusless'
-										value={ village_id }
-										onChange={ e => this.setState({
-											village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
-											village_id: e.target.value
-										})
-										}
-									>
-										{ villages }
-									</select>
-								</div>
-							</div>
-						</div>
-
-						<DoubleInput
-							label={ props.lang_finder_player_pop }
-							placeholder1={ props.lang_finder_default + ': 0' }
-							placeholder2={ props.lang_finder_default + ': 500' }
-							value1={ min_player_pop }
-							value2={ max_player_pop }
-							onChange1={ e => this.setState({ min_player_pop: e.target.value }) }
-							onChange2={ e => this.setState({ max_player_pop: e.target.value }) }
+						<Select
+							label = { props.lang_finder_distance_to }
+							value = { village_id }
+							onChange = { e => this.setState({
+								village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
+								village_id: e.target.value,
+							}) }
+							options = { villages }
+							className = { village_select_class }
+							icon='fa-home'
 						/>
 
 						<DoubleInput
-							label={ props.lang_finder_village_pop }
-							placeholder1={ props.lang_finder_default + ': 0' }
-							placeholder2={ props.lang_finder_default + ': 200' }
-							value1={ min_village_pop }
-							value2={ max_village_pop }
-							onChange1={ e => this.setState({ min_village_pop: e.target.value }) }
-							onChange2={ e => this.setState({ max_village_pop: e.target.value }) }
+							label = { props.lang_finder_player_pop }
+							placeholder1 = { props.lang_finder_default + ': 0' }
+							placeholder2 = { props.lang_finder_default + ': 500' }
+							value1 = { min_player_pop }
+							value2 = { max_player_pop }
+							onChange1 = { e => this.setState({ min_player_pop: e.target.value }) }
+							onChange2 = { e => this.setState({ max_player_pop: e.target.value }) }
+							icon = 'fa-users-crown'
 						/>
 
-						<button
-							className={ search_button }
-							onClick={ this.search.bind(this) }
-							style={{ marginRight: '1rem' }}
-						>
-							{ props.lang_button_search }
-						</button>
+						<DoubleInput
+							label = { props.lang_finder_village_pop }
+							placeholder1 = { props.lang_finder_default + ': 0' }
+							placeholder2 = { props.lang_finder_default + ': 200' }
+							value1 = { min_village_pop }
+							value2 = { max_village_pop }
+							onChange1 = { e => this.setState({ min_village_pop: e.target.value }) }
+							onChange2 = { e => this.setState({ max_village_pop: e.target.value }) }
+							icon = 'fa-house-user'
+						/>
+
+						<Button
+							action = { props.lang_button_search }
+							className = { search_button }
+							onClick = { this.search.bind(this) }
+							style = {{ marginRight: '1rem' }}
+							icon = 'fa-search'
+						/>
 
 					</div>
 					<div className='column'>
 
-						<div class='field'>
-							<label class='label'>{props.lang_finder_add_list}</label>
-							<div className='control'>
-								<div class={ farmlist_select_class }>
-									<select
-										class='is-radiusless'
-										value={ selected_farmlist }
-										onChange={ e => this.setState({ selected_farmlist: e.target.value }) }
-									>
-										{ farmlist_opt }
-									</select>
-								</div>
-							</div>
-						</div>
+						<Select
+							label = { props.lang_finder_add_list }
+							value = { selected_farmlist }
+							onChange = { e => this.setState({ selected_farmlist: e.target.value }) }
+							options = { farmlist_opt }
+							className = { farmlist_select_class }
+							icon = 'fa-cow'
+						/>
 
 						<DoubleInput
 							label={ props.lang_finder_distance }
@@ -252,11 +241,12 @@ export default class InactiveFinder extends Component {
 							value2={ max_distance }
 							onChange1={ e => this.setState({ min_distance: e.target.value }) }
 							onChange2={ e => this.setState({ max_distance: e.target.value }) }
+							icon = 'fa-ruler-horizontal'
 						/>
 
 						<label class='label'>{props.lang_finder_inactive_for}</label>
 						<div class='field has-addons'>
-							<p class='control'>
+							<p class='control has-icons-left'>
 								<input
 									class='input is-radiusless'
 									type='text'
@@ -264,6 +254,7 @@ export default class InactiveFinder extends Component {
 									value={ inactive_for }
 									onChange={ e => this.setState({ inactive_for: e.target.value }) }
 								/>
+								<span class="icon is-left"><i class="fas fa-user-slash"></i></span>
 							</p>
 							<p class='control'>
 								<a class='button is-static is-radiusless'>

@@ -4,6 +4,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { connect } from 'unistore/preact';
 import { storeKeys } from '../language';
+import { DoubleInput, Select, Button, Help } from '../components/form';
 
 @connect(storeKeys)
 export default class RoberHideouts extends Component {
@@ -116,27 +117,22 @@ export default class RoberHideouts extends Component {
 
 		target_help = 'successfully registered robber villages!';
 		target_help_css = 'help is-success';
-		this.hide_target();
 		this.setState({ robber1_village_id, robber2_village_id, target_help, target_help_css });
-	};
-
-	hide_target = async e => {
-		let { target_style } = this.state;
 		setTimeout(async e => {
-			this.setState({ target_style });
-		}, 10000 );
+			this.setState({ target_style: { display: 'none' } });
+		}, 3000 );
 	};
 
 	submit = async e => {
-		var robbersRegistered = this.state.robber1_village_id != 0 ||
+		const robbersAreRegistered = this.state.robber1_village_id != 0 ||
 								this.state.robber2_village_id != 0;
 		this.setState({
 			error_village: (this.state.village_id == 0),
 			error_interval_min: (this.state.interval_min == 0),
 			error_interval_max: (this.state.interval_max == 0),
 			error_mission_type: (this.state.mission_type == 0),
-			error_target_x: (!robbersRegistered),
-			error_target_y: (!robbersRegistered)
+			error_target_x: (!robbersAreRegistered),
+			error_target_y: (!robbersAreRegistered)
 		});
 
 		if (this.state.error_village || this.state.error_mission_type ||
@@ -163,26 +159,29 @@ export default class RoberHideouts extends Component {
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11
 		} = this.state;
 
+		const robbersAreRegistered =
+			this.state.robber1_village_id != 0 || this.state.robber2_village_id != 0;
+
+		if (target_help_css == 'help' && robbersAreRegistered)
+			target_style = { display: 'none' };
+
 		const row_style = {
 			verticalAlign: 'middle',
 			textAlign: 'center',
 		};
 
-		var robbersRegistered = this.state.robber1_village_id != 0 ||
-								this.state.robber2_village_id != 0;
 		var toggle_icon = classNames({
 			fas: true,
 			'fa-lg': true,
-			'fa-times-circle': !robbersRegistered,
-			'fa-check-circle': robbersRegistered,
+			'fa-times-circle': !robbersAreRegistered,
+			'fa-check-circle': robbersAreRegistered,
 		});
 		var toggle_span = classNames({
 			icon: true,
 			'is-medium': true,
-			'has-text-danger': !robbersRegistered,
-			'has-text-success': robbersRegistered,
+			'has-text-danger': !robbersAreRegistered,
+			'has-text-success': robbersAreRegistered,
 		});
-		target_style = robbersRegistered ? { display: 'none' } : '';
 
 		var class_name;
 		switch (own_tribe) {
@@ -233,13 +232,11 @@ export default class RoberHideouts extends Component {
 
 		const village_select_class = classNames({
 			select: true,
-			'is-radiusless': true,
 			'is-danger': this.state.error_village
 		});
 
 		const missiontype_select_class = classNames({
 			select: true,
-			'is-radiusless': true,
 			'is-danger': this.state.error_mission_type
 		});
 
@@ -252,17 +249,16 @@ export default class RoberHideouts extends Component {
 			</option>
 		);
 
-		const missionTypes = [
+		const mission_types = [
 			{ value: 3, name: 'Attack' },
 			{ value: 4, name: 'Raid' },
 			{ value: 47, name: 'Siege' }
-		];
-		const mission_types = missionTypes.map(type =>
+		].map(option =>
 			<option
-				value={ type.value }
-				mission_type_name={ type.name }
+				value={ option.value }
+				mission_type_name={ option.name }
 			>
-				{type.name}
+				{option.name}
 			</option>
 		);
 
@@ -271,105 +267,79 @@ export default class RoberHideouts extends Component {
 				<div className="columns">
 
 					<div className="column">
+
 						<label class="label">
 							<span>robbers registered</span>
 							<span class={ toggle_span }>
 								<i class={ toggle_icon }></i>
 							</span>
 						</label>
-						<div class='field' style={ target_style }>
-							<label class='label'>target (x / y)</label>
-							<input
-								class={ input_class_x }
-								style={{ width: '80px', marginRight: '10px' }}
-								type='text'
-								value={ target_x }
-								placeholder= "x"
-								onChange={ e => this.setState({ target_x: e.target.value }) }
-							/>
-							<input
-								class={ input_class_y }
-								style={{ width: '80px', marginRight: '10px' }}
-								type='text'
-								value={ target_y }
-								placeholder="y"
-								onChange={ e => this.setState({ target_y: e.target.value }) }
-							/>
-							<button className='button is-radiusless is-success' onClick={ this.setRobbers }>
-								register robbers
-							</button>
-							<p class={ target_help_css }>{target_help}</p>
-						</div>
 
+						<DoubleInput
+							label = 'target (x / y)'
+							placeholder1 = { 'x' }
+							placeholder2 = { 'y' }
+							value1 = { target_x }
+							value2 = { target_y }
+							onChange1 = { e => this.setState({ target_x: e.target.value }) }
+							onChange2 = { e => this.setState({ target_y: e.target.value }) }
+							class1 = { input_class_x }
+							class2 = { input_class_y }
+							parent_style = { target_style }
+							button = { <Button action = 'set robbers' className = 'is-success' onClick = { this.setRobbers } icon = 'fa-campground' /> }
+							help = { <Help className = { target_help_css } content = { target_help } /> }
+							icon = 'fa-map-marker-alt'
+						/>
 
-						<div class='field'>
-							<label style={{ marginTop: '2rem' }} class='label'>{props.lang_farmlist_interval}</label>
-							<input
-								class={ input_class_min }
-								style={{ width: '150px', marginRight: '10px' }}
-								type='text'
-								value={ interval_min }
-								placeholder={ props.lang_common_min }
-								onChange={ e => this.setState({ interval_min: e.target.value }) }
-							/>
-							<input
-								class={ input_class_max }
-								style={{ width: '150px' }}
-								type='text'
-								value={ interval_max }
-								placeholder={ props.lang_common_max }
-								onChange={ e => this.setState({ interval_max: e.target.value }) }
-							/>
-						</div>
+						<DoubleInput
+							label = { props.lang_farmlist_interval }
+							placeholder1 = { props.lang_common_min }
+							placeholder2 = { props.lang_common_max }
+							value1 = { interval_min }
+							value2 = { interval_max }
+							onChange1 = { e => this.setState({ interval_min: e.target.value }) }
+							onChange2 = { e => this.setState({ interval_max: e.target.value }) }
+							class1 = { input_class_min }
+							class2 = { input_class_max }
+							icon = 'fa-stopwatch'
+						/>
 
 					</div>
 
 					<div className="column">
 
-						<div class="field">
-							<label class="label">select village</label>
-							<div class="control">
-								<div class={ village_select_class }>
-									<select
-										class="is-radiusless"
-										value={ village_id }
-										onChange={ (e) => this.setState({
-											village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
-											village_id: e.target.value
-										})
-										}
-									>
-										{villages}
-									</select>
-								</div>
-							</div>
-						</div>
+						<Select
+							label = { props.lang_combo_box_select_village }
+							value = { village_id }
+							onChange = { e => this.setState({
+								village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
+								village_id: e.target.value,
+							}) }
+							options = { villages }
+							className = { village_select_class }
+							icon='fa-home'
+						/>
 
-						<div class='field'>
-							<label class='label'>mission type</label>
-							<div class='control'>
-								<div class={ missiontype_select_class }>
-									<select
-										class='is-radiusless'
-										value={ mission_type }
-										onChange={ e => this.setState({
-											mission_type_name: e.target[e.target.selectedIndex].attributes.mission_type_name.value,
-											mission_type: e.target.value,
-										})
-										}
-									>
-										{mission_types}
-									</select>
-								</div>
-							</div>
-						</div>
+						<Select
+							label = { 'mission type' }
+							value = { mission_type }
+							onChange = { e => this.setState({
+								mission_type_name: e.target[e.target.selectedIndex].attributes.mission_type_name.value,
+								mission_type: e.target.value,
+							}) }
+							options = { mission_types }
+							className = { missiontype_select_class }
+							icon = 'fa-bullseye-arrow'
+						/>
 
 					</div>
 
 				</div>
 
 				<div class="columns">
+
 					<div class="column">
+
 						<table className="table is-hoverable is-fullwidth">
 							<thead>
 								<tr>
@@ -500,24 +470,26 @@ export default class RoberHideouts extends Component {
 								</tr>
 							</tbody>
 						</table>
+
 					</div>
+
 				</div>
 
-				<div className="columns" style='margin-top: 1rem;'>
-					<div className="column">
-						<button className="button is-radiusless is-success" onClick={ this.submit } style='margin-right: 1rem'>
-							submit
-						</button>
-						<button className="button is-radiusless" onClick={ this.cancel } style='margin-right: 1rem'>
-							cancel
-						</button>
+				<div className="columns">
 
-						<button className="button is-danger is-radiusless" onClick={ this.delete }>
-							delete
-						</button>
+					<div className="column">
+
+						<div class="buttons">
+							<Button action={ props.lang_button_submit } onClick={ this.submit } className="is-success" icon='fa-check' />
+							<Button action={ props.lang_button_cancel } onClick={ this.cancel } icon='fa-times' />
+							<Button action={ props.lang_button_delete } onClick={ this.delete } className="is-danger" icon='fa-trash-alt' />
+						</div>
+
 					</div>
+
 					<div className="column">
 					</div>
+
 				</div>
 
 			</div>

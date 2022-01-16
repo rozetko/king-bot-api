@@ -259,6 +259,8 @@ class timed_send_feature extends feature_item {
 						// unit speed
 						if (Number(unit_types[own_tribe][key].speed) < speed) {
 							duration = target_durations[key];
+							logger.debug(duration, this.params.name);
+							logger.debug(`duration: ${duration} with ${mission_type_name} from ${village_name} to ${target_village_name}`, this.params.name);
 							duration = duration * 1000; // to ms
 							speed = Number(unit_types[own_tribe][key].speed);
 							continue;

@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import arrayMove from 'array-move';
 import { connect } from 'unistore/preact';
 import { storeKeys } from '../language';
+import { Select, Button } from '../components/form';
 
 const headerStyle = {
 	textAlign: 'center',
@@ -13,14 +14,14 @@ const headerStyle = {
 @connect(storeKeys)
 export default class BuildingQueue extends Component {
 	state = {
+		all_villages: [],
+		building_types: [],
 		village_name: '',
 		village_id: 0,
-		all_villages: [],
-		queue: [],
-		error_village: false,
 		buildings: [],
 		resources: [],
-		buildings_dict: null,
+		queue: [],
+		error_village: false
 	};
 
 	componentWillMount() {
@@ -30,10 +31,19 @@ export default class BuildingQueue extends Component {
 	}
 
 	componentDidMount() {
-		if (this.state.village_id) this.village_changes({ target: { value: this.state.village_id } });
+		if (this.state.village_id) {
+			var option = document.createElement('option');
+			option.setAttribute('value', this.state.village_id);
+			option.setAttribute('village_name', this.state.village_name);
+			var select = document.createElement('select');
+			select.options.add(option);
+			this.village_changes({
+				target: select
+			});
+		}
 
 		axios.get('/api/data?ident=villages').then(res => this.setState({ all_villages: res.data }));
-		axios.get('/api/data?ident=buildingdata').then(res => this.setState({ buildings_dict: res.data }));
+		axios.get('/api/data?ident=building_types').then(res => this.setState({ building_types: res.data }));
 	}
 
 	async submit() {
@@ -43,13 +53,11 @@ export default class BuildingQueue extends Component {
 
 		if (this.state.error_village) return;
 
-		const { ident, uuid, village_name, village_id, queue } = this.state;
-		this.props.submit({ ident, uuid, village_name, village_id, queue });
+		this.props.submit({ ...this.state });
 	}
 
 	async delete() {
-		const { ident, uuid, village_name, village_id, queue } = this.state;
-		this.props.delete({ ident, uuid, village_name, village_id, queue });
+		this.props.delete({ ...this.state });
 	}
 
 	async cancel() {
@@ -86,14 +94,10 @@ export default class BuildingQueue extends Component {
 	}
 
 	upgrade(building) {
-		const { buildingType, lvl, locationId } = building;
+		const { buildingType, locationId } = building;
 		const queue_item = {
 			type: buildingType,
-			location: locationId,
-			costs: {
-				...building.upgradeCosts,
-			},
-			upgrade_time: building.upgradeTime,
+			location: locationId
 		};
 
 		this.setState({ queue: [ ...this.state.queue, queue_item ] });
@@ -129,18 +133,18 @@ export default class BuildingQueue extends Component {
 		this.setState({ queue: [ ...queues ] });
 	}
 
-	render(props, { name, all_villages, village_name, village_id, queue, buildings, resources, buildings_dict }) {
+	render(props, { name, all_villages, village_id, queue, buildings, resources, building_types }) {
 		const village_select_class = classNames({
 			select: true,
 			'is-danger': this.state.error_village,
 		});
 
-		let buildings_options = [];
-		if (buildings_dict) {
-			buildings_options = buildings.map(building =>
+		let resource_options = [];
+		if (building_types) {
+			resource_options = resources.map(building =>
 				<tr>
 					<td style={ headerStyle }>{ building.locationId }</td>
-					<td>{ buildings_dict[building.buildingType] }</td>
+					<td>{ building_types[building.buildingType] }</td>
 					<td style={ headerStyle }>{ building.lvl }</td>
 					<td style={ headerStyle }>
 						<a class='has-text-black' onClick={ () => this.upgrade(building) }>
@@ -153,12 +157,12 @@ export default class BuildingQueue extends Component {
 			);
 		}
 
-		let resource_options = [];
-		if (buildings_dict) {
-			resource_options = resources.map(building =>
+		let buildings_options = [];
+		if (building_types) {
+			buildings_options = buildings.map(building =>
 				<tr>
 					<td style={ headerStyle }>{ building.locationId }</td>
-					<td>{ buildings_dict[building.buildingType] }</td>
+					<td>{ building_types[building.buildingType] }</td>
 					<td style={ headerStyle }>{ building.lvl }</td>
 					<td style={ headerStyle }>
 						<a class='has-text-black' onClick={ () => this.upgrade(building) }>
@@ -172,12 +176,12 @@ export default class BuildingQueue extends Component {
 		}
 
 		let queue_options = [];
-		if (buildings_dict) {
+		if (building_types) {
 			queue_options = queue.map((building, index) =>
 				<tr>
 					<td style={ headerStyle }>{ index + 1 }</td>
 					<td style={ headerStyle }>{ building.location }</td>
-					<td>{ buildings_dict[building.type] }</td>
+					<td>{ building_types[building.type] }</td>
 					<td style={ headerStyle }>
 						<a class='has-text-black' onClick={ () => this.move_up(building) }>
 							<span class='icon is-medium'>
@@ -204,44 +208,43 @@ export default class BuildingQueue extends Component {
 		}
 
 		const villages = all_villages.map(village =>
-			<option value={ village.data.villageId } village_name={ village.data.name } >
+			<option
+				value={ village.data.villageId }
+				village_name={ village.data.name }
+			>
 				({village.data.coordinates.x}|{village.data.coordinates.y}) {village.data.name}
 			</option>
 		);
 
-
 		return (
 			<div>
 				<div className='columns'>
-					<div className='column'>
-						<div class='field'>
-							<label class='label'>{props.lang_combo_box_select_village}</label>
-							<div class='control'>
-								<div class={ village_select_class }>
-									<select
-										class='is-radiusless'
-										value={ village_id }
-										onChange={ this.village_changes.bind(this) }
-									>
-										{ villages }
-									</select>
-								</div>
-								<a
-									className='button is-success is-radiusless'
-									style={{ marginLeft: '3rem', marginRight: '1rem' }}
-									onClick={ this.submit.bind(this) }
-								>{props.lang_button_submit}</a>
-								<a
-									className='button is-danger is-radiusless'
-									onClick={ this.delete.bind(this) }
-								>{props.lang_button_delete}</a>
 
-							</div>
+					<div className='column'>
+
+						<label class="label">{ props.lang_combo_box_select_village }</label>
+						<div class='field is-grouped'>
+							<Select
+								value = { village_id }
+								onChange={ this.village_changes.bind(this) }
+								options = { villages }
+								className = { village_select_class }
+								parent_field = { false }
+								icon = 'fa-home'
+							/>
+							<p class="control">
+								<Button action={ props.lang_button_submit } onClick={ this.submit.bind(this) } className="is-success" icon='fa-check' />
+							</p>
+							<p class="control">
+								<Button action={ props.lang_button_delete } onClick={ this.delete.bind(this) } className="is-danger" icon='fa-trash-alt' />
+							</p>
 						</div>
+
 					</div>
+
 				</div>
 
-				<div className='columns' style={{ marginTop: '2rem' }} >
+				<div className='columns'>
 
 					<div className='column' align='center'>
 						<strong>{props.lang_queue_res_fields}</strong>
@@ -295,6 +298,7 @@ export default class BuildingQueue extends Component {
 							</tbody>
 						</table>
 					</div>
+
 				</div>
 
 			</div>

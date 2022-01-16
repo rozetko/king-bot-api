@@ -34,11 +34,11 @@ server.use(express.json());
 server.use(express.static(path.resolve(__dirname, './electron-dist')));
 
 server.post('/api/login', (req, res) => {
-	const { gameworld, email, password, ingameName } = req.body;
+	const { gameworld, email, password, sitter_type, sitter_name } = req.body;
 
 	running_server.close();
 
-	settings.write_credentials(gameworld, email, password, ingameName);
+	settings.write_credentials(gameworld, email, password, sitter_type, sitter_name);
 	kingbot.start_server().then(() => {
 		window.loadURL('http://localhost:3000');
 	});
@@ -78,30 +78,11 @@ function createWindow () {
 	tray.on('click', (event, arg) => {
 		toggleWindow();
 	});
-	/*
-	tray.displayBalloon({
-		//icon: 'info' ,
-		title: 'test title',
-		content: 'text etxtaedasdas d',
-		largeIcon: true
-	});
-	tray.on('double-click', (event, arg) => {
-		tray.displayBalloon({
-			//icon: 'info' ,
-			title: 'test title',
-			content: 'text etxtaedasdas d',
-			largeIcon: true
-		});
-	});*/
-	//tray.on('double-click', toggleWindow);
 
 	// Create the browser window.
 	window = new BrowserWindow({
 		width: 1200,
-		height: 800,
-		//webPreferences: {
-		//	backgroundThrottling: false
-		//}
+		height: 800
 	});
 
 	// Load the index.html of the app.

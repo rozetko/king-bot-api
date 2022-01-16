@@ -28,7 +28,7 @@ axios.get('/api/data?ident=settings')
 const App = () => (
 	<div>
 		<NavBar />
-		<div className='columns is-centered'>
+		<div className='columns is-centered' style='padding: 0 0.5em;'>
 			<div className='column is-two-thirds'>
 				<Notifications />
 				<div style={{ marginTop: '1rem' }}>

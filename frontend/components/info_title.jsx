@@ -9,6 +9,5 @@ export default connect('', actions)(({ title, description, add_notification }) =
 				<i class='fas fa-info'></i>
 			</span>
 		</a>
-
 	</h1>
 ));

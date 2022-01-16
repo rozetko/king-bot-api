@@ -1,4 +1,4 @@
-import winston, { log } from 'winston';
+import winston from 'winston';
 // @ts-ignore
 import logzio_transport from 'winston-logzio';
 import { format } from 'logform';

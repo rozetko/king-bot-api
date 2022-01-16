@@ -93,7 +93,7 @@ export default class EditFeature extends Component {
 				<h1
 					className='subtitle is-4'
 					syle={{ marginBottom: '2rem' }}
-					align='center'
+					align='left'
 				>
 					{this.props[`lang_feature_${ident}`]}
 					{long_description &&
