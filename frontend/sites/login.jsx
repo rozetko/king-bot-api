@@ -29,10 +29,8 @@ export default class Login extends Component {
 			error_sitter: sitter_type != '' && !sitter_name
 		});
 
-		const {
-			error_gameworld, error_email, error_password, error_sitter } = this.state;
-
-		if (error_gameworld || error_email || error_password || error_sitter) return;
+		if (this.state.error_gameworld || this.state.error_email ||
+			this.state.error_password || this.state.error_sitter) return;
 
 		alert(this.props.lang_login_notification);
 		fetch('/api/login', {
@@ -173,7 +171,7 @@ export default class Login extends Component {
 									</div>
 
 									<div className='control' style={{ marginTop: '30px' }}>
-										<Button action='change login' className='is-success' onClick={ this.submit } icon='fa-edit' />
+										<Button action='change login' className='is-success' onClick={ this.submit.bind(this) } icon='fa-edit' />
 									</div>
 
 								</div>

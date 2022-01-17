@@ -1,10 +1,8 @@
-import { log, find_state_data, sleep, list_remove, get_random_int } from '../util';
-import { Ifarmlist, Ivillage } from '../interfaces';
-import { Ifeature, Irequest, feature_collection, feature_item, Ioptions } from './feature';
-import { farming, village } from '../gamedata';
+import { sleep, get_random_int } from '../util';
+import { Ivillage } from '../interfaces';
+import { feature_collection, feature_item, Ioptions } from './feature';
+import { village } from '../gamedata';
 import api from '../api';
-import database from '../database';
-import uniqid from 'uniqid';
 import logger from '../logger';
 
 interface Ioptions_trade extends Ioptions {
@@ -12,6 +10,7 @@ interface Ioptions_trade extends Ioptions {
 	destination_village_name: string
 	source_village_id: number
 	destination_village_id: number
+	destination_village_own: boolean
 	interval_min: number
 	interval_max: number
 	send_wood: number
@@ -44,6 +43,7 @@ class trade_route extends feature_collection {
 			destination_village_name: '',
 			source_village_id: 0,
 			destination_village_id: 0,
+			destination_village_own: true,
 			interval_min: 0,
 			interval_max: 0,
 			send_wood: 0,
@@ -66,9 +66,12 @@ class trade_feature extends feature_item {
 	options: Ioptions_trade;
 
 	set_options(options: Ioptions_trade): void {
-		const { uuid, run, error, source_village_name, destination_village_name,
+		const { uuid, run, error,
+			source_village_name,
+			destination_village_name,
 			source_village_id,
 			destination_village_id,
+			destination_village_own,
 			interval_min,
 			interval_max,
 			send_wood,
@@ -85,13 +88,12 @@ class trade_feature extends feature_item {
 			destination_crop } = options;
 		this.options = {
 			...this.options,
-			uuid,
-			run,
-			error,
+			uuid, run, error,
 			source_village_name,
 			destination_village_name,
 			source_village_id,
 			destination_village_id,
+			destination_village_own,
 			interval_min,
 			interval_max,
 			send_wood,
@@ -134,91 +136,133 @@ class trade_feature extends feature_item {
 		return 'trade_route';
 	}
 
-	enough_merchants(longData: any, resources: any): boolean {
-		var data = longData[0].data;
+	async enough_merchants(resources: any): Promise<boolean> {
+		const { source_village_id } = this.options;
+		const merchant_ident: string = `Merchants:${source_village_id}`;
+		const merchant_data = await api.get_cache([merchant_ident]);
+
+		var data = merchant_data[0].data;
 		var merchant_capacity = (data.max - data.inTransport - data.inOffers) * data.carry;
 		var trade_size = resources[1] + resources[2] + resources[3] + resources[4];
 		if (trade_size > merchant_capacity) {
 			return false;
 		}
-
 		return true;
 	}
 
 	async run(): Promise<void> {
 		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
-		const { source_village_name, destination_village_name, source_village_id, destination_village_id, interval_min, interval_max, send_wood, send_clay, send_iron, send_crop, source_wood,
-			source_clay,
-			source_iron,
-			source_crop,
-			destination_wood,
-			destination_clay,
-			destination_iron,
-			destination_crop } = this.options;
-
-		if (!source_village_id || !destination_village_id) {
-			logger.error('aborted feature because is not configured', this.params.name);
-
-			logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
-			this.running = false;
-			this.options.run = false;
-			this.options.error = true;
-			return;
-		}
-
-		const params = [
-			village.collection_own_ident,
-		];
-		const response = await api.get_cache(params);
-		const vill: Ivillage = village.find(source_village_id, response);
-		const vill2: Ivillage = village.find(destination_village_id, response);
-
-		const sourceVillage_id: number = vill.villageId;
-		const destVillage_id: number = vill2.villageId;
-
 		while (this.options.run) {
-			const response = await api.get_cache(params);
-			const merchant_response = await api.get_cache([`Merchants:${sourceVillage_id}`]);
-
-			const vill: Ivillage = village.find(source_village_id, response);
-			const vill2: Ivillage = village.find(destination_village_id, response);
-			var resources = [0, 0, 0, 0, 0];
-
-			resources[1] = Math.floor(Math.min(send_wood, vill.storage['1']));
-			resources[2] = Math.floor(Math.min(send_clay, vill.storage['2']));
-			resources[3] = Math.floor(Math.min(send_iron, vill.storage['3']));
-			resources[4] = Math.floor(Math.min(send_crop, vill.storage['4']));
-			//If there are enough merchants
-			if (this.enough_merchants(merchant_response, resources)) {
-				//And source village has more than desired and destination has less than desired
-				if (vill.storage['1'] < source_wood || vill2.storage['1'] > destination_wood) {
-					resources[1] = 0;
-				} if (vill.storage['2'] < source_clay || vill2.storage['2'] > destination_clay) {
-					resources[2] = 0;
-				} if (vill.storage['3'] < source_iron || vill2.storage['3'] > destination_iron) {
-					resources[3] = 0;
-				} if (vill.storage['4'] < source_crop || vill2.storage['4'] > destination_crop) {
-					resources[4] = 0;
-				}
-				if (resources[1] + resources[2] + resources[3] + resources[4] > 0) {
-
-					await api.send_merchants(sourceVillage_id, destVillage_id, resources);
-					logger.info(`trade ${resources} sent from ${source_village_name} to ${destination_village_name}`, this.params.name);
-				} else {
-					logger.info(`trade ${source_village_name} -> ${destination_village_name} conditions not met. ${resources}`, this.params.name);
-				}
-				await sleep(get_random_int(interval_min, interval_max));
-			} else {
-				logger.warn(`not enough merchants for trade ${source_village_name} -> ${destination_village_name}`, this.params.name);
-				await sleep(get_random_int(300, 600));
+			const { source_village_id, destination_village_id, destination_village_own } = this.options;
+			if (!source_village_id || !destination_village_id) {
+				logger.error('aborted feature because is not configured', this.params.name);
+				this.options.error = true;
+				break;
 			}
-
+			if (destination_village_own)
+				await this.trade_own_route();
+			else
+				await this.trade_external_route();
 		}
 
 		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
 		this.running = false;
 		this.options.run = false;
+	}
+
+	async trade_own_route(): Promise<void> {
+		const {
+			source_village_name, destination_village_name,
+			source_village_id, destination_village_id,
+			interval_min, interval_max,
+			send_wood, send_clay,
+			send_iron, send_crop,
+			source_wood, source_clay,
+			source_iron, source_crop,
+			destination_wood, destination_clay,
+			destination_iron, destination_crop
+		} = this.options;
+
+		const villages_data: any = await village.get_own();
+		const source_village: Ivillage = village.find(source_village_id, villages_data);
+		const destination_village: Ivillage = village.find(destination_village_id, villages_data);
+
+		var resources = [0, 0, 0, 0, 0];
+		resources[1] = Math.floor(Math.min(send_wood, source_village.storage['1']));
+		resources[2] = Math.floor(Math.min(send_clay, source_village.storage['2']));
+		resources[3] = Math.floor(Math.min(send_iron, source_village.storage['3']));
+		resources[4] = Math.floor(Math.min(send_crop, source_village.storage['4']));
+
+		// if there are enough merchants
+		if (await this.enough_merchants(resources)) {
+			// and source village has more than desired
+			// and destination has less than desired
+			if (source_village.storage['1'] < source_wood || destination_village.storage['1'] > destination_wood) {
+				resources[1] = 0;
+			} if (source_village.storage['2'] < source_clay || destination_village.storage['2'] > destination_clay) {
+				resources[2] = 0;
+			} if (source_village.storage['3'] < source_iron || destination_village.storage['3'] > destination_iron) {
+				resources[3] = 0;
+			} if (source_village.storage['4'] < source_crop || destination_village.storage['4'] > destination_crop) {
+				resources[4] = 0;
+			}
+			if (resources[1] + resources[2] + resources[3] + resources[4] > 0) {
+				await api.send_merchants(source_village_id, destination_village_id, resources);
+				logger.info(`trade ${resources} sent from ${source_village_name} to ${destination_village_name}`, this.params.name);
+			} else {
+				logger.info(`trade ${source_village_name} -> ${destination_village_name} conditions not met. ${resources}`, this.params.name);
+			}
+			await sleep(get_random_int(interval_min, interval_max));
+		} else {
+			logger.warn(`not enough merchants for trade ${source_village_name} -> ${destination_village_name}`, this.params.name);
+			await sleep(get_random_int(300, 600));
+		}
+	}
+
+	async trade_external_route(): Promise<void> {
+		const {
+			source_village_name, destination_village_name,
+			source_village_id, destination_village_id,
+			interval_min, interval_max,
+			send_wood, send_clay,
+			send_iron, send_crop,
+			source_wood, source_clay,
+			source_iron, source_crop,
+		} = this.options;
+
+		const villages_data: any = await village.get_own();
+		const source_village: Ivillage = village.find(source_village_id, villages_data);
+
+		var resources = [0, 0, 0, 0, 0];
+		resources[1] = Math.floor(Math.min(send_wood, source_village.storage['1']));
+		resources[2] = Math.floor(Math.min(send_clay, source_village.storage['2']));
+		resources[3] = Math.floor(Math.min(send_iron, source_village.storage['3']));
+		resources[4] = Math.floor(Math.min(send_crop, source_village.storage['4']));
+
+		// if there are enough merchants
+		if (await this.enough_merchants(resources)) {
+			// and source village has more than desired
+			if (source_village.storage['1'] < source_wood) {
+				resources[1] = 0;
+			} if (source_village.storage['2'] < source_clay) {
+				resources[2] = 0;
+			} if (source_village.storage['3'] < source_iron) {
+				resources[3] = 0;
+			} if (source_village.storage['4'] < source_crop) {
+				resources[4] = 0;
+			}
+			if (resources[1] + resources[2] + resources[3] + resources[4] > 0) {
+				await api.send_merchants(source_village_id, destination_village_id, resources);
+				logger.info(`trade ${resources} sent from ${source_village_name} to ${destination_village_name}`, this.params.name);
+			} else {
+				logger.info(`trade ${source_village_name} -> ${destination_village_name} conditions not met. ${resources}`, this.params.name);
+			}
+			await sleep(get_random_int(interval_min, interval_max));
+		} else {
+			logger.warn(`not enough merchants for trade ${source_village_name} -> ${destination_village_name}`, this.params.name);
+			await sleep(get_random_int(300, 600));
+		}
 	}
 }
 
