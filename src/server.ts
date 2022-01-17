@@ -83,6 +83,13 @@ class server {
 				return;
 			}
 
+			if (ident == 'worldwonders') {
+				const response = await api.get_world_wonders();
+
+				res.send(response.results);
+				return;
+			}
+
 			if (ident == 'farmlists') {
 				const farmlists = await farming.get_own();
 				const data = find_state_data(farming.farmlist_ident, farmlists);

@@ -72,6 +72,16 @@ class api {
 		return await this.post('getLastReports', 'reports', params);
 	}
 
+	async get_world_wonders(): Promise<any> {
+		const params = {
+			start: 0,
+			end: 9,
+			rankingType: 'ranking_WorldWonder'
+		};
+
+		return await this.post('getRanking', 'ranking', params);
+	}
+
 	async send_partial_farmlists(listId: number, entryIds: number[], village_id: number): Promise<any> {
 		const params = {
 			listId: listId,

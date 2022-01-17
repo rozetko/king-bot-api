@@ -144,7 +144,7 @@ class robber_feature extends feature_item {
 	}
 
 	async send_troops(robber_village: Ivillage): Promise<void> {
-		var { village_name, village_id,
+		const { village_name, village_id,
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11,
 			mission_type, mission_type_name } = this.options;
 

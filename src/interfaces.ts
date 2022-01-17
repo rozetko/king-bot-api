@@ -77,10 +77,10 @@ export interface Ivillage {
 	isTown: boolean;
 	treasuresUseable: number;
 	treasures: number;
-	allowTributeCollection: number;
 	protectionGranted: number;
 	tributeCollectorPlayerId: number;
 	realTributePercent: number;
+	// from here only returned for own village
 	supplyBuildings: number;
 	supplyTroops: number;
 	production: Iresources;
@@ -104,6 +104,8 @@ export interface Ivillage {
 	tributeTime: number;
 	tributesRequiredToFetch: number;
 	estimatedWarehouseLevel: number;
+	allowTributeCollection: number;
+	// only robbers (?)
 	position: number;
 }
 

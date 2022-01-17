@@ -13,6 +13,8 @@ export default class TradeRoute extends Component {
 		destination_village_name: '',
 		source_village_id: 0,
 		destination_village_id: 0,
+		destination_village_own: 'true',
+		destination_resources_disabled: '',
 		interval_min: 0,
 		interval_max: 0,
 		send_wood: 0,
@@ -28,6 +30,7 @@ export default class TradeRoute extends Component {
 		destination_iron: 10000000,
 		destination_crop: 10000000,
 		all_villages: [],
+		world_wonders: [],
 		error_source_village_id: false,
 		error_destination_village_id: false,
 		error_input_min: false,
@@ -39,6 +42,8 @@ export default class TradeRoute extends Component {
 
 		axios.get('/api/data?ident=villages')
 			.then(res => this.setState({ all_villages: res.data }));
+		axios.get('/api/data?ident=worldwonders')
+			.then(res => this.setState({ world_wonders: res.data }));
 	}
 
 	async submit() {
@@ -65,11 +70,28 @@ export default class TradeRoute extends Component {
 		route('/');
 	}
 
+	set_destination_village = async e =>  {
+		const destination_village_own =
+			e.target[e.target.selectedIndex].attributes.destination_village_own.value == 'true';
+
+		this.setState({
+			destination_village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
+			destination_village_id: e.target.value,
+			destination_village_own: destination_village_own
+		});
+
+		this.setState({
+			destination_resources_disabled: !destination_village_own ? 'disabled' : ''
+		});
+	};
+
 	render(props) {
 		const {
 			all_villages,
+			world_wonders,
 			source_village_id,
 			destination_village_id,
+			destination_village_own,
 			interval_min, interval_max,
 			send_wood,
 			send_clay,
@@ -84,6 +106,10 @@ export default class TradeRoute extends Component {
 			destination_iron,
 			destination_crop,
 		} = this.state;
+
+		let { destination_resources_disabled } = this.state;
+		if (!destination_village_own)
+			destination_resources_disabled = 'disabled';
 
 		const source_village_select_class = classNames({
 			select: true,
@@ -107,14 +133,33 @@ export default class TradeRoute extends Component {
 			'is-danger': this.state.error_input_max,
 		});
 
-		const villages = all_villages.map(village =>
+		const source_villages = all_villages.map(village =>
 			<option
 				value={ village.data.villageId }
 				village_name={ village.data.name }
+				destination_village_own={ 'true' }
 			>
 				({village.data.coordinates.x}|{village.data.coordinates.y}) {village.data.name}
 			</option>
 		);
+
+		var destination_villages = null;
+		if (world_wonders.length > 0)
+			destination_villages = [
+				<optgroup label="Own Villages">
+					{source_villages}
+				</optgroup>,
+				<optgroup label="World Wonders">
+					{world_wonders.map(village =>
+						<option
+							value={ village.villageId }
+							village_name={ village.name }
+							destination_village_own={ 'false' }
+						>
+							({village.coordinates.x}|{village.coordinates.y}) {village.name}
+						</option>
+					) }
+				</optgroup>];
 
 		const input_style = { width: '7.5em' };
 
@@ -147,9 +192,9 @@ export default class TradeRoute extends Component {
 							value = { source_village_id }
 							onChange = { e => this.setState({
 								source_village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
-								source_village_id: e.target.value,
+								source_village_id: e.target.value
 							}) }
-							options = { villages }
+							options = { source_villages }
 							className = { source_village_select_class }
 							icon = 'fa-home'
 						/>
@@ -157,11 +202,8 @@ export default class TradeRoute extends Component {
 						<Select
 							label = { props.lang_trade_dest_village }
 							value = { destination_village_id }
-							onChange = { e => this.setState({
-								destination_village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
-								destination_village_id: e.target.value,
-							}) }
-							options = { villages }
+							onChange = { this.set_destination_village }
+							options = { world_wonders.length > 0 ? destination_villages : source_villages }
 							className = { destination_village_select_class }
 							icon = 'fa-home'
 						/>
@@ -252,41 +294,45 @@ export default class TradeRoute extends Component {
 
 				<div className='columns'>
 
-					<div className='column'>
+					<fieldset disabled={ destination_resources_disabled }>
 
-						<label class='label'>{props.lang_trade_dest_less}</label>
-						<div class="field is-grouped">
-							<Input
-								placeholder= '10000000'
-								value={ destination_wood }
-								onChange={ e => this.setState({ destination_wood: e.target.value }) }
-								style={ input_style }
-								parent_field = { false }
-							/>
-							<Input
-								placeholder= '10000000'
-								value={ destination_clay }
-								onChange={ e => this.setState({ destination_clay: e.target.value }) }
-								style={ input_style }
-								parent_field = { false }
-							/>
-							<Input
-								placeholder= '10000000'
-								value={ destination_iron }
-								onChange={ e => this.setState({ destination_iron: e.target.value }) }
-								style={ input_style }
-								parent_field = { false }
-							/>
-							<Input
-								placeholder= '10000000'
-								value={ destination_crop }
-								onChange={ e => this.setState({ destination_crop: e.target.value }) }
-								style={ input_style }
-								parent_field = { false }
-							/>
+						<div className='column'>
+
+							<label class='label'>{props.lang_trade_dest_less}</label>
+							<div class="field is-grouped">
+								<Input
+									placeholder= '10000000'
+									value={ destination_wood }
+									onChange={ e => this.setState({ destination_wood: e.target.value }) }
+									style={ input_style }
+									parent_field = { false }
+								/>
+								<Input
+									placeholder= '10000000'
+									value={ destination_clay }
+									onChange={ e => this.setState({ destination_clay: e.target.value }) }
+									style={ input_style }
+									parent_field = { false }
+								/>
+								<Input
+									placeholder= '10000000'
+									value={ destination_iron }
+									onChange={ e => this.setState({ destination_iron: e.target.value }) }
+									style={ input_style }
+									parent_field = { false }
+								/>
+								<Input
+									placeholder= '10000000'
+									value={ destination_crop }
+									onChange={ e => this.setState({ destination_crop: e.target.value }) }
+									style={ input_style }
+									parent_field = { false }
+								/>
+							</div>
+
 						</div>
 
-					</div>
+					</fieldset>
 
 				</div>
 
