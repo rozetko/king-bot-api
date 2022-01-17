@@ -1,7 +1,6 @@
 import api from './api';
 import settings from './settings';
-import { log, sleep } from './util';
-import { Ivillage, Ifarmlist, Iunits, Iplayer } from './interfaces';
+import { Iunits, Iplayer } from './interfaces';
 import { tribe } from './data';
 import server from './server';
 import logger from './logger';
@@ -46,7 +45,6 @@ class kingbot {
 		if (!email || !password || !gameworld) {
 			logger.error('please provide email, password and gameworld', 'login');
 			process.exit();
-			return;
 		}
 
 		logger.info('start login...', 'login');

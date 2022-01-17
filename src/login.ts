@@ -32,6 +32,7 @@ async function manage_login(
 	let db_sitter_type = database.get('account.sitter_type').value();
 	let db_sitter_name = database.get('account.sitter_name').value();
 
+	let is_logged: boolean = false;
 	if (db_email === email) {
 		logger.info('found lobby session in database...', 'login');
 
@@ -52,23 +53,33 @@ async function manage_login(
 				axios.defaults.headers.common['Cookie'] += cookies_gameworld;
 				if (await test_gameworld_connection(axios, gameworld, session_gameworld)) {
 					logger.info('database gameworld connection successful', 'login');
-					return;
+					is_logged = true;
 				} else {
 					logger.warn('database connection to gameworld failed', 'login');
 				}
 			}
 
-			await login_to_gameworld(axios, gameworld, sitter_type, sitter_name, msid, session_lobby);
-			return;
+			if (!is_logged) {
+				await login_to_gameworld(axios, gameworld, sitter_type, sitter_name, msid, session_lobby);
+				is_logged = true;
+			}
 		} else {
 			logger.warn('database connection to lobby failed', 'login');
 		}
 	}
 
 
-	const { msid, session_lobby } = await login_to_lobby(axios, email, password);
+	if (!is_logged) {
+		const { msid, session_lobby } = await login_to_lobby(axios, email, password);
 
-	await login_to_gameworld(axios, gameworld, sitter_type, sitter_name, msid, session_lobby);
+		await login_to_gameworld(axios, gameworld, sitter_type, sitter_name, msid, session_lobby);
+		is_logged = true;
+	}
+
+	if (is_logged) {
+		// set avatar name
+		settings.avatar_name = database.get('account.avatar_name').value();
+	}
 
 	return;
 }
@@ -163,15 +174,17 @@ async function login_to_gameworld(
 	gameworld = gameworld.toLowerCase();
 
 	let mellonURL: string;
-
+	let avatar_name: string;
 	if (sitter_type && sitter_name) {
 		// login to sitter or dual account
 		let avatarID: string = await get_avatar_id(axios, session_lobby, gameworld, sitter_type, sitter_name);
 		mellonURL = `https://mellon-t5.traviangames.com/game-world/join-as-guest/avatarId/${avatarID}?msname=msid&msid=${msid}`;
+		avatar_name = sitter_name;
 	} else {
 		// login to normal gameworld
 		let gameworldID: string = await get_gameworld_id(axios, session_lobby, gameworld);
 		mellonURL = `https://mellon-t5.traviangames.com/game-world/join/gameWorldId/${gameworldID}?msname=msid&msid=${msid}`;
+		avatar_name = await get_avatar_name(axios, session_lobby, gameworld);
 	}
 
 	try {
@@ -222,6 +235,7 @@ async function login_to_gameworld(
 	database.set('account.gameworld', gameworld).write();
 	database.set('account.sitter_type', sitter_type).write();
 	database.set('account.sitter_name', sitter_name).write();
+	database.set('account.avatar_name', avatar_name).write();
 
 	return { session_gameworld, token_gameworld, cookies_gameworld };
 }
@@ -279,6 +293,31 @@ async function get_gameworld_id(axios: AxiosInstance, session: string, gameworld
 	});
 
 	return gameworld_id;
+}
+
+async function get_avatar_name(axios: AxiosInstance, session: string, gameworld_string: string): Promise<string> {
+	const payload: object = {
+		action: 'get',
+		controller: 'cache',
+		params: {
+			names: ['Collection:Avatar:']
+		},
+		session
+	};
+
+	const res: AxiosResponse = await axios.post(lobby_endpoint, payload);
+
+	let gameworlds: any = clash_obj(res.data, 'cache', 'response');
+	gameworlds = gameworlds[0].data;
+
+	let avatar_name: string = '';
+
+	gameworlds.forEach((x: any) => {
+		if (x.data.worldName.toLowerCase() === gameworld_string)
+			avatar_name = x.data.avatarName;
+	});
+
+	return avatar_name;
 }
 
 async function get_avatar_id(

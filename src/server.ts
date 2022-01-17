@@ -156,7 +156,8 @@ class server {
 			if (ident == 'settings') {
 				res.send({
 					email: settings.email,
-					gameworld: settings.gameworld
+					gameworld: settings.gameworld,
+					avatar_name: settings.avatar_name
 				});
 
 				return;
