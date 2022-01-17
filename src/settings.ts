@@ -15,6 +15,7 @@ class settings {
 	email: string;
 	sitter_type: string;
 	sitter_name: string;
+	avatar_name: string;
 	ip: string;
 
 	async init(): Promise<void> {
