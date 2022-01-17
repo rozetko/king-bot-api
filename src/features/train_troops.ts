@@ -89,18 +89,29 @@ class train_feature extends feature_item {
 		return 'train_troops';
 	}
 
+	async run(): Promise<void> {
+		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
+
+		while (this.options.run) {
+			const { village_id, interval_min, interval_max } = this.options;
+			if (!village_id) {
+				logger.error('aborted feature because is not configured', this.params.name);
+				this.options.error = true;
+				break;
+			}
+			await this.train_troops();
+			if (this.options.error)
+				break;
+			await sleep(get_random_int(interval_min, interval_max));
+		}
+
+		this.running = false;
+		this.options.run = false;
+		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
+	}
+
 	async train_troops(): Promise<void> {
 		const { village_id, village_name, unit, unit_name, amount } = this.options;
-
-		if (!village_id) {
-			logger.error('aborted feature because is not configured', this.params.name);
-
-			logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
-			this.running = false;
-			this.options.run = false;
-			this.options.error = true;
-			return;
-		}
 
 		// get village
 		const villages_data: any = await village.get_own();
@@ -174,20 +185,6 @@ class train_feature extends feature_item {
 			`with a cost of wood: ${total_training_cost[0]}, clay: ${total_training_cost[1]}, iron: ${total_training_cost[2]}`,
 			this.params.name);
 		return;
-	}
-
-	async run(): Promise<void> {
-		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
-
-		while (this.options.run) {
-			const { interval_min, interval_max } = this.options;
-			await this.train_troops();
-			await sleep(get_random_int(interval_min, interval_max));
-		}
-
-		this.running = false;
-		this.options.run = false;
-		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
 	}
 
 	building_type(unit: number): number {

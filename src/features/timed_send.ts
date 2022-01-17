@@ -188,17 +188,30 @@ class timed_send_feature extends feature_item {
 	async run(): Promise<void> {
 		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
-		var { village_id, village_name,
+		let loop = 0;
+		while (this.options.run) {
+			const { village_id } = this.options;
+			if (!village_id) {
+				logger.error('aborted feature because is not configured', this.params.name);
+				this.options.error = true;
+				break;
+			}
+			await this.timed_send(++loop);
+			if (this.options.error)
+				break;
+		}
+
+		this.running = false;
+		this.options.run = false;
+		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
+	}
+
+	async timed_send(loop: number): Promise<void> {
+		const { village_id, village_name,
 			target_village_id, target_village_name,
 			mission_type, mission_type_name,
 			arrival_date, arrival_time, date, time,
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 } = this.options;
-
-		if (!village_id) {
-			logger.error('aborted feature because is not configured', this.params.name);
-			this.options.error = true;
-			return this.exit();
-		}
 
 		const units: Iunits = {
 			1: Number(t1),
@@ -222,7 +235,7 @@ class timed_send_feature extends feature_item {
 			logger.error(`aborted timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
 			'because no units have been defined', this.params.name);
 			this.options.error = true;
-			return this.exit();
+			return;
 		}
 
 		const player_data: Iplayer = await player.get();
@@ -231,109 +244,97 @@ class timed_send_feature extends feature_item {
 		const arrival_time_ms = new Date(arrival_date + 'T' + arrival_time + 'Z').getTime();
 		const player_time_ms = new Date(date + 'T' + time + 'Z').getTime();
 
-		let loop = 0;
-		while (this.options.run) {
-			this.set_options(this.options);
-			loop++;
+		// check target
+		const target_data: Itarget = await api.check_target(village_id, target_village_id, mission_type);
+		let target_durations: Idurations = target_data.durations;
 
-			// check target
-			const target_data: Itarget = await api.check_target(village_id, target_village_id, mission_type);
-			let target_durations: Idurations = target_data.durations;
-
-			// set duration by the lowest speed
-			var speed = 100;
-			var duration = 0;
-			for (var key in units) {
-				if (Object.prototype.hasOwnProperty.call(units, Number(key))) {
-					if (units[key] > 0) {
-						// hero speed
-						if (key == '11') {
-							let hero_speed = (await hero.get()).speed;
-							if (hero_speed < speed) {
-								duration = target_durations[key];
-								duration = duration * 1000; // to ms
-								speed = hero_speed;
-							}
-							continue;
-						}
-						// unit speed
-						if (Number(unit_types[own_tribe][key].speed) < speed) {
+		// set duration by the lowest speed
+		var speed = 100;
+		var duration = 0;
+		for (var key in units) {
+			if (Object.prototype.hasOwnProperty.call(units, Number(key))) {
+				if (units[key] > 0) {
+					// hero speed
+					if (key == '11') {
+						let hero_speed = (await hero.get()).speed;
+						if (hero_speed < speed) {
 							duration = target_durations[key];
-							logger.debug(duration, this.params.name);
-							logger.debug(`duration: ${duration} with ${mission_type_name} from ${village_name} to ${target_village_name}`, this.params.name);
 							duration = duration * 1000; // to ms
-							speed = Number(unit_types[own_tribe][key].speed);
-							continue;
+							speed = hero_speed;
 						}
+						continue;
+					}
+					// unit speed
+					if (Number(unit_types[own_tribe][key].speed) < speed) {
+						duration = target_durations[key];
+						duration = duration * 1000; // to ms
+						speed = Number(unit_types[own_tribe][key].speed);
+						continue;
 					}
 				}
-			}
-
-			// set times
-			var send_time_ms = arrival_time_ms - duration;
-			var current_time_ms = Date.now();
-			var diff_time_ms = send_time_ms - current_time_ms;
-			var duration_short = this.get_duration(duration);
-
-			// debug
-			logger.debug(`[${loop}] arrival time: ${logger.get_timestamp(new Date(arrival_time_ms))} | ` +
-			`duration: ${duration_short} | ` +
-			`send: ${logger.get_timestamp(new Date(send_time_ms))} | ` +
-			`left: ${Math.floor(diff_time_ms / 1000)} seconds`, this.params.name);
-
-			if (send_time_ms < current_time_ms + 2000) {
-
-				if (send_time_ms <= current_time_ms) {
-
-					// check hero
-					let send_hero: boolean = t11 > 0;
-					if (send_hero) {
-
-						// get hero data
-						const hero_data: Ihero = await hero.get();
-
-						if (hero_data.isMoving || hero_data.status != hero_status.idle)
-						{
-							logger.error(`aborted timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
-							`because the hero is ${hero.get_hero_status(hero_data.status)}`, this.params.name);
-							break; // stop
-						}
-						if (hero_data.villageId != village_id) {
-							logger.error(`aborted timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
-							'because the hero is not from this village', this.params.name);
-							break; // stop
-						}
-					}
-
-					// send units
-					var response: any = await api.send_units(village_id, target_village_id, units, mission_type);
-					if (response.errors) {
-						for (let error of response.errors)
-							logger.error(`timed ${mission_type_name} from ${village_name} to ${target_village_name} failed: ${error.message}`, this.params.name);
-						break; // stop
-					}
-					logger.info(`sent timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
-					`arriving on ${logger.get_timestamp(new Date(player_time_ms))} ` +
-					`(duration: ${duration_short})`, this.params.name);
-					break; // stop
-				}
-				else {
-					await sleep(1);	// sleep 1 second
-				}
-			}
-			else {
-				// sleep until the time difference, in seconds
-				await sleep(Math.floor(diff_time_ms / 1000));
 			}
 		}
 
-		this.exit();
-	}
+		// set times
+		var send_time_ms = arrival_time_ms - duration;
+		var current_time_ms = Date.now();
+		var diff_time_ms = send_time_ms - current_time_ms;
+		var duration_short = this.get_duration(duration);
 
-	exit(): void {
-		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
-		this.running = false;
-		this.options.run = false;
+		// debug
+		logger.debug(`[${loop}] arrival time: ${logger.get_timestamp(new Date(arrival_time_ms))} | ` +
+		`duration: ${duration_short} | ` +
+		`send: ${logger.get_timestamp(new Date(send_time_ms))} | ` +
+		`left: ${Math.floor(diff_time_ms / 1000)} seconds`, this.params.name);
+
+		if (send_time_ms < current_time_ms + 2000) {
+
+			if (send_time_ms <= current_time_ms) {
+
+				// check hero
+				let send_hero: boolean = t11 > 0;
+				if (send_hero) {
+
+					// get hero data
+					const hero_data: Ihero = await hero.get();
+
+					if (hero_data.isMoving || hero_data.status != hero_status.idle)
+					{
+						logger.error(`aborted timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
+						`because the hero is ${hero.get_hero_status(hero_data.status)}`, this.params.name);
+						this.options.error = true;
+						return; // stop
+					}
+					if (hero_data.villageId != village_id) {
+						logger.error(`aborted timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
+						'because the hero is not from this village', this.params.name);
+						this.options.error = true;
+						return; // stop
+					}
+				}
+
+				// send units
+				var response: any = await api.send_units(village_id, target_village_id, units, mission_type);
+				if (response.errors) {
+					for (let error of response.errors)
+						logger.error(`timed ${mission_type_name} from ${village_name} to ${target_village_name} failed: ${error.message}`, this.params.name);
+					this.options.error = true;
+					return; // stop
+				}
+				logger.info(`sent timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
+				`arriving on ${logger.get_timestamp(new Date(player_time_ms))} ` +
+				`(duration: ${duration_short})`, this.params.name);
+				this.options.error = false;
+				return; // stop
+			}
+			else {
+				await sleep(1);	// sleep 1 second
+			}
+		}
+		else {
+			// sleep until the time difference, in seconds
+			await sleep(Math.floor(diff_time_ms / 1000));
+		}
 	}
 
 	get_duration(duration: number): string {

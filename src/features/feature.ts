@@ -334,12 +334,17 @@ export abstract class feature_item {
 		this.set_options({ ...this.get_options(), run: false });
 	}
 
+	save(): void {
+		database.set(`${this.params.ident}.options`, [this.get_options()]).write();
+	}
+
 	async start(): Promise<void> {
 		this.set_options({ ...this.get_options(), run: true });
 
 		try {
 			this.running = true;
 			await this.run();
+			this.save();
 		} catch (error:any) {
 			logger.error(error.message, 'feature_item');
 			if (error.stack)

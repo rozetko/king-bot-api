@@ -543,6 +543,7 @@ export default class TimedSend extends Component {
 											onChange={ async e => {
 												this.setState({ t11: e.target.checked ? 1 : 0 });
 											} }
+											checked={ t11 > 0 }
 										/>
 									</td>
 								</tr>
