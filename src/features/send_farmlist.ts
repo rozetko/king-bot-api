@@ -117,29 +117,30 @@ class farm_feature extends feature_item {
 					continue;
 				}
 
+				// cleaning was desired
 				if (losses_farmlist != '') {
 					const losses_list_obj = farming.find(losses_farmlist, response);
 					const losses_id = losses_list_obj.listId;
 					await clean_farmlist(list_obj.listId, losses_id);
 				}
 
-				if (!farmlists_to_send[village_id]) {
+				// add the list.
+				if (!farmlists_to_send[village_id])
 					farmlists_to_send[village_id] = [];
-				}
-
-				farmlists_to_send[village_id].push(list_obj.listId); // No cleaning was desired so just add the list.
+				farmlists_to_send[village_id].push(list_obj.listId);
 			}
 
-			for (var village_id in farmlists_to_send) {
-				if (Object.prototype.hasOwnProperty.call(farmlists_to_send, village_id)) {
-					var farmlist_ids = farmlists_to_send[village_id];
-					const village_id_num: number = parseInt(village_id);
-					await api.send_farmlists(farmlist_ids, village_id_num);
-					await sleep(get_random_int(.75, 1.25));
+			if (Object.keys(farmlists_to_send).length > 0) {
+				for (var village_id in farmlists_to_send) {
+					if (Object.prototype.hasOwnProperty.call(farmlists_to_send, village_id)) {
+						var farmlist_ids = farmlists_to_send[village_id];
+						const village_id_num: number = parseInt(village_id);
+						await api.send_farmlists(farmlist_ids, village_id_num);
+						await sleep(get_random_int(.75, 1.25));
+					}
 				}
+				logger.info('farmlists sent', this.params.name);
 			}
-
-			logger.info('farmlists sent', this.params.name);
 
 			await sleep(get_random_int(interval_min, interval_max));
 		}
