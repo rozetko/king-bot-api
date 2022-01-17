@@ -164,11 +164,13 @@ class trade_feature extends feature_item {
 				await this.trade_own_route();
 			else
 				await this.trade_external_route();
+			if (this.options.error)
+				break;
 		}
 
-		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
 		this.running = false;
 		this.options.run = false;
+		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
 	}
 
 	async trade_own_route(): Promise<void> {

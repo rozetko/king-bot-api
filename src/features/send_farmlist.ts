@@ -89,7 +89,6 @@ class farm_feature extends feature_item {
 		const response = await api.get_cache(params);
 
 		while (this.options.run) {
-
 			const { interval_min, interval_max, farmlists, losses_farmlist } = this.options;
 
 			if (!interval_min) {
@@ -145,9 +144,9 @@ class farm_feature extends feature_item {
 			await sleep(get_random_int(interval_min, interval_max));
 		}
 
-		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
 		this.running = false;
 		this.options.run = false;
+		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
 	}
 }
 

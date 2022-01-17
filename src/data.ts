@@ -45,6 +45,13 @@ export enum time_format {
 	iso = 3
 }
 
+export enum troops_status {
+	stationary = 0,
+	moving = 1,
+	trapped = 2,
+	elsewhere = 3
+}
+
 export const default_Iunits = { 1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0 };
 
 export const building_types: { [index: number]: string } = {

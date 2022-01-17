@@ -1,5 +1,6 @@
-import { Itroops_collection } from '../interfaces';
 import { find_state_data } from '../util';
+import { Itroops_collection } from '../interfaces';
+import { troops_status } from '../data';
 import api from '../api';
 
 class troops {
@@ -31,13 +32,6 @@ class troops {
 
 		return troops_data;
 	}
-}
-
-export enum troops_status {
-	stationary = 0,
-	moving = 1,
-	trapped = 2,
-	elsewhere = 3
 }
 
 export default new troops();

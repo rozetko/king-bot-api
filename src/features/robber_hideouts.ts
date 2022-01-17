@@ -2,10 +2,9 @@ import { find_state_data, sleep, get_random_int } from '../util';
 import { Iunits, Ihero, Ivillage, Imap_details, Itroops_collection } from '../interfaces';
 import { feature_collection, feature_item, Ioptions } from './feature';
 import { hero, village, troops } from '../gamedata';
-import { hero_status, mission_type } from '../data';
+import { hero_status, mission_type, troops_status } from '../data';
 import api from '../api';
 import logger from '../logger';
-import { troops_status } from '../gamedata/troops';
 
 interface Ioptions_robber_hideouts extends Ioptions {
 	village_name: string,
@@ -143,20 +142,43 @@ class robber_feature extends feature_item {
 		return 'robber_hideouts';
 	}
 
+	async run(): Promise<void> {
+		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
+
+		while (this.options.run) {
+			const { village_id, interval_min, interval_max, t11 } = this.options;
+			if (!village_id) {
+				logger.error('aborted feature because is not configured', this.params.name);
+				this.options.error = true;
+				break;
+			}
+			this.send_hero = t11 > 0;
+			const robber: Ivillage = await this.check_robber();
+			if (robber) {
+				let troops_busy: boolean = await this.check_troops();
+				if (troops_busy)
+					logger.info('aborted send because the troops are busy right now', this.params.name);
+				else {
+					await this.send_troops(robber);
+					if (this.options.error)
+						break;
+				}
+			}
+			else {
+				logger.info('no robber hideouts at this time, will check again later', this.params.name);
+			}
+			await sleep(get_random_int(interval_min, interval_max));
+		}
+
+		this.running = false;
+		this.options.run = false;
+		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
+	}
+
 	async send_troops(robber_village: Ivillage): Promise<void> {
 		const { village_name, village_id,
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11,
 			mission_type, mission_type_name } = this.options;
-
-		if (!village_id) {
-			logger.error('aborted feature because is not configured', this.params.name);
-
-			logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
-			this.running = false;
-			this.options.run = false;
-			this.options.error = true;
-			return;
-		}
 
 		const units: Iunits = {
 			1: Number(t1),
@@ -179,6 +201,7 @@ class robber_feature extends feature_item {
 		{
 			logger.error(`aborted robber hideouts on village ${village_name} ` +
 			'because no units have been defined', this.params.name);
+			this.options.error = true;
 			return;
 		}
 		// TODO: no units available to sent
@@ -221,34 +244,6 @@ class robber_feature extends feature_item {
 
 		logger.info(`sent ${mission_type_name.toLowerCase()} from ${village_name} to ${robber_village.name}${hero_sent}`, this.params.name);
 		return;
-	}
-
-	async run(): Promise<void> {
-		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
-
-		while (this.options.run) {
-			const { interval_min, interval_max, t11 } = this.options;
-
-			this.send_hero = t11 > 0;
-
-			const robber: Ivillage = await this.check_robber();
-			if (robber) {
-				let troops_busy: boolean = await this.check_troops();
-				if (troops_busy)
-					logger.info('aborted send because the troops are busy right now', this.params.name);
-				else
-					await this.send_troops(robber);
-			}
-			else {
-				logger.info('no robber hideouts at this time, will check again later', this.params.name);
-			}
-
-			await sleep(get_random_int(interval_min, interval_max));
-		}
-
-		this.running = false;
-		this.options.run = false;
-		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
 	}
 
 	// TODO: player.getRobberVillagesAmount
