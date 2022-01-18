@@ -324,6 +324,7 @@ class timed_send_feature extends feature_item {
 				logger.info(`sent timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
 				`arriving on ${logger.get_timestamp(new Date(player_time_ms))} ` +
 				`(duration: ${duration_short})`, this.params.name);
+				this.options.run = false;
 				return; // stop
 			}
 			else {
