@@ -8,32 +8,33 @@ export default ({
 	onChange2, onChange1,
 	class1,
 	class2,
-	type, width = '7.5em',
-	style = { width },
-	parent_style, icon, button, help
+	type, type1, type2,
+	width = '7.5em', style = { width },
+	icon, icon1, icon2,
+	parent_style, button, help
 }) => (
 	<div class="field"{ ...parent_style ? { style: parent_style } : {} }>
 		{ label && (<label class="label">{ label }</label>) }
 		<div class="field is-grouped">
 			<Input
 				className = { class1 }
-				type = { type }
+				type = { type1 ? type1 : type }
 				placeholder={ placeholder1 }
 				value={ value1 }
 				onChange={ onChange1 }
 				style={ style }
 				parent_field = { false }
-				icon = { icon }
+				icon = { icon1 ? icon1 : icon }
 			/>
 			<Input
 				className = { class2 }
-				type = { type }
+				type = { type2 ? type2 : type }
 				placeholder={ placeholder2 }
 				value={ value2 }
 				onChange={ onChange2 }
 				style={ style }
 				parent_field = { false }
-				icon = { icon }
+				icon = { icon2 ? icon2 : icon }
 			/>
 			{ button && (<p class='control'>{ button }</p>) }
 		</div>
