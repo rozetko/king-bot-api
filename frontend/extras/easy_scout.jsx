@@ -22,11 +22,13 @@ export default class EasyScout extends Component {
 		error_amount: false
 	};
 
-	componentDidMount() {
+	componentWillMount() {
 		this.setState({
-			...this.props.feature
+			...this.props.feature,
 		});
+	}
 
+	componentDidMount() {
 		axios.get('/api/data?ident=villages').then(res => this.setState({ all_villages: res.data }));
 		axios.get('/api/data?ident=farmlists').then(res => this.setState({ all_farmlists: res.data }));
 	}

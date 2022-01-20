@@ -37,7 +37,7 @@ export default class BuildingQueue extends Component {
 			option.setAttribute('village_name', this.state.village_name);
 			var select = document.createElement('select');
 			select.options.add(option);
-			this.village_changes({
+			this.set_village({
 				target: select
 			});
 		}
@@ -64,7 +64,7 @@ export default class BuildingQueue extends Component {
 		route('/');
 	}
 
-	async village_changes(e) {
+	async set_village(e) {
 		if (!e.target.value) return;
 
 		this.setState({
@@ -226,7 +226,7 @@ export default class BuildingQueue extends Component {
 						<div class='field is-grouped'>
 							<Select
 								value = { village_id }
-								onChange={ this.village_changes.bind(this) }
+								onChange={ this.set_village.bind(this) }
 								options = { villages }
 								className = { village_select_class }
 								parent_field = { false }

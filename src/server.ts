@@ -5,16 +5,16 @@ import api from './api';
 import settings from './settings';
 import logger from './logger';
 import { inactive_finder } from './extras';
-import { building_types, tribe, unit_types } from './data';
+import { building_types, tribe, troops_status, troops_type, unit_types } from './data';
 import { Ifeature_params, feature } from './features/feature';
-import { Ivillage, Ibuilding, Iplayer } from './interfaces';
+import { Ivillage, Ibuilding, Iplayer, Iunits } from './interfaces';
 import { find_state_data } from './util';
 import {
 	raise_fields, building_queue,
 	finish_earlier, auto_adventure, send_farmlist,
 	trade_route, timed_send, train_troops, robber_hideouts
 } from './features';
-import { farming, village, player } from './gamedata';
+import { farming, village, player, troops } from './gamedata';
 import database from './database';
 
 class server {
@@ -78,14 +78,12 @@ class server {
 			if (ident == 'villages') {
 				const villages = await village.get_own();
 				const data = find_state_data(village.collection_own_ident, villages);
-
 				res.send(data);
 				return;
 			}
 
 			if (ident == 'worldwonders') {
 				const response = await api.get_world_wonders();
-
 				res.send(response.results);
 				return;
 			}
@@ -93,7 +91,6 @@ class server {
 			if (ident == 'farmlists') {
 				const farmlists = await farming.get_own();
 				const data = find_state_data(farming.farmlist_ident, farmlists);
-
 				res.send(data);
 				return;
 			}
@@ -101,7 +98,6 @@ class server {
 			if (ident == 'player_tribe') {
 				const player_data: Iplayer = await player.get();
 				const data: tribe = player_data.tribeId;
-
 				res.send(data);
 				return;
 			}
@@ -109,24 +105,18 @@ class server {
 			if (ident == 'player_settings') {
 				const player_data: Iplayer = await player.get();
 				const settings_ident: string = 'Settings:' + player_data.playerId;
-
 				const response: any[] = await api.get_cache([settings_ident]);
 				const settings_data = find_state_data(settings_ident, response);
-
 				res.send(settings_data);
 				return;
 			}
 
 			if (ident == 'buildings') {
 				const { village_id } = req.query;
-
 				const queue_ident: string = village.building_collection_ident + village_id;
-
 				const response: any[] = await api.get_cache([queue_ident]);
-
 				const rv = [];
 				const data = find_state_data(queue_ident, response);
-
 				for (let bd of data) {
 					const build: Ibuilding = bd.data;
 
@@ -134,9 +124,7 @@ class server {
 						if (Number(build.lvl) > 0)
 							rv.push(build);
 				}
-
 				res.send(rv);
-
 				return;
 			}
 
@@ -144,14 +132,19 @@ class server {
 				const { village_id } = req.query;
 				const village_data = await village.get_own();
 				const village_obj: Ivillage = village.find(village_id, village_data);
-
 				res.send(village_obj);
-
 				return;
 			}
 
 			if (ident == 'building_types') {
 				res.send(building_types);
+				return;
+			}
+
+			if (ident == 'units') {
+				const { village_id } = req.query;
+				const units: Iunits = await troops.get_units(village_id, troops_type.stationary, troops_status.home);
+				res.send(units);
 				return;
 			}
 
@@ -166,7 +159,6 @@ class server {
 					gameworld: settings.gameworld,
 					avatar_name: settings.avatar_name
 				});
-
 				return;
 			}
 
