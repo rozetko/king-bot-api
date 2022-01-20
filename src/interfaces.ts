@@ -353,7 +353,7 @@ export interface Itroops {
 	filter: string,
 	villageIdSupply: number,
 	status: string,
-	units: [],
+	units: Iunits,
 	supplyTroops: number,
 	capacity: number,
 	movement: Imovement

@@ -2,7 +2,7 @@ import { find_state_data, sleep, get_random_int } from '../util';
 import { Iunits, Ihero, Ivillage, Imap_details, Itroops_collection } from '../interfaces';
 import { feature_collection, feature_item, Ioptions } from './feature';
 import { hero, village, troops } from '../gamedata';
-import { hero_status, mission_type, troops_status } from '../data';
+import { hero_status, mission_type, troops_type } from '../data';
 import api from '../api';
 import logger from '../logger';
 
@@ -195,6 +195,8 @@ class robber_feature extends feature_item {
 		};
 
 		// check units
+		// TODO: adding a unit index of -1 will send all units with max number to this farm.
+		// adding a unit value of -1 will send all units of this type to this farm.
 		if (units[1]==0 && units[2]==0 && units[3]==0 && units[4]==0 &&
 			units[5]==0 && units[6]==0 && units[7]==0 && units[8]==0 &&
 			units[9]==0 && units[10]==0 && units[11]==0)
@@ -267,14 +269,14 @@ class robber_feature extends feature_item {
 		// return any that still has robbers
 		if (robber1.hasNPC != 0) {
 
-			if (robber1.npcInfo.troops.units.length == 0)
+			if (robber1.npcInfo.troops.units == null)
 				this.send_hero = false;
 
 			return robber1_village;
 		}
 		if (robber2.hasNPC != 0) {
 
-			if (robber2.npcInfo.troops.units.length == 0)
+			if (robber2.npcInfo.troops.units == null)
 				this.send_hero = false;
 
 			return robber2_village;
@@ -292,7 +294,7 @@ class robber_feature extends feature_item {
 		const robber1_village: Ivillage = find_state_data(village.ident + robber1_village_id, villages_data);
 		const robber2_village: Ivillage = find_state_data(village.ident + robber2_village_id, villages_data);
 
-		const troops_collection: Itroops_collection[] = await troops.get(village_id, troops_status.moving);
+		const troops_collection: Itroops_collection[] = await troops.get(village_id, troops_type.moving);
 		for (let troop of troops_collection) {
 			if (troop.data.movement) {
 

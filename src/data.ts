@@ -46,6 +46,11 @@ export enum time_format {
 }
 
 export enum troops_status {
+	home = 'home',
+	support = 'support'
+}
+
+export enum troops_type {
 	stationary = 0,
 	moving = 1,
 	trapped = 2,
