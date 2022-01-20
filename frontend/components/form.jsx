@@ -13,5 +13,5 @@ export const Button = ({ action, className, onClick, style, icon }) => (
 );
 
 export const Help = ({ className = 'help', content, style }) => (
-	<p className={ className } style={ style }>{content}</p>
+	<p className={ className && className.includes('help') ? className : 'help ' + className } style={ style }>{content}</p>
 );
