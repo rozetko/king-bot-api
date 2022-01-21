@@ -1,8 +1,8 @@
 import { sleep } from '../util';
-import { Iunits, Ihero, Iplayer, Itarget, Idurations } from '../interfaces';
+import { Iunits, Ihero, Iplayer, Idurations } from '../interfaces';
 import { feature_collection, feature_item, Ioptions } from './feature';
-import { player, hero } from '../gamedata';
-import { unit_types, tribe, hero_status, mission_type } from '../data';
+import { player, hero, troops } from '../gamedata';
+import { unit_types, tribe, hero_status, mission_type, troops_status, troops_type } from '../data';
 import api from '../api';
 import database from '../database';
 import logger from '../logger';
@@ -88,6 +88,8 @@ class timed_send extends feature_collection {
 
 class timed_send_feature extends feature_item {
 	options: Ioptions_timed_send;
+
+	own_tribe: tribe;
 
 	set_options(options: Ioptions_timed_send): void {
 		const { uuid, run, error, village_name,
@@ -192,15 +194,21 @@ class timed_send_feature extends feature_item {
 	async run(): Promise<void> {
 		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
+		const player_data: Iplayer = await player.get();
+		this.own_tribe = player_data.tribeId;
+
 		let loop = 0;
+
 		while (this.options.run) {
 			const { village_id } = this.options;
 			if (!village_id) {
-				logger.error('aborted feature because is not configured', this.params.name);
+				logger.error('stop feature because is not configured', this.params.name);
 				this.options.error = true;
 				break;
 			}
+
 			await this.timed_send(++loop);
+
 			if (this.options.error)
 				break;
 		}
@@ -212,7 +220,7 @@ class timed_send_feature extends feature_item {
 
 	async timed_send(loop: number): Promise<void> {
 		const { village_id, village_name,
-			target_village_id, target_village_name,
+			target_village_id, target_village_name, target_durations,
 			mission_type, mission_type_name,
 			arrival_date, arrival_time, date, time,
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 } = this.options;
@@ -236,28 +244,19 @@ class timed_send_feature extends feature_item {
 			units[5]==0 && units[6]==0 && units[7]==0 && units[8]==0 &&
 			units[9]==0 && units[10]==0 && units[11]==0)
 		{
-			logger.error(`aborted timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
-			'because no units have been defined', this.params.name);
+			logger.error(`stop timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
+			'because no units have been defined to send', this.params.name);
 			this.options.error = true;
-			return;
+			return;  // stop
 		}
 
-		const player_data: Iplayer = await player.get();
-		const own_tribe: tribe = player_data.tribeId;
-
-		const arrival_time_ms = new Date(arrival_date + 'T' + arrival_time + 'Z').getTime();
-		const player_time_ms = new Date(date + 'T' + time + 'Z').getTime();
-
-		// check target
-		const target_data: Itarget = await api.check_target(village_id, target_village_id, mission_type);
-		let target_durations: Idurations = target_data.durations;
-
-		// set duration by the lowest speed
+		// check target and set duration by the lowest speed
 		var speed = 100;
 		var duration = 0;
 		for (var key in units) {
 			if (Object.prototype.hasOwnProperty.call(units, Number(key))) {
 				if (units[key] > 0) {
+
 					// hero speed
 					if (key == '11') {
 						let hero_speed = (await hero.get()).speed;
@@ -268,77 +267,130 @@ class timed_send_feature extends feature_item {
 						}
 						continue;
 					}
+
 					// unit speed
-					if (Number(unit_types[own_tribe][key].speed) < speed) {
+					if (Number(unit_types[this.own_tribe][key].speed) < speed) {
 						duration = target_durations[key];
 						duration = duration * 1000; // to ms
-						speed = Number(unit_types[own_tribe][key].speed);
+						speed = Number(unit_types[this.own_tribe][key].speed);
 						continue;
 					}
 				}
 			}
 		}
 
-		// set times
-		var send_time_ms = arrival_time_ms - duration;
-		var current_time_ms = Date.now();
-		var diff_time_ms = send_time_ms - current_time_ms;
-		var duration_short = this.get_duration(duration);
+		// arrival time
+		const arrival_time_ms = new Date(arrival_date + 'T' + arrival_time + 'Z').getTime();
+		const player_time_ms = new Date(date + 'T' + time + 'Z').getTime();
 
-		// debug
-		logger.debug(`[${loop}] arrival time: ${logger.get_timestamp(new Date(arrival_time_ms))} | ` +
-		`duration: ${duration_short} | ` +
-		`send: ${logger.get_timestamp(new Date(send_time_ms))} | ` +
-		`left: ${Math.floor(diff_time_ms / 1000)} seconds`, this.params.name);
+		// send time
+		const send_time_ms = arrival_time_ms - duration;
+		const now = Date.now();
+		const offset = 500; // add a offset margin for the current time
+		const current_time_ms = now + offset;
+		const diff_time_ms = send_time_ms - now;
 
-		if (send_time_ms < current_time_ms + 2000) {
+		// only perform checks 5 minutes before
+		const five_minutes_ms = 300000;
+		if (send_time_ms < current_time_ms + five_minutes_ms) {
 
-			if (send_time_ms <= current_time_ms) {
+			// but don't check the last minute
+			const one_minute_ms = 60000;
+			if (send_time_ms >= current_time_ms + one_minute_ms) {
+
+				// check available units to send
+				const units_avaiable: Iunits = await troops.get_units(village_id, troops_type.stationary, troops_status.home);
+				for (var type = 1; type < 11; type++) {
+					if (!units_avaiable[type] || units[type] == 0)
+						continue;
+					if (units[type] > Number(units_avaiable[type])) {
+						logger.error(`timed ${mission_type_name} aborted from ${village_name} to ${target_village_name} `+
+						'because there are not enough units in village to send', this.params.name);
+						this.options.error = true;
+						return;  // stop
+					}
+				}
 
 				// check hero
 				let send_hero: boolean = t11 > 0;
 				if (send_hero) {
-
 					// get hero data
 					const hero_data: Ihero = await hero.get();
 
 					if (hero_data.isMoving || hero_data.status != hero_status.idle)
 					{
-						logger.error(`aborted timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
+						logger.error(`timed ${mission_type_name} aborted from ${village_name} to ${target_village_name} ` +
 						`because the hero is ${hero.get_hero_status(hero_data.status)}`, this.params.name);
 						this.options.error = true;
 						return; // stop
 					}
 					if (hero_data.villageId != village_id) {
-						logger.error(`aborted timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
+						logger.error(`timed ${mission_type_name} aborted from ${village_name} to ${target_village_name} ` +
 						'because the hero is not from this village', this.params.name);
 						this.options.error = true;
 						return; // stop
 					}
 				}
 
+			}
+
+		}
+
+		// debug
+		logger.debug(`[${loop}] ` +
+		`arrival time: ${logger.get_timestamp(new Date(arrival_time_ms))} | ` +
+		`duration: ${this.get_duration(duration)} | ` +
+		`send time: ${logger.get_timestamp(new Date(send_time_ms))} | ` +
+		`time left: ${Math.floor(diff_time_ms / 1000)} seconds (${diff_time_ms} ms)`, this.params.name);
+
+		// less than 2 mins
+		const two_minutes_ms = 120000;
+		if (send_time_ms <= current_time_ms + two_minutes_ms) {
+
+			// less than 2 seconds
+			if (send_time_ms < current_time_ms + 2000) {
+
 				// send units
-				var response: any = await api.send_units(village_id, target_village_id, units, mission_type);
-				if (response.errors) {
-					for (let error of response.errors)
-						logger.error(`timed ${mission_type_name} from ${village_name} to ${target_village_name} failed: ${error.message}`, this.params.name);
+				if (send_time_ms <= current_time_ms) {
+					var response: any = await api.send_units(village_id, target_village_id, units, mission_type);
+					if (response.errors) {
+						for (let error of response.errors)
+							logger.error(`send timed ${mission_type_name} from ${village_name} to ${target_village_name} failed: ${error.message}`, this.params.name);
+						this.options.error = true;
+						return; // stop
+					}
+					logger.info(`sent timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
+					`arriving on ${logger.get_timestamp(new Date(player_time_ms))} ` +
+					`(duration: ${this.get_duration(duration)})`, this.params.name);
+					this.options.run = false;
+					return; // stop
+				}
+
+				// to late
+				if (send_time_ms > current_time_ms) {
+
+					var seconds_late = Math.floor(diff_time_ms / 1000);
+					if (seconds_late < 0) // multiply number with -1 to make it positive
+						seconds_late = seconds_late * -1;
+
+					logger.error(`timed ${mission_type_name} aborted from ${village_name} to ${target_village_name} ` +
+					`because it would not arrive in time with a delay of ${seconds_late} seconds (${diff_time_ms} ms)`, this.params.name);
 					this.options.error = true;
 					return; // stop
 				}
-				logger.info(`sent timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
-				`arriving on ${logger.get_timestamp(new Date(player_time_ms))} ` +
-				`(duration: ${duration_short})`, this.params.name);
-				this.options.run = false;
-				return; // stop
+
+				// sleep 1 second
+				await sleep(1);
+				return;
 			}
-			else {
-				await sleep(1);	// sleep 1 second
-			}
-		}
-		else {
+
 			// sleep until the time difference, in seconds
 			await sleep(Math.floor(diff_time_ms / 1000));
+			return;
 		}
+
+		// sleep up to 2 minutes early
+		await sleep(Math.floor((diff_time_ms - two_minutes_ms) / 1000));
 	}
 
 	get_duration(duration: number): string {
