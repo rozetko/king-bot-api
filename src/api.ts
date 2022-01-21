@@ -82,6 +82,14 @@ class api {
 		return await this.post('getRanking', 'ranking', params);
 	}
 
+	async get_robber_villages_amount(kingdomId: number = 0): Promise<any> {
+		const params = {
+			kingdomId: kingdomId
+		};
+
+		return await this.post('getRobberVillagesAmount', 'player', params);
+	}
+
 	async send_partial_farmlists(listId: number, entryIds: number[], village_id: number): Promise<any> {
 		const params = {
 			listId: listId,

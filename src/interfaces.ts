@@ -130,8 +130,8 @@ export interface Ibuilding {
 	upgradeSupplyUsageSums: { [index: number]: number }
 	category: number
 	sortOrder: number
-	rubble: [] // TODO implement
-	rubbleDismantleTime: [] // TODO implement
+	rubble: Iresources
+	rubbleDismantleTime: number
 	effect: number[]
 }
 

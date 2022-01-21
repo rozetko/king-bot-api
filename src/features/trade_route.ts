@@ -156,7 +156,7 @@ class trade_feature extends feature_item {
 		while (this.options.run) {
 			const { source_village_id, destination_village_id, destination_village_own } = this.options;
 			if (!source_village_id || !destination_village_id) {
-				logger.error('aborted feature because is not configured', this.params.name);
+				logger.error('stop feature because is not configured', this.params.name);
 				this.options.error = true;
 				break;
 			}
