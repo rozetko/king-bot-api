@@ -92,13 +92,13 @@ class farm_feature extends feature_item {
 			const { interval_min, interval_max, farmlists, losses_farmlist } = this.options;
 
 			if (!interval_min) {
-				logger.error('aborted feature because is not configured', this.params.name);
+				logger.error('stop feature because is not configured', this.params.name);
 				this.options.error = true;
 				break;
 			}
 
 			if (farmlists.length == 0) {
-				logger.error('aborted because farmlist is empty', this.params.name);
+				logger.error('stop feature because farmlist is empty', this.params.name);
 				this.options.error = true;
 				break;
 			}

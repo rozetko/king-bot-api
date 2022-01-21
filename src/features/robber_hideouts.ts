@@ -2,7 +2,7 @@ import { find_state_data, sleep, get_random_int } from '../util';
 import { Iunits, Ihero, Ivillage, Imap_details, Itroops_collection } from '../interfaces';
 import { feature_collection, feature_item, Ioptions } from './feature';
 import { hero, village, troops } from '../gamedata';
-import { hero_status, mission_type, troops_type } from '../data';
+import { hero_status, mission_type, troops_status, troops_type } from '../data';
 import api from '../api';
 import logger from '../logger';
 
@@ -148,7 +148,7 @@ class robber_feature extends feature_item {
 		while (this.options.run) {
 			const { village_id, interval_min, interval_max, t11 } = this.options;
 			if (!village_id) {
-				logger.error('aborted feature because is not configured', this.params.name);
+				logger.error('stop feature because is not configured', this.params.name);
 				this.options.error = true;
 				break;
 			}
@@ -157,7 +157,7 @@ class robber_feature extends feature_item {
 			if (robber) {
 				let troops_busy: boolean = await this.check_troops();
 				if (troops_busy)
-					logger.info('aborted send because the troops are busy right now', this.params.name);
+					logger.info('send aborted because the troops are busy right now', this.params.name);
 				else {
 					await this.send_troops(robber);
 					if (this.options.error)
@@ -180,6 +180,7 @@ class robber_feature extends feature_item {
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11,
 			mission_type, mission_type_name } = this.options;
 
+		// TODO: adding a unit index of -1 will send all units with max number
 		const units: Iunits = {
 			1: Number(t1),
 			2: Number(t2),
@@ -194,19 +195,30 @@ class robber_feature extends feature_item {
 			11: Number(t11)
 		};
 
-		// check units
-		// TODO: adding a unit index of -1 will send all units with max number to this farm.
-		// adding a unit value of -1 will send all units of this type to this farm.
+		// check defined units to send
 		if (units[1]==0 && units[2]==0 && units[3]==0 && units[4]==0 &&
 			units[5]==0 && units[6]==0 && units[7]==0 && units[8]==0 &&
 			units[9]==0 && units[10]==0 && units[11]==0)
 		{
-			logger.error(`aborted robber hideouts on village ${village_name} ` +
-			'because no units have been defined', this.params.name);
+			logger.error(`stop robber hideouts on village ${village_name} ` +
+			'because no units have been defined to send', this.params.name);
 			this.options.error = true;
 			return;
 		}
-		// TODO: no units available to sent
+
+		// check available units to send
+		const units_avaiable: Iunits = await troops.get_units(village_id, troops_type.stationary, troops_status.home);
+		for (var type = 1; type < 11; type++) {
+			if (!units_avaiable[type] || units[type] == 0)
+				continue;
+			if (units[type] == -1) { // adding a unit value of -1 will send all units of this type
+				units[type] = units_avaiable[type];
+			}
+			else if (units[type] > Number(units_avaiable[type])) {
+				logger.info('send aborted because there are not enough units in village to send', this.params.name);
+				return;
+			}
+		}
 
 		// check hero
 		if (this.send_hero) {
@@ -216,12 +228,12 @@ class robber_feature extends feature_item {
 
 			if (hero_data.isMoving || hero_data.status != hero_status.idle)
 			{
-				logger.info('aborted send because the hero is ' +
+				logger.info('send aborted because the hero is ' +
 				hero.get_hero_status(hero_data.status), this.params.name);
 				return;
 			}
 			if (hero_data.villageId != village_id) {
-				logger.warn('aborted send because the hero is ' +
+				logger.warn('send aborted because the hero is ' +
 				`not native to the village ${village_name}`, this.params.name);
 				return;
 			}
@@ -240,7 +252,7 @@ class robber_feature extends feature_item {
 		// check errors
 		if (response.errors) {
 			for (let error of response.errors)
-				logger.error(`sent from ${village_name} failed: ${error.message}`, this.params.name);
+				logger.error(`send ${mission_type_name.toLowerCase()} from ${village_name} failed: ${error.message}`, this.params.name);
 			return;
 		}
 
@@ -248,9 +260,14 @@ class robber_feature extends feature_item {
 		return;
 	}
 
-	// TODO: player.getRobberVillagesAmount
 	async check_robber(): Promise<Ivillage> {
 		const { robber1_village_id, robber2_village_id } = this.options;
+
+		// get available robber villages amount (kingdom: 0 = robber hideouts)
+		const response = await api.get_robber_villages_amount(0);
+		const amount: number = response.data;
+		if (amount == 0)
+			return null;
 
 		// get robber villages
 		const village1_ident = village.ident + robber1_village_id;

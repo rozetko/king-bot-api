@@ -84,7 +84,7 @@ class queue extends feature_item {
 		while (this.options.run) {
 			const { village_id } = this.options;
 			if (!village_id) {
-				logger.error('aborted feature because is not configured', this.params.name);
+				logger.error('stop feature because is not configured', this.params.name);
 				this.options.error = true;
 				break;
 			}
