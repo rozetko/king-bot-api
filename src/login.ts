@@ -18,69 +18,58 @@ async function manage_login(
 	sitter_name: string
 ): Promise<any> {
 
+	// get account from database
+	const {
+		db_email, db_gameworld,
+		db_sitter_type, db_sitter_name,
+		db_avatar_name
+	} = database.get('account').value();
+
+	// lowercase names
 	gameworld = gameworld.toLowerCase();
 	sitter_type = sitter_type.toLowerCase();
 	sitter_name = sitter_name.toLowerCase();
 
+	// set values to session
 	settings.email = email;
 	settings.gameworld = gameworld;
 	settings.sitter_name = sitter_name;
 	settings.sitter_type = sitter_type;
+	settings.avatar_name = db_avatar_name;
 
-	let db_email = database.get('account.email').value();
-	let db_gameworld = database.get('account.gameworld').value();
-	let db_sitter_type = database.get('account.sitter_type').value();
-	let db_sitter_name = database.get('account.sitter_name').value();
-
-	let is_logged: boolean = false;
 	if (db_email === email) {
 		logger.info('found lobby session in database...', 'login');
 
-		// get credentials from database
-		const { session_lobby, cookies_lobby, msid } = database.get('account').value();
+		// get lobby session from database
+		const { session_lobby, cookies_lobby } = database.get('account').value();
 
 		axios.defaults.headers.common['Cookie'] = cookies_lobby;
 
 		if (await test_lobby_connection(axios, session_lobby)) {
-			logger.info('database lobby connection successful', 'login');
+			logger.info(`database connection to lobby with account ${email} successful`, 'login');
 
 			if (db_gameworld === gameworld && db_sitter_name === sitter_name && db_sitter_type === sitter_type) {
-				logger.info('found gameworld session in database ...', 'login');
+				logger.info('found gameworld session in database...', 'login');
 
 				// get credentials from database
 				const { session_gameworld, cookies_gameworld } = database.get('account').value();
 
 				axios.defaults.headers.common['Cookie'] += cookies_gameworld;
 				if (await test_gameworld_connection(axios, gameworld, session_gameworld)) {
-					logger.info('database gameworld connection successful', 'login');
-					is_logged = true;
+					logger.info(`database connection to gameworld ${gameworld} successful`, 'login');
+					return;
 				} else {
-					logger.warn('database connection to gameworld failed', 'login');
+					logger.warn(`database connection to gameworld ${gameworld} failed`, 'login');
 				}
 			}
-
-			if (!is_logged) {
-				await login_to_gameworld(axios, gameworld, sitter_type, sitter_name, msid, session_lobby);
-				is_logged = true;
-			}
 		} else {
-			logger.warn('database connection to lobby failed', 'login');
+			logger.warn(`database connection to lobby with account ${email} failed`, 'login');
 		}
 	}
 
-
-	if (!is_logged) {
-		const { msid, session_lobby } = await login_to_lobby(axios, email, password);
-
-		await login_to_gameworld(axios, gameworld, sitter_type, sitter_name, msid, session_lobby);
-		is_logged = true;
-	}
-
-	if (is_logged) {
-		// set avatar name
-		settings.avatar_name = database.get('account.avatar_name').value();
-	}
-
+	// login
+	const { msid, session_lobby } = await login_to_lobby(axios, email, password);
+	await login_to_gameworld(axios, gameworld, sitter_type, sitter_name, msid, session_lobby);
 	return;
 }
 
@@ -123,7 +112,7 @@ async function login_to_lobby(axios: AxiosInstance, email: string, password: str
 		process.exit();
 	}
 
-	logger.info('token: ' + token_lobby, 'login');
+	logger.info('lobby token: ' + token_lobby, 'login');
 
 	options = {
 		method: 'GET',
@@ -143,7 +132,7 @@ async function login_to_lobby(axios: AxiosInstance, email: string, password: str
 
 	let sessionLink: string = cookies.headers.location;
 	session_lobby = sessionLink.substring(sessionLink.lastIndexOf('=') + 1);
-	logger.info('sessionID: ' + session_lobby, 'login');
+	logger.info('lobby sessionID: ' + session_lobby, 'login');
 
 	// last lobby session link, there are no information to get from for now
 	//let lastLobbyURL = 'https://lobby.kingdoms.com/' + sessionLink;
@@ -152,6 +141,7 @@ async function login_to_lobby(axios: AxiosInstance, email: string, password: str
 	logger.info('logged into lobby with account ' + email, 'login');
 
 	// set values to database
+	database.set('account.ip', settings.ip).write();
 	database.set('account.msid', msid).write();
 	database.set('account.token_lobby', token_lobby).write();
 	database.set('account.session_lobby', session_lobby).write();
@@ -190,14 +180,14 @@ async function login_to_gameworld(
 	try {
 		res = await axios.get(mellonURL);
 	} catch {
-		logger.error('error login to gameworld. could you have entered the wrong one?', 'login');
+		logger.error(`error login to gameworld ${gameworld}. could you have entered the wrong one?`, 'login');
 		process.exit();
 	}
 
 	let rv: any = parse_token(res.data);
 
 	token_gameworld = rv.token;
-	logger.info('new token: ' + token_gameworld, 'login');
+	logger.info('gameworld token: ' + token_gameworld, 'login');
 
 	res = await axios.get(rv.url);
 
@@ -220,7 +210,7 @@ async function login_to_gameworld(
 	// get new sessionID
 	let sessionLink = res.headers.location;
 	session_gameworld = sessionLink.substring(sessionLink.lastIndexOf('=') + 1);
-	logger.info('new sessionID: ' + session_gameworld, 'login');
+	logger.info('gameworld sessionID: ' + session_gameworld, 'login');
 
 	// last session link, there are no information to get from for now
 	//let gameworldURL = `https://${gameworld}.kingdoms.com/` + sessionLink;
@@ -236,6 +226,9 @@ async function login_to_gameworld(
 	database.set('account.sitter_type', sitter_type).write();
 	database.set('account.sitter_name', sitter_name).write();
 	database.set('account.avatar_name', avatar_name).write();
+
+	// set avatar_name to session
+	settings.avatar_name = avatar_name;
 
 	return { session_gameworld, token_gameworld, cookies_gameworld };
 }
@@ -281,18 +274,16 @@ async function get_gameworld_id(axios: AxiosInstance, session: string, gameworld
 	};
 
 	const res: AxiosResponse = await axios.post(lobby_endpoint, payload);
+	const gameworlds_obj: any = clash_obj(res.data, 'cache', 'response');
+	const gameworlds = gameworlds_obj[0].data;
 
-	let gameworlds: any = clash_obj(res.data, 'cache', 'response');
-	gameworlds = gameworlds[0].data;
-
-	let gameworld_id: string = '';
-
-	gameworlds.forEach((x: any) => {
+	gameworlds.every((x: any) => {
 		if (x.data.worldName.toLowerCase() === gameworld_string)
-			gameworld_id = x.data.consumersId;
+			return x.data.consumersId;
 	});
 
-	return gameworld_id;
+	logger.error(`gameworld: ${gameworld_string} do not match with any sitter spot.`, 'login');
+	process.exit();
 }
 
 async function get_avatar_name(axios: AxiosInstance, session: string, gameworld_string: string): Promise<string> {
@@ -306,18 +297,16 @@ async function get_avatar_name(axios: AxiosInstance, session: string, gameworld_
 	};
 
 	const res: AxiosResponse = await axios.post(lobby_endpoint, payload);
+	const gameworlds_obj: any = clash_obj(res.data, 'cache', 'response');
+	const gameworlds = gameworlds_obj[0].data;
 
-	let gameworlds: any = clash_obj(res.data, 'cache', 'response');
-	gameworlds = gameworlds[0].data;
-
-	let avatar_name: string = '';
-
-	gameworlds.forEach((x: any) => {
+	gameworlds.every((x: any) => {
 		if (x.data.worldName.toLowerCase() === gameworld_string)
-			avatar_name = x.data.avatarName;
+			return x.data.avatarName;
 	});
 
-	return avatar_name;
+	logger.error(`gameworld: ${gameworld_string} do not match with any sitter spot.`, 'login');
+	process.exit();
 }
 
 async function get_avatar_id(
@@ -327,7 +316,6 @@ async function get_avatar_id(
 	sitter_type: string,
 	sitter_name: string
 ): Promise<string> {
-
 	// ignore sitter type for now
 
 	// there are only 4 sitter spots right now, but just to be safe
@@ -389,7 +377,8 @@ async function test_gameworld_connection(axios: AxiosInstance, gameworld: string
 	};
 
 	try {
-		const response = await axios.post(`https://${gameworld}.kingdoms.com/api/?c=cache&a=get&t${Date.now()}`, payload);
+		const gameworld_endpoint = `https://${gameworld}.kingdoms.com/api/?c=cache&a=get&t${Date.now()}`;
+		const response = await axios.post(gameworld_endpoint, payload);
 		return !response.data.error;
 	} catch { return false; }
 }
