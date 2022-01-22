@@ -1,13 +1,23 @@
-# ignore credentials
+# Ignore credentials
 cred.txt
-dist/
-.DS_Store
+
+# Custom Main JS
 custom_main.js
+
+# Build & Release folders
+dist/
 build/
-public/
-electron-dist
 king-bot-api-*
 KingBotApi.dmg
+*.zip
+
+# Build files
+public/bundle.js
+public/bundle.js.LICENSE.txt
+public/index.html
+electron-dist/bundle.js
+electron-dist/bundle.js.LICENSE.txt
+electron-dist/index.html
 
 # Logs
 logs
@@ -76,3 +86,6 @@ typings/
 
 # Visual Studio Code
 /.vscode
+
+# Apple folder custom attributes file
+.DS_Store

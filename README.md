@@ -109,7 +109,7 @@ http://proxy:inthe@secondlineis:optional
 
 this file will be ignored by git so you don't have to be scared to accidentally commit your credentials.
 
-create a file names `own_main.js` which is going to be ignore by git, you can modify it as you wish, without pushing your custom feature set to github.
+create a file names `custom_main.js` which is going to be ignore by git, you can modify it as you wish, without pushing your custom feature set to github.
 
 # thank you for
 

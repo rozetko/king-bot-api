@@ -1,12 +1,20 @@
-# ignore credentials
+# Ignore credentials
 assets/cred.txt
 assets/database.json
-dist/
-dev_main.js
-.DS_Store
-custom_main.js
-build/
 
+# Main JS
+custom_main.js
+sample_main.js
+dev_main.js
+
+# Build & Release folders
+dist/
+build/
+king-bot-api-*
+KingBotApi.dmg
+*.zip
+
+# Package Lock
 package-lock.json
 
 # Logs
@@ -25,3 +33,6 @@ jspm_packages/
 
 # Visual Studio Code
 /.vscode
+
+# Apple folder custom attributes file
+.DS_Store
