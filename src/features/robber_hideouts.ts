@@ -284,14 +284,13 @@ class robber_feature extends feature_item {
 		const robber2: Imap_details = find_state_data(position2_ident, position_data);
 
 		// return any that still has robbers
-		if (robber1.hasNPC != 0) {
-
+		if (robber1.hasNPC != 0 && robber1.npcInfo.troops != null) {
 			if (robber1.npcInfo.troops.units == null)
 				this.send_hero = false;
 
 			return robber1_village;
 		}
-		if (robber2.hasNPC != 0) {
+		if (robber2.hasNPC != 0 && robber2.npcInfo.troops != null) {
 
 			if (robber2.npcInfo.troops.units == null)
 				this.send_hero = false;
