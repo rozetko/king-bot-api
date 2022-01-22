@@ -1,6 +1,6 @@
 # king-bot-api <!-- omit in toc -->
 
-this is a really high performance based bot for [travian kingdoms](https://www.kingdoms.com/) written in typescript.  
+this is a really high performance based bot written in typescript.  
 it's designed to run in a console for better server support.
 
 [![Build Status](https://travis-ci.com/pkeweloh/king-bot-api.svg?branch=master)](https://travis-ci.com/pkeweloh/king-bot-api)
