@@ -1,5 +1,5 @@
 import api from './api';
-import settings from './settings';
+import settings, { Icredentials } from './settings';
 import { Iunits, Iplayer } from './interfaces';
 import { tribe } from './data';
 import server from './server';
@@ -14,10 +14,11 @@ class kingbot {
 		password: string = '',
 		sitter_type: string = '',
 		sitter_name: string = '',
-		port: number = 3000
+		port: number = 3000,
+		proxy: string = null
 	) {
 		await settings.init();
-		await this.login(gameworld, email, password, sitter_type, sitter_name);
+		await this.login(gameworld, email, password, sitter_type, sitter_name, proxy);
 
 		server.start(port);
 	}
@@ -27,11 +28,12 @@ class kingbot {
 		email: string = '',
 		password: string = '',
 		sitter_type: string = '',
-		sitter_name: string = ''
+		sitter_name: string = '',
+		proxy: string = null
 	): Promise<void> {
 
 		if (!email || !password || !gameworld) {
-			let cred: any = settings.read_credentials();
+			let cred: Icredentials = settings.read_credentials();
 
 			if (cred) {
 				email = cred.email;
@@ -39,6 +41,7 @@ class kingbot {
 				gameworld = cred.gameworld;
 				sitter_name = cred.sitter_name;
 				sitter_type = cred.sitter_type;
+				proxy = cred.proxy;
 			}
 		}
 
@@ -48,7 +51,7 @@ class kingbot {
 		}
 
 		logger.info('start login...', 'login');
-
+		api.init(proxy);
 		await api.login(email, password, gameworld, sitter_type, sitter_name);
 	}
 

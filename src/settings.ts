@@ -31,7 +31,15 @@ class settings {
 
 		if (!fs.existsSync(filename)) return null;
 
-		let cred: string = fs.readFileSync(filename, 'utf-8');
+		let creds: string = fs.readFileSync(filename, 'utf-8');
+		let proxy: string = null;
+		let temp = creds.split('\n');
+
+		if (temp.length > 1 && temp[1] != '') {
+			proxy = temp[1].trim();
+		}
+
+		let cred = temp[0];
 		let cred_array: string[] = cred.trim().split(';');
 		let sitter_type: string = '';
 		let sitter_name: string = '';
@@ -46,10 +54,12 @@ class settings {
 			password: cred_array[1],
 			gameworld: cred_array[2],
 			sitter_name,
-			sitter_type
+			sitter_type,
+			proxy
 		};
 	}
 
+	// TODO: write proxy
 	write_credentials(gameworld: string, email: string, password: string, sitter_type: string, sitter_name: string): void {
 		// change credentials
 		const filename: string = this.assets_folder + this.credentials_name;
@@ -66,12 +76,13 @@ class settings {
 	}
 }
 
-interface Icredentials {
+export interface Icredentials {
 	email: string
 	password: string
 	gameworld: string
 	sitter_name: string
 	sitter_type: string
+	proxy: string
 }
 
 export default new settings();
