@@ -25,21 +25,56 @@ class api {
 	*/
 
 	init(proxy: string) {
-		this.ax = axios.create();
 		const options: AxiosRequestConfig = {};
-
 		if (proxy != null && proxy != '') {
 			const agent = createHttpsProxy(proxy);
+			options.httpAgent = agent;
 			options.httpsAgent = agent;
+			options.proxy = false;
 			logger.info(`using proxy ${proxy}`, 'api');
+			database.set('account.proxy', proxy).write();
 		}
-
-		this.ax = axios.create();
+		this.ax = axios.create(options);
 		this.ax.defaults.withCredentials = true;
 		this.ax.defaults.headers.common['User-Agent'] = 'Chrome/51.0.2704.63';
 	}
 
+	async test_proxy(): Promise<void> {
+		logger.info('testing proxy...', 'api');
+
+		let http_ip, https_ip;
+		try {
+			const http_response: any = await this.ax.get('http://api.ipify.org/?format=json');
+			if (http_response.data) {
+				http_ip = http_response.data.ip;
+				if (http_ip == settings.ip)
+					logger.warn('the ip address for http protocol has not changed', 'api');
+			}
+			const https_response: any = await this.ax.get('https://api.ipify.org/?format=json');
+			if (https_response.data) {
+				https_ip = https_response.data.ip;
+				if (https_ip == settings.ip)
+					logger.warn('the ip address for https protocol has not changed', 'api');
+			}
+		} catch (error:any) {
+			logger.error(`proxy test fail: ${error.message}`, 'api');
+			if (error.stack)
+				logger.debug(error.stack, 'api');
+			process.exit();
+		}
+
+		if (http_ip != https_ip || settings.ip == http_ip || settings.ip == https_ip) {
+			logger.error('proxy test fail: a new ip address could not be obtained through the proxy', 'api');
+			process.exit();
+		}
+		logger.info(`proxy test ok: using new ip address ${https_ip}`, 'api');
+		database.set('account.proxy_ip', https_ip).write();
+	}
+
 	async login(email: string, password: string, gameworld: string, sitter_type: string, sitter_name: string) {
+		logger.info('start login...', 'api');
+
+		// manage gameworld login
 		await manage_login(this.ax, email, password, gameworld, sitter_type, sitter_name);
 
 		// assign login credentials
