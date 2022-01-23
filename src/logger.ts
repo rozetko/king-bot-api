@@ -10,11 +10,6 @@ const level = () => {
 	return isDevelopment ? 'debug' : 'warn';
 };
 
-const transports = [
-	new winston.transports.Console(),
-	new winston.transports.File({ filename: settings.assets_folder + '/api.log' })
-];
-
 interface log {
 	level: string
 	message: string,
@@ -29,18 +24,30 @@ class logger {
 	log_list: log[] = [];
 
 	constructor() {
-		const LOG_FORMAT = format.combine(
-			//format.timestamp({ format: 'DD-MM-YYYY HH:mm:ss' }),
+		const CONSOLE_FORMAT = winston.format.combine(
 			format.colorize(),
-			//format.align(),
 			format.printf(
 				(info) => `[${info.level}] ${info.timestamp} [[34m${info.group}[39m] ${info.message}`
 			)
 		);
+		const LOG_FORMAT = winston.format.combine(
+			format.uncolorize(),
+			format.printf(
+				(info) => `[${info.level}] ${info.timestamp} [${info.group}] ${info.message}`
+			)
+		);
+
+		const transports = [
+			new winston.transports.Console(),
+			new winston.transports.File({
+				format: LOG_FORMAT,
+				filename: settings.assets_folder + '/api.log'
+			})
+		];
 
 		this.log_inst = winston.createLogger({
 			level: level(),
-			format: LOG_FORMAT,
+			format: CONSOLE_FORMAT,
 			transports
 		});
 
