@@ -19,11 +19,11 @@ async function manage_login(
 ): Promise<any> {
 
 	// get account from database
-	const {
-		db_email, db_gameworld,
-		db_sitter_type, db_sitter_name,
-		db_avatar_name
-	} = database.get('account').value();
+	const db_email = database.get('account.email').value();
+	const db_gameworld = database.get('account.gameworld').value();
+	const db_sitter_type = database.get('account.sitter_type').value();
+	const db_sitter_name = database.get('account.sitter_name').value();
+	const db_avatar_name = database.get('account.avatar_name').value();
 
 	// lowercase names
 	gameworld = gameworld.toLowerCase();
@@ -46,7 +46,7 @@ async function manage_login(
 		axios.defaults.headers.common['Cookie'] = cookies_lobby;
 
 		if (await test_lobby_connection(axios, session_lobby)) {
-			logger.info(`database connection to lobby with account ${email} successful`, 'login');
+			logger.info(`successful database reconnection to lobby with account ${email}`, 'login');
 
 			if (db_gameworld === gameworld && db_sitter_name === sitter_name && db_sitter_type === sitter_type) {
 				logger.info('found gameworld session in database...', 'login');
@@ -56,7 +56,7 @@ async function manage_login(
 
 				axios.defaults.headers.common['Cookie'] += cookies_gameworld;
 				if (await test_gameworld_connection(axios, gameworld, session_gameworld)) {
-					logger.info(`database connection to gameworld ${gameworld} successful`, 'login');
+					logger.info(`successful database reconnection to gameworld ${gameworld}`, 'login');
 					return;
 				} else {
 					logger.warn(`database connection to gameworld ${gameworld} failed`, 'login');

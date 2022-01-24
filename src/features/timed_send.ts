@@ -1,4 +1,4 @@
-import { sleep } from '../util';
+import { sleep, sleep_ms } from '../util';
 import { Iunits, Ihero, Iplayer, Idurations } from '../interfaces';
 import { feature_collection, feature_item, Ioptions } from './feature';
 import { player, hero, troops } from '../gamedata';
@@ -285,10 +285,12 @@ class timed_send_feature extends feature_item {
 
 		// send time
 		const send_time_ms = arrival_time_ms - duration;
-		const now = Date.now();
-		const offset = 500; // add a offset margin for the current time
-		const current_time_ms = now + offset;
-		const diff_time_ms = send_time_ms - now;
+		const current_time_ms = Date.now();
+		const diff_time_ms = send_time_ms - current_time_ms;
+
+		// times in date for operation with seconds
+		const current_time = new Date(current_time_ms);
+		const send_time = new Date(send_time_ms);
 
 		// only perform checks 5 minutes before
 		const five_minutes_ms = 300000;
@@ -351,7 +353,7 @@ class timed_send_feature extends feature_item {
 			if (send_time_ms < current_time_ms + 2000) {
 
 				// send units
-				if (send_time_ms <= current_time_ms) {
+				if (send_time.getSeconds() <= current_time.getSeconds()) {
 					var response: any = await api.send_units(village_id, target_village_id, units, mission_type);
 					if (response.errors) {
 						for (let error of response.errors)
@@ -367,7 +369,7 @@ class timed_send_feature extends feature_item {
 				}
 
 				// to late
-				if (send_time_ms > current_time_ms) {
+				if (send_time.getSeconds() > current_time.getSeconds()) {
 
 					var seconds_late = Math.floor(diff_time_ms / 1000);
 					if (seconds_late < 0) // multiply number with -1 to make it positive
@@ -379,18 +381,18 @@ class timed_send_feature extends feature_item {
 					return; // stop
 				}
 
-				// sleep 1 second
-				await sleep(1);
+				// sleep half second to retry
+				await sleep(0.5);
 				return;
 			}
 
 			// sleep until the time difference, in seconds
-			await sleep(Math.floor(diff_time_ms / 1000));
+			await sleep_ms(diff_time_ms);
 			return;
 		}
 
 		// sleep up to 2 minutes early
-		await sleep(Math.floor((diff_time_ms - two_minutes_ms) / 1000));
+		await sleep_ms(diff_time_ms - two_minutes_ms);
 	}
 
 	get_duration(duration: number): string {

@@ -77,8 +77,6 @@ export default class TimedSend extends Component {
 	submit = async e => {
 		this.setState({
 			error_village: this.state.village_id == 0,
-			error_date: !this.state.date,
-			error_time: !this.state.time,
 			error_mission_type: this.state.mission_type == 0,
 			error_target_x: this.state.target_village_id == 0,
 			error_target_y: this.state.target_village_id == 0,
