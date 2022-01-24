@@ -16,6 +16,8 @@ export function list_remove(item: any, list: any[]): any[] {
 
 export const sleep = (sec: number) => new Promise(res => setTimeout(res, sec * 1000));
 
+export const sleep_ms = (ms: number) => new Promise(res => setTimeout(res, ms));
+
 export function get_date(): number {
 	return Math.floor(Number(Date.now()) / 1000);
 }
