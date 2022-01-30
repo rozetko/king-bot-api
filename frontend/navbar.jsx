@@ -13,6 +13,8 @@ import actions from './actions';
 export default class NavBar extends Component {
 	navbarFeatures = [];
 	state = {
+		gameworld: '',
+		avatar_name: '',
 		burger: false
 	};
 
@@ -20,6 +22,11 @@ export default class NavBar extends Component {
 		this.availableLanguages = lang.availableLanguages.map(x =>
 			<a className='navbar-item' onClick={ () => lang.changeLanguage(x) }>{x}</a>
 		);
+	}
+
+	async componentDidMount() {
+		await axios.get('/api/data?ident=settings')
+			.then(({ data }) => this.setState({ gameworld: data.gameworld, avatar_name: data.avatar_name }));
 	}
 
 	show_burger = e => {
@@ -71,54 +78,53 @@ export default class NavBar extends Component {
 			'is-active': this.state.burger,
 		});
 
-		const menue_class = classNames({
+		const menu_class = classNames({
 			'navbar-menu': true,
 			'is-active': this.state.burger,
 		});
 
 		return (
-			<nav class="navbar is-light is-fixed-top">
+			<nav class="navbar is-light is-fixed-top" role="navigation" aria-label="main navigation">
 				<div class="container">
 					<div class="navbar-brand">
+						<span class="navbar-item">
+							<a href="/" title={ this.props.lang_navbar_home }>
+								<h1 style="margin-bottom: 0.3em; line-height: 0;" class="navbar-item title is-3">
+									{this.props.lang_navbar_king_bot_api}
+								</h1>
+							</a>
+							<span style="line-height: 0em; margin-top: 0em; margin-bottom: 0.2em;margin-left: 0.2em;" class="subtitle is-4">
+								{this.state.gameworld}{this.state.avatar_name ? '/' + this.state.avatar_name : ''}
+							</span>
+						</span>
 						<a role="button" onClick={ this.show_burger } class={ burger_class } aria-label="menu" aria-expanded="false">
 							<span aria-hidden="true"></span>
 							<span aria-hidden="true"></span>
 							<span aria-hidden="true"></span>
 						</a>
 					</div>
-					<div class={ menue_class }>
+					<div class={ menu_class }>
 						<div class="navbar-start">
-							<a class="navbar-item" onClick={ e => this.route('/') }>
-								{this.props.lang_navbar_home}
-							</a>
 
 							<div class="navbar-item has-dropdown is-hoverable">
-								<a class="navbar-link is-arrowless">
+								<a class="navbar-link">
 									{this.props.lang_navbar_add_feature}
 								</a>
-
 								<div class='navbar-dropdown is-radiusless'>
 									{this.navbarFeatures}
 								</div>
 							</div>
 
 							<div class='navbar-item has-dropdown is-hoverable'>
-								<a class='navbar-link is-arrowless'>
+								<a class='navbar-link'>
 									{this.props.lang_navbar_extras}
 								</a>
-
 								<div class="navbar-dropdown is-radiusless">
-									<a className="navbar-item" onClick={ e => this.route('/easy_scout') }>
+									<a className="navbar-item" href="/easy_scout">
 										{this.props.lang_navbar_easy_scout}
 									</a>
-									<a className="navbar-item" onClick={ e => this.route('/inactive_finder') }>
+									<a className="navbar-item" href="/inactive_finder">
 										{this.props.lang_navbar_inactive_finder}
-									</a>
-									<a className="navbar-item" onClick={ e => this.route('/logger') }>
-										{this.props.lang_navbar_logger}
-									</a>
-									<a className="navbar-item" onClick={ e => this.route('/login') }>
-										{this.props.lang_navbar_change_login}
 									</a>
 								</div>
 							</div>
@@ -126,19 +132,54 @@ export default class NavBar extends Component {
 						</div>
 						<div class="navbar-end">
 
-							<div class="navbar-item has-dropdown is-hoverable">
-								<a class="navbar-link is-arrowless">
-									{this.props.lang_navbar_language}
-								</a>
-
-								<div class='navbar-dropdown is-radiusless'>
-									{this.availableLanguages}
+							<div id="table_search" class="navbar-item">
+								<div class="control has-icons-left has-icons-right">
+									<input
+										class = "input is-radiusless is-small"
+										type = "search"
+										placeholder = "search features"
+										autocomplete = "off"
+										spellcheck = "false"
+										style = {{ width: '12em' }}
+									/>
+									<span class="icon is-small is-left">
+										<i class="fas fa-search"></i>
+									</span>
+									<span class="icon is-small is-right" style={{ pointerEvents: 'all', cursor: 'pointer' }}>
+										<i class="fas fa-times"></i>
+									</span>
 								</div>
 							</div>
 
-							<a class="navbar-item" target="_blank" href="https://github.com/pkeweloh/king-bot-api">
-								{this.props.lang_navbar_king_bot_api}
-							</a>
+							<div class="navbar-item has-dropdown is-hoverable">
+								<a class="navbar-link">options</a>
+
+								<div class="navbar-dropdown is-radiusless">
+
+									<div class="navbar-item has-dropdown is-hoverable">
+										<a class="navbar-link">
+											{this.props.lang_navbar_language}
+										</a>
+										<div class="navbar-dropdown is-radiusless">
+											{this.availableLanguages}
+										</div>
+									</div>
+									<a class="navbar-item" href="/logger">
+										{this.props.lang_navbar_logger}
+									</a>
+									<a class="navbar-item" href="/login">
+										{this.props.lang_navbar_change_login}
+									</a>
+									<a class="navbar-item" target="_blank" href="https://github.com/pkeweloh/king-bot-api">
+										{this.props.lang_navbar_king_bot_api}
+									</a>
+									<hr class="navbar-divider" />
+									<div class="navbar-item">
+										v{process.env.VERSION}
+									</div>
+								</div>
+
+							</div>
 						</div>
 					</div>
 				</div>

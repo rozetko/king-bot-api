@@ -11,9 +11,9 @@ export default class Units extends Component {
 		unit_types: []
 	};
 
-	componentDidMount() {
-		axios.get('/api/data?ident=player_tribe').then(res => this.setState({ own_tribe: Number(res.data) }));
-		axios.get('/api/data?ident=unit_types').then(res => this.setState({ unit_types: res.data }));
+	async componentDidMount() {
+		await axios.get('/api/data?ident=player_tribe').then(res => this.setState({ own_tribe: Number(res.data) }));
+		await axios.get('/api/data?ident=unit_types').then(res => this.setState({ unit_types: res.data }));
 	}
 
 	render(props, { own_tribe, unit_types }) {

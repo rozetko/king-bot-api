@@ -52,7 +52,12 @@ module.exports = {
 			title: 'king-bot-api',
 			template: path.join(__dirname, 'frontend/index.html')
 		}),
-		new webpack.HotModuleReplacementPlugin()
+		new webpack.HotModuleReplacementPlugin(),
+		new webpack.DefinePlugin({
+			'process.env.VERSION': JSON.stringify(
+				process.env.npm_package_version,
+			),
+		})
 	],
 
 	devServer: {

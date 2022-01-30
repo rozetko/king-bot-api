@@ -5,23 +5,60 @@ import { connect } from 'unistore/preact';
 import Feature from '../components/feature';
 import { storeKeys } from '../language';
 
+var jQuery = require( 'jquery' );
+import 'datatables.net';
+import 'datatables-bulma';
+
 const rowStyle = {
 	verticalAlign: 'middle',
-	textAlign: 'center'
+	textAlign: 'center',
+	whiteSpace: 'nowrap'
 };
 
 @connect(storeKeys)
 export default class FeatureList extends Component {
 	state = {
-		gameworld: '',
-		avatar_name: '',
 		features: []
 	};
 
 	async componentDidMount() {
-		await axios.get('/api/data?ident=settings')
-			.then(({ data }) => this.setState({ gameworld: data.gameworld, avatar_name: data.avatar_name }));
 		await axios.get('/api/allfeatures').then(({ data }) => this.setState({ features: data }));
+
+		const table = jQuery('#table').DataTable({
+			dom: 'frtip',
+			order: [],
+			columnDefs: [
+				{ targets: [2,3,4], orderable: false }
+			],
+			pageLength: 8,
+			lengthChange: false,
+			rowGroup: true
+		});
+
+		jQuery('#table_search input').on('keyup', function () {
+			if (this.value) {
+				jQuery('#table_search .icon.is-right').show();
+				jQuery('#table_search .icon.is-right').on('click', function() {
+					jQuery('#table_search input').val('');
+					jQuery('#table_search input').trigger('keyup');
+				});
+			}
+			else {
+				jQuery('#table_search .icon.is-right').hide();
+			}
+			table.search(this.value).draw();
+		});
+		jQuery('#table_search').slideDown();
+		jQuery('#table_search input').trigger('keyup');
+	}
+
+	async componentWillUnmount() {
+		jQuery('#table_search').slideUp();
+	}
+
+	shouldComponentUpdate(nextProps, nextState) {
+		// render only if features were not already loaded
+		return this.state.features.length != nextState.features.length;
 	}
 
 	render(props, state) {
@@ -30,10 +67,7 @@ export default class FeatureList extends Component {
 
 		return (
 			<div>
-				<h1 className='title is-2' align='left'>
-					{props.lang_navbar_king_bot_api} <span class="subtitle is-3">{state.gameworld}{state.avatar_name ? '/' + state.avatar_name : ''}</span>
-				</h1>
-				<table className='table is-hoverable is-fullwidth'>
+				<table id="table" className='table is-hoverable is-fullwidth'>
 					<thead>
 						<tr>
 							<th style={ rowStyle }>{props.lang_home_name}</th>

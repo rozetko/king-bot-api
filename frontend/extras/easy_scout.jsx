@@ -28,9 +28,9 @@ export default class EasyScout extends Component {
 		});
 	}
 
-	componentDidMount() {
-		axios.get('/api/data?ident=villages').then(res => this.setState({ all_villages: res.data }));
-		axios.get('/api/data?ident=farmlists').then(res => this.setState({ all_farmlists: res.data }));
+	async componentDidMount() {
+		await axios.get('/api/data?ident=villages').then(res => this.setState({ all_villages: res.data }));
+		await axios.get('/api/data?ident=farmlists').then(res => this.setState({ all_farmlists: res.data }));
 	}
 
 	async submit() {

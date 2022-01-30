@@ -28,21 +28,19 @@ axios.get('/api/data?ident=settings')
 const App = () => (
 	<div>
 		<NavBar />
-		<div className='columns is-centered' style='padding: 0 0.5em;'>
-			<div className='column is-two-thirds'>
+		<section class='section' style={{ paddingTop: '2rem' }}>
+			<div class='container is-max-desktop'>
 				<Notifications />
-				<div style={{ marginTop: '1rem' }}>
-					<Router>
-						<FeatureList default path='/' />
-						<Login path='/login' />
-						<EditFeature path='/edit_feature/:ident/:uuid' />
-						<EasyScout path='/easy_scout' />
-						<InactiveFinder path='/inactive_finder' />
-						<Logger path='/logger' />
-					</Router>
-				</div>
+				<Router>
+					<FeatureList default path='/' />
+					<Login path='/login' />
+					<EditFeature path='/edit_feature/:ident/:uuid' />
+					<EasyScout path='/easy_scout' />
+					<InactiveFinder path='/inactive_finder' />
+					<Logger path='/logger' />
+				</Router>
 			</div>
-		</div>
+		</section>
 	</div>
 );
 

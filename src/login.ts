@@ -277,10 +277,11 @@ async function get_gameworld_id(axios: AxiosInstance, session: string, gameworld
 	const gameworlds_obj: any = clash_obj(res.data, 'cache', 'response');
 	const gameworlds = gameworlds_obj[0].data;
 
-	gameworlds.every((x: any) => {
-		if (x.data.worldName.toLowerCase() === gameworld_string)
-			return x.data.consumersId;
-	});
+	for (let gameworld of gameworlds) {
+		if (gameworld.data.worldName.toLowerCase() == gameworld_string) {
+			return gameworld.data.consumersId;
+		}
+	}
 
 	logger.error(`gameworld: ${gameworld_string} do not match with any sitter spot.`, 'login');
 	process.exit();
@@ -300,10 +301,11 @@ async function get_avatar_name(axios: AxiosInstance, session: string, gameworld_
 	const gameworlds_obj: any = clash_obj(res.data, 'cache', 'response');
 	const gameworlds = gameworlds_obj[0].data;
 
-	gameworlds.every((x: any) => {
-		if (x.data.worldName.toLowerCase() === gameworld_string)
-			return x.data.avatarName;
-	});
+	for (let gameworld of gameworlds) {
+		if (gameworld.data.worldName.toLowerCase() == gameworld_string) {
+			return gameworld.data.avatarName;
+		}
+	}
 
 	logger.error(`gameworld: ${gameworld_string} do not match with any sitter spot.`, 'login');
 	process.exit();
