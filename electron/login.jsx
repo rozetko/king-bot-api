@@ -129,7 +129,7 @@ class Login extends Component {
 		);
 
 		return (
-			<div class="container" style={{ marginTop: '2rem' }}>
+			<div class="container" style={{ marginTop: '6rem' }}>
 
 				<div class="columns is-centered">
 

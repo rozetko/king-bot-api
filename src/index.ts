@@ -46,7 +46,7 @@ class kingbot {
 		}
 
 		if (!email || !password || !gameworld) {
-			logger.error('please provide email, password and gameworld', 'login');
+			logger.error('please provide email, password and gameworld', 'api');
 			process.exit();
 		}
 
