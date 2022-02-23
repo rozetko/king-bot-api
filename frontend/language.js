@@ -28,6 +28,7 @@ const languages = {
 		lang_feature_timed_send: 'timed send',
 		lang_feature_train_troops: 'train troops',
 		lang_feature_robber_hideouts: 'robber hideouts',
+		lang_feature_improve_troops: 'improve troops',
 
 		lang_feature_desc_hero: 'this feature sends the hero automaticly on an adventure if the health is above given percentage.',
 		lang_feature_desc_queue: 'this is an endless building queue. don\'t change the village once it\'s set. if you want to change the village, just do another building queue feature with your desired village',
