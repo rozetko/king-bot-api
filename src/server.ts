@@ -10,9 +10,16 @@ import { Ifeature_params, feature } from './features/feature';
 import { Ivillage, Ibuilding, Iplayer, Iunits } from './interfaces';
 import { find_state_data } from './util';
 import {
-	raise_fields, building_queue,
-	finish_earlier, auto_adventure, send_farmlist,
-	trade_route, timed_send, train_troops, robber_hideouts
+	finish_earlier,
+	auto_adventure,
+	send_farmlist,
+	building_queue,
+	raise_fields,
+	trade_route,
+	timed_send,
+	train_troops,
+	improve_troops,
+	robber_hideouts
 } from './features';
 import { farming, village, player, troops } from './gamedata';
 import database from './database';
@@ -29,6 +36,7 @@ class server {
 		trade_route,
 		timed_send,
 		train_troops,
+		improve_troops,
 		robber_hideouts
 	];
 

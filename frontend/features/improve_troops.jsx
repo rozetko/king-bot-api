@@ -7,23 +7,19 @@ import { storeKeys } from '../language';
 import { Input, DoubleInput, Select, Button } from '../components/form';
 
 @connect(storeKeys)
-export default class TrainTroops extends Component {
+export default class ImproveTroops extends Component {
 	state = {
 		all_villages: [],
 		unit_types: '',
 		own_tribe: 0,
 		village_name: '',
 		village_id: '',
-		error_village: false,
 		unit_type: 0,
 		unit_type_name: '',
-		amount: 0,
-		interval_min: 0,
-		interval_max: 0,
-		error_amount: false,
-		error_unit: false,
-		error_interval_max: false,
-		error_interval_min: false
+		level: 0,
+		error_village: false,
+		error_unit_type: false,
+		error_level: false
 	};
 
 	componentWillMount() {
@@ -39,14 +35,11 @@ export default class TrainTroops extends Component {
 	async submit() {
 		this.setState({
 			error_village: (this.state.village_id == 0),
-			error_unit: (this.state.unit_type == 0),
-			error_amount: (this.state.amount == 0),
-			error_interval_min: (this.state.interval_min == 0),
-			error_interval_max: (this.state.interval_max == 0)
+			error_unit_type: (this.state.unit_type == 0),
+			error_level: (this.state.level == 0)
 		});
 
-		if (this.state.error_village || this.state.error_unit || this.state.error_amount ||
-			this.state.error_interval_min || this.state.error_interval_max)
+		if (this.state.error_village || this.state.error_unit_type || this.state.error_level)
 			return;
 
 		this.props.submit({ ...this.state });
@@ -63,8 +56,7 @@ export default class TrainTroops extends Component {
 	render(props) {
 		var {
 			all_villages, unit_types, own_tribe,
-			village_id,	unit_type, amount,
-			interval_min, interval_max,
+			village_id,	unit_type, level
 		} = this.state;
 
 		const village_select_class = classNames({
@@ -74,26 +66,18 @@ export default class TrainTroops extends Component {
 
 		const unit_select_class = classNames({
 			select: true,
-			'is-danger': this.state.error_unit,
+			'is-danger': this.state.error_unit_type,
 		});
 
-		const input_class_amount = classNames({
-			input: true,
-			'is-radiusless': true,
-			'is-danger': this.state.error_amount,
+		const level_select_class = classNames({
+			select: true,
+			'is-danger': this.state.error_level,
 		});
 
-		const input_class_min = classNames({
-			input: true,
-			'is-radiusless': true,
-			'is-danger': this.state.error_interval_min,
-		});
-
-		const input_class_max = classNames({
-			input: true,
-			'is-radiusless': true,
-			'is-danger': this.state.error_interval_max,
-		});
+		const range = (start, end) => Array.from(Array(end - start + 1).keys()).map(x => x + start);
+		const levels = range(1, 20).map(option =>
+			<option	value={ option }>{option}</option>
+		);
 
 		const villages = all_villages.map(village =>
 			<option
@@ -144,27 +128,14 @@ export default class TrainTroops extends Component {
 							icon = 'fa-helmet-battle'
 						/>
 
-						<Input
-							label={ props.lang_easy_scout_amount }
-							//placeholder='0: max'
-							value={ amount }
-							onChange={ e => this.setState({ amount: e.target.value }) }
-							className={ input_class_amount }
+						<Select
+							label={ props.lang_queue_level }
+							value={ level }
+							onChange={ e => this.setState({ level: e.target.value }) }
+							options = { levels }
+							className={ level_select_class }
 							width= '7.5em'
 							icon = 'fa-sort-amount-up'
-						/>
-
-						<DoubleInput
-							label = { props.lang_farmlist_interval }
-							placeholder1 = { props.lang_common_min }
-							placeholder2 = { props.lang_common_max }
-							value1 = { interval_min }
-							value2 = { interval_max }
-							onChange1 = { e => this.setState({ interval_min: e.target.value }) }
-							onChange2 = { e => this.setState({ interval_max: e.target.value }) }
-							class1 = { input_class_min }
-							class2 = { input_class_max }
-							icon = 'fa-stopwatch'
 						/>
 
 					</div>

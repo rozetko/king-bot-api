@@ -405,3 +405,54 @@ export interface Isettings {
 	showSeasonalTheme: boolean,
 	showSnowfall: boolean
 }
+
+export interface Iresearch {
+	researchQueueFull: boolean
+	upgradeQueueFull: boolean
+	units: Iresearch_unit[]
+}
+
+export interface Iresearch_unit {
+	unitType: number
+	unitLevel: number
+	costs: Iresources
+	time: number
+	canResearch: boolean
+	canUpgrade: boolean
+	unitsInUpgrade: number
+	required: Iresearch_required[]
+	maxLevel: number
+	currentStrength: Iresearch_strength
+	researchStrength: Iresearch_strength[]
+}
+
+export interface Iresearch_queue {
+	villageId: number
+	buildingTypes: Iresearch_queue_building
+}
+
+export interface Iresearch_queue_building {
+	[index: number]: Iresearch_queue_unit[]
+}
+
+export interface Iresearch_queue_unit {
+	unitType: number,
+	researchLevel: number
+	startTime: number
+	finished: number
+	pause: number
+}
+
+export interface Iresearch_required {
+	buildingType: number
+	requiredLevel: number
+	currentLevel: number
+	valid: boolean
+}
+
+export interface Iresearch_strength {
+	level: number
+	attack: number
+	defence: number
+	defenceCavalry: number
+}

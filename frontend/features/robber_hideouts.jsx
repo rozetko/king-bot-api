@@ -212,10 +212,34 @@ export default class RoberHideouts extends Component {
 	};
 
 	can_siege() {
+		var { units } = this.state;
 		var { t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 } = this.state;
 
-		return t7 > 0 &&
-			(t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8 + t9 + t10 + t11) >= 1000;
+		// all units support
+		if (t1 == -1)
+			t1 = units[1];
+		if (t2 == -1)
+			t2 = units[2];
+		if (t3 == -1)
+			t3 = units[3];
+		if (t4 == -1)
+			t4 = units[4];
+		if (t5 == -1)
+			t5 = units[5];
+		if (t6 == -1)
+			t6 = units[6];
+		if (t7 == -1)
+			t7 = units[7];
+		if (t8 == -1)
+			t8 = units[8];
+
+		var amount =
+			Number(t1) + Number(t2) + Number(t3) +
+			Number(t4) + Number(t5) + Number(t6) +
+			Number(t7) + Number(t8) + Number(t9) +
+			Number(t10) + Number(t11);
+
+		return t7 > 0 && amount >= 1000;
 	}
 
 	render(props) {

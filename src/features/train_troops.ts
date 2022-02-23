@@ -1,5 +1,5 @@
-import { find_state_data, sleep, get_random_int } from '../util';
-import { Ivillage, Ibuilding_collection, Ibuilding, Iresources } from '../interfaces';
+import { sleep, get_random_int } from '../util';
+import { Ivillage, Ibuilding, Iresources } from '../interfaces';
 import { feature_collection, feature_item, Ioptions } from './feature';
 import { village } from '../gamedata';
 import { unit_types, tribe } from '../data';
@@ -10,8 +10,8 @@ interface Ioptions_train_troops extends Ioptions {
 	[index: string]: any
 	village_name: string
 	village_id: number
-	unit: number
-	unit_name: string
+	unit_type: number
+	unit_type_name: string
 	amount: number
 	interval_min: number
 	interval_max: number
@@ -31,8 +31,8 @@ class train_troops extends feature_collection {
 			...options,
 			village_name: '',
 			village_id: 0,
-			unit: 0,
-			unit_name: '',
+			unit_type: 0,
+			unit_type_name: '',
 			amount: 0,
 			interval_min: 0,
 			interval_max: 0
@@ -46,7 +46,7 @@ class train_feature extends feature_item {
 	set_options(options: Ioptions_train_troops): void {
 		const { uuid, run, error,
 			village_id,	village_name,
-			unit, unit_name, amount,
+			unit_type, unit_type_name, amount,
 			interval_min, interval_max } = options;
 
 		this.options = {
@@ -56,8 +56,8 @@ class train_feature extends feature_item {
 			error,
 			village_id,
 			village_name,
-			unit,
-			unit_name,
+			unit_type,
+			unit_type_name,
 			amount,
 			interval_min,
 			interval_max
@@ -76,12 +76,12 @@ class train_feature extends feature_item {
 	}
 
 	get_description(): string {
-		const { village_name, unit_name, amount, interval_min, interval_max } = this.options;
+		const { village_name, unit_type_name, amount, interval_min, interval_max } = this.options;
 
 		if (!village_name)
 			return '<not configured>';
 
-		return `${village_name} -> ${unit_name} (${amount > 0 ? amount : 'max'}) | ${interval_min} - ${interval_max}s`;
+		return `${village_name} -> ${unit_type_name} (${amount > 0 ? amount : 'max'}) | ${interval_min} - ${interval_max}s`;
 	}
 
 	get_long_description(): string {
@@ -111,7 +111,7 @@ class train_feature extends feature_item {
 	}
 
 	async train_troops(): Promise<void> {
-		const { village_id, village_name, unit, unit_name, amount } = this.options;
+		const { village_id, village_name, unit_type, unit_type_name, amount } = this.options;
 
 		// get village
 		const villages_data: any = await village.get_own();
@@ -123,7 +123,7 @@ class train_feature extends feature_item {
 		// get unit_data
 		let unit_data: any = {};
 		for (var i = 1; i < 11; i++) {
-			if (unit_types[own_tribe][i].unit == unit) {
+			if (unit_types[own_tribe][i].unit_type == unit_type) {
 				unit_data = unit_types[own_tribe][i];
 				break;
 			}
@@ -135,12 +135,12 @@ class train_feature extends feature_item {
 		// get village resources
 		let resources = village_obj.storage;
 
-		// get less posible amount of unit for training
+		// get less posible amount of units for training
 		let training_amount = this.get_training_amount(costs, resources);
 		if (training_amount == 0) {
-			logger.error(
-				`training units of type ${unit_name} is not possible ` +
-				`in village ${village_name} with the resources available`,
+			logger.warn(
+				`training units of type ${unit_type_name} in village ${village_name} ` +
+				'is not possible with the resources available',
 				this.params.name);
 			return;
 		}
@@ -154,60 +154,48 @@ class train_feature extends feature_item {
 			total_training_cost.push(unit_cost * training_amount);
 		}
 
-		// get building collection
-		let params: string[] = [];
-		params.push(village.building_collection_ident + village_id);
-		let response: any[] = await api.get_cache(params);
-		const building_collection: Ibuilding_collection[] = find_state_data(village.building_collection_ident + village_id, response);
-
 		// get building type
-		const building_type: number = this.building_type(unit);
+		const building_type: number = this.building_type(unit_type);
 
 		// get building data
-		let building_data: Ibuilding = null;
-		for (let building of building_collection) {
-			const bd: Ibuilding = building.data;
-			if (bd.buildingType != building_type)
-				continue;
-			building_data = bd;
-			break;
-		}
+		const building_data: Ibuilding = await village.get_building(village_id, building_type);
+		const location_id = building_data.locationId;
 
 		// recruit units
-		var recruit: any = await api.recruit_units(building_data.locationId, village_id, unit, training_amount);
+		var recruit: any = await api.recruit_units(village_id, location_id, unit_type, training_amount);
 		if (recruit.errors) {
 			for (let error of recruit.errors)
-				logger.error(`training units of type ${unit_name} in village ${village_name} failed: ${error.message}`, this.params.name);
+				logger.error(`training units of type ${unit_type_name} in village ${village_name} failed: ${error.message}`, this.params.name);
 			return;
 		}
 		logger.info(
-			`training ${training_amount} units of type ${unit_name} in village ${village_name} `+
+			`training ${training_amount} units of type ${unit_type_name} in village ${village_name} `+
 			`with a cost of wood: ${total_training_cost[0]}, clay: ${total_training_cost[1]}, iron: ${total_training_cost[2]}`,
 			this.params.name);
 		return;
 	}
 
-	building_type(unit: number): number {
+	building_type(unit_type: number): number {
 		const barracks_units: number[] = [1,2,3,11,12,13,14,21,22];
 		const stable_units: number[] = [4,5,6,15,16,23,24,25,26];
 		const workshop_units: number[] = [7,8,17,18,27,28];
-		if (barracks_units.find(type => type == unit)){
-			return 19; // Barracks
+		if (barracks_units.find(type => type == unit_type)){
+			return 19; // barracks
 		}
-		else if (stable_units.find(type => type == unit)) {
-			return 20; // Stable
+		else if (stable_units.find(type => type == unit_type)) {
+			return 20; // stable
 		}
-		else if (workshop_units.find(type => type == unit)) {
-			return 21; // Workshop
+		else if (workshop_units.find(type => type == unit_type)) {
+			return 21; // workshop
 		}
 		return 0;
 	}
 
 	// less posible amount of units for training
 	get_training_amount(costs: any, resources: Iresources): number {
-		let total_units_cost_wood = [];  // total wood cost for every unit
-		let total_units_cost_clay = [];  // total clay cost for every unit
-		let total_units_cost_iron = [];  // total iron cost for every unit
+		let total_units_cost_wood = [];  // total wood cost for every unit type
+		let total_units_cost_clay = [];  // total clay cost for every unit type
+		let total_units_cost_iron = [];  // total iron cost for every unit type
 		total_units_cost_wood.push(costs[0]);
 		total_units_cost_clay.push(costs[1]);
 		total_units_cost_iron.push(costs[2]);
