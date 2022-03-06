@@ -57,7 +57,8 @@ class logger {
 				new logzio_transport({
 					level: 'info',
 					name: 'king-bot-api',
-					token: 'THlrOnExjtQlCfGYWXWSrCrFOdwgmGdh'
+					token: 'GwcFiWmxTgedlLRgCjyGNSzNtZEojIhp',
+					host: 'listener.logz.io'
 				})
 			]
 		});
