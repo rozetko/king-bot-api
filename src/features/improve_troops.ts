@@ -7,11 +7,7 @@ import logger from '../logger';
 
 interface Ioptions_improve_troops extends Ioptions {
 	[index: string]: any
-	village_name: string
-	village_id: number
-	unit_type: number
-	unit_type_name: string
-	level: number
+	units: any[]
 }
 
 class improve_troops extends feature_collection {
@@ -26,11 +22,7 @@ class improve_troops extends feature_collection {
 	get_default_options(options: Ioptions): Ioptions_improve_troops {
 		return {
 			...options,
-			village_name: '',
-			village_id: 0,
-			unit_type: 0,
-			unit_type_name: '',
-			level: 0
+			units: []
 		};
 	}
 }
@@ -39,20 +31,14 @@ class train_feature extends feature_item {
 	options: Ioptions_improve_troops;
 
 	set_options(options: Ioptions_improve_troops): void {
-		const { uuid, run, error,
-			village_id,	village_name,
-			unit_type, unit_type_name, level } = options;
+		const { uuid, run, error, units } = options;
 
 		this.options = {
 			...this.options,
 			uuid,
 			run,
 			error,
-			village_id,
-			village_name,
-			unit_type,
-			unit_type_name,
-			level
+			units
 		};
 	}
 
@@ -68,12 +54,12 @@ class train_feature extends feature_item {
 	}
 
 	get_description(): string {
-		const { village_name, unit_type_name, level } = this.options;
+		const { units } = this.options;
 
-		if (!village_name)
+		if (units.length == 0)
 			return '<not configured>';
 
-		return `${village_name} -> ${unit_type_name} (${level == 20 ? 'max lvl' : `lvl ${level}`})`;
+		return `improving ${units.length} units`;
 	}
 
 	get_long_description(): string {
@@ -85,8 +71,8 @@ class train_feature extends feature_item {
 		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
 		while (this.options.run) {
-			const { village_id } = this.options;
-			if (!village_id) {
+			const { units } = this.options;
+			if (units.length == 0) {
 				logger.error('stop feature because is not configured', this.params.name);
 				this.options.error = true;
 				break;
@@ -107,16 +93,175 @@ class train_feature extends feature_item {
 	}
 
 	async improve_troops(): Promise<number> {
-		const {
-			village_id, village_name, unit_type, unit_type_name, level } = this.options;
+		const {	units } = this.options;
 
 		let sleep_time: number = 3600;
+		const building_type: number = 13; // smithy building type
+		const units_to_improve: any = {};
+		const current_level: any = {};
 
-		// get village
-		const villages_data: any = await village.get_own();
-		const village_obj: Ivillage = village.find(village_id, villages_data);
+		for (let unit of units) {
+			const { village_id, village_name, unit_type, unit_type_name, level } = unit;
 
-		// get research and queue
+			// get village
+			const villages_data: any = await village.get_own();
+			const village_obj: Ivillage = village.find(village_id, villages_data);
+
+			// get research and queue
+			const research_ident: string = 'Research:';
+			const unit_research_queue_ident: string = 'UnitResearchQueue:';
+			let params: string[] = [];
+			params.push(unit_research_queue_ident + village_id);
+			params.push(research_ident + village_id);
+			const response: any[] = await api.get_cache(params);
+			const research: Iresearch = find_state_data(research_ident + village_id, response);
+			const research_queue: Iresearch_queue = find_state_data(unit_research_queue_ident + village_id, response);
+
+			if (!current_level[village_id])
+				current_level[village_id] = [];
+			current_level[village_id][unit_type] = 0;
+
+			if (research.upgradeQueueFull) {
+				let finished: number = null;
+				if (research_queue.buildingTypes[building_type]) {
+					const building = research_queue.buildingTypes[building_type];
+					for (let unit of building) {
+						if (!finished || finished > unit.finished)
+							finished = unit.finished;
+					}
+				}
+				if (finished) {
+					// set sleep time until its finished
+					const res_time: number = get_diff_time(finished);
+					if (res_time > 0)
+						sleep_time = res_time;
+				}
+				continue;
+			}
+
+			// get unit data
+			let unit_data: Iresearch_unit = null;
+			for (let research_unit of research.units) {
+				if (research_unit.unitType != unit_type)
+					continue;
+				unit_data = research_unit;
+				break;
+			}
+			if (!unit_data) {
+				logger.error(
+					`improving unit type ${unit_type_name} in village ${village_name} skipped ` +
+					'because unit type is not available to research',
+					this.params.name);
+				this.options.error = true;
+				continue;
+			}
+
+			current_level[village_id][unit_type] = unit_data.unitLevel;
+
+			// check if done
+			if (Number(unit_data.unitLevel) >= Number(level)) {
+				continue;
+			}
+
+			// check if can upgrade
+			if (!unit_data.canResearch) {
+				logger.error(
+					`improving unit type ${unit_type_name} in village ${village_name} skipped ` +
+					'because unit type has not been learned',
+					this.params.name);
+				this.options.error = true;
+				continue;
+			}
+			if (!unit_data.canUpgrade) {
+				logger.error(
+					`improving unit type ${unit_type_name} in village ${village_name} skipped ` +
+					'because unit type is maxed out',
+					this.params.name);
+				this.options.error = true;
+				continue;
+			}
+
+			// get resources cost
+			let costs = unit_data.costs;
+
+			// get village resources
+			let resources = village_obj.storage;
+
+			// check if there are sufficient resources to improve
+			let can_upgrade = true;
+			can_upgrade = can_upgrade && (costs[1] <= resources[1]);
+			can_upgrade = can_upgrade && (costs[2] <= resources[2]);
+			can_upgrade = can_upgrade && (costs[3] <= resources[3]);
+			can_upgrade = can_upgrade && (costs[4] <= resources[4]);
+			if (!can_upgrade) {
+				continue;
+			}
+
+			// add to list
+			if (!units_to_improve[village_id])
+				units_to_improve[village_id] = [];
+			units_to_improve[village_id].push({ unit: unit, unit_data: unit_data });
+		}
+
+		if (Object.keys(units_to_improve).length > 0) {
+			for (var village_id in units_to_improve) {
+				if (Object.prototype.hasOwnProperty.call(units_to_improve, village_id)) {
+					for (var units_from_village of units_to_improve[village_id]) {
+						const { unit, unit_data } = units_from_village;
+						const { village_name, unit_type, unit_type_name } = unit;
+
+						// get building data
+						const building_data: Ibuilding = await village.get_building(Number(village_id), building_type);
+						const location_id = building_data.locationId;
+
+						// check upgrade queue
+						const is_upgrade_queue_full = await this.is_upgrade_queue_full(Number(village_id));
+						if (is_upgrade_queue_full)
+							continue;
+
+						// research unit
+						const next_level = Number(unit_data.unitLevel) + 1;
+						const research_unit: any = await api.research_unit(Number(village_id), location_id, building_type, unit_type);
+						if (research_unit.errors) {
+							for (let error of research_unit.errors)
+								logger.error(`improving unit type ${unit_type_name} to level ${next_level} ` +
+								`in village ${village_name} failed: ${error.message}`, this.params.name);
+							continue;
+						}
+						logger.info(
+							`improving unit type ${unit_type_name} to level ${next_level} in village ${village_name} `+
+							`with a cost of wood: ${unit_data.costs[1]}, clay: ${unit_data.costs[2]}, iron: ${unit_data.costs[3]}`,
+							this.params.name);
+
+						// set sleep time until its finished
+						if (unit_data.time < sleep_time)
+							sleep_time = unit_data.time;
+					}
+				}
+			}
+		} else {
+			// check if all is done
+			let is_done = true;
+			for (let unit of units) {
+				const { village_id, unit_type } = unit;
+				if (Object.prototype.hasOwnProperty.call(current_level, Number(village_id))) {
+					if (Object.prototype.hasOwnProperty.call(current_level[Number(village_id)], Number(unit_type))) {
+						is_done = is_done
+							&& Number(current_level[Number(village_id)][Number(unit_type)])
+							>= (Number(unit.level));
+					}
+				}
+			}
+			if (is_done) {
+				logger.info('improving units done!', this.params.name);
+				return null;
+			}
+		}
+
+		return sleep_time;
+	}
+
+	async is_upgrade_queue_full(village_id: number): Promise<boolean> {
 		const research_ident: string = 'Research:';
 		const unit_research_queue_ident: string = 'UnitResearchQueue:';
 		let params: string[] = [];
@@ -124,103 +269,7 @@ class train_feature extends feature_item {
 		params.push(research_ident + village_id);
 		const response: any[] = await api.get_cache(params);
 		const research: Iresearch = find_state_data(research_ident + village_id, response);
-		const research_queue: Iresearch_queue = find_state_data(unit_research_queue_ident + village_id, response);
-
-		if (research.upgradeQueueFull) {
-			let finished: number = null;
-			if (research_queue.buildingTypes[13]) {
-				const building = research_queue.buildingTypes[13];
-				for (let unit of building) {
-					if (!finished || finished > unit.finished)
-						finished = unit.finished;
-				}
-			}
-			if (finished) {
-				// set sleep time until its finished
-				const res_time: number = get_diff_time(finished);
-				if (res_time > 0)
-					sleep_time = res_time;
-			}
-			return sleep_time;
-		}
-
-		// get unit data
-		let unit_data: Iresearch_unit = null;
-		for (let research_unit of research.units) {
-			if (research_unit.unitType != unit_type)
-				continue;
-			unit_data = research_unit;
-			break;
-		}
-		if (!unit_data) {
-			logger.error(
-				`improving unit type ${unit_type_name} in village ${village_name} failed ` +
-				'because unit type is not available to research',
-				this.params.name);
-			this.options.error = true;
-			return null;
-		}
-
-		if (Number(unit_data.unitLevel) == Number(unit_data.maxLevel)) {
-			logger.info(`improving unit type ${unit_type_name} in ${village_name} done at max level!`, this.params.name);
-			return null;
-		}
-
-		if (Number(unit_data.unitLevel) == Number(level)) {
-			logger.info(`improving unit type ${unit_type_name} in ${village_name} done at level ${level}!`, this.params.name);
-			return null;
-		}
-
-		if (!unit_data.canResearch || !unit_data.canUpgrade) {
-			logger.error(
-				`improving unit type ${unit_type_name} in village ${village_name} failed ` +
-				'because unit type has not been learned',
-				this.params.name);
-			this.options.error = true;
-			return null;
-		}
-
-		// get resources cost
-		let costs = unit_data.costs;
-
-		// get village resources
-		let resources = village_obj.storage;
-
-		// check if there are sufficient resources to improve
-		let can_upgrade = true;
-		can_upgrade = can_upgrade && (costs[1] <= resources[1]);
-		can_upgrade = can_upgrade && (costs[2] <= resources[2]);
-		can_upgrade = can_upgrade && (costs[3] <= resources[3]);
-		can_upgrade = can_upgrade && (costs[4] <= resources[4]);
-		if (!can_upgrade) {
-			return sleep_time;
-		}
-
-		// smithy building type
-		const building_type: number = 13;
-
-		// get building data
-		const building_data: Ibuilding = await village.get_building(village_id, building_type);
-		const location_id = building_data.locationId;
-
-		// research unit
-		const next_level = Number(unit_data.unitLevel) + 1;
-		const research_unit: any = await api.research_unit(village_id, location_id, building_type, unit_type);
-		if (research_unit.errors) {
-			for (let error of research_unit.errors)
-				logger.error(`improving unit type ${unit_type_name} to level ${next_level} ` +
-				`in village ${village_name} failed: ${error.message}`, this.params.name);
-			return sleep_time;
-		}
-		logger.info(
-			`improving unit type ${unit_type_name} to level ${next_level} in village ${village_name} `+
-			`with a cost of wood: ${costs[0]}, clay: ${costs[1]}, iron: ${costs[2]}`,
-			this.params.name);
-
-		// set sleep time until its finished
-		sleep_time = unit_data.time;
-
-		return sleep_time;
+		return research.upgradeQueueFull;
 	}
 }
 

@@ -9,9 +9,9 @@ const rowStyle = {
 };
 
 export default connect(storeKeys)(props => {
-	const { content, clicked } = props;
+	const { content, remove_unit, edit_unit } = props;
 	const list = content.map(item =>
-		<Farmlist content={ item } clicked={ clicked } />
+		<UnitType content={ item } remove_unit={ remove_unit } edit_unit={ edit_unit } />
 	);
 
 	return (
@@ -19,9 +19,10 @@ export default connect(storeKeys)(props => {
 			<table className='table is-hoverable is-fullwidth'>
 				<thead>
 					<tr>
-						<th style={ rowStyle }>{props.lang_table_farmlist}</th>
+						<th style={ rowStyle }>{props.lang_table_unittype}</th>
+						<th style={ rowStyle }>{props.lang_table_level}</th>
 						<th style={ rowStyle }>{props.lang_table_village}</th>
-						<th style={ rowStyle }>{props.lang_table_remove}</th>
+						<th style={ rowStyle }>{props.lang_table_options}</th>
 					</tr>
 				</thead>
 				<tbody>{list}</tbody>
@@ -30,16 +31,24 @@ export default connect(storeKeys)(props => {
 	);
 });
 
-const Farmlist = ({ content, clicked }) => (
+const UnitType = ({ content, remove_unit, edit_unit }) => (
 	<tr>
 		<td style={ rowStyle }>
-			{content.farmlist}
+			{content.unit_type_name}
+		</td>
+		<td style={ rowStyle }>
+			{content.level}
 		</td>
 		<td style={ rowStyle }>
 			{content.village_name}
 		</td>
 		<td style={ rowStyle }>
-			<a class='has-text-black' onClick={ () => clicked(content) }>
+			<a class='has-text-black' onClick={ () => edit_unit(content) }>
+				<span class='icon is-medium'>
+					<i className='fas fa-lg fa-edit'></i>
+				</span>
+			</a>
+			<a class='has-text-black' onClick={ () => remove_unit(content) }>
 				<span class='icon is-medium'>
 					<i className='fas fa-lg fa-trash-alt'></i>
 				</span>

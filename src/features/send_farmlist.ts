@@ -64,12 +64,12 @@ class farm_feature extends feature_item {
 	}
 
 	get_description(): string {
-		const { interval_min, interval_max } = this.options;
+		const { farmlists, interval_min, interval_max } = this.options;
 
-		if (!interval_min)
+		if (farmlists.length == 0)
 			return '<not configured>';
 
-		return `Farmlist: ${interval_min} - ${interval_max}s`;
+		return `farmlists (${farmlists.length}): ${interval_min} - ${interval_max}s`;
 	}
 
 	get_long_description(): string {
@@ -134,8 +134,7 @@ class farm_feature extends feature_item {
 				for (var village_id in farmlists_to_send) {
 					if (Object.prototype.hasOwnProperty.call(farmlists_to_send, village_id)) {
 						var farmlist_ids = farmlists_to_send[village_id];
-						const village_id_num: number = parseInt(village_id);
-						await api.send_farmlists(farmlist_ids, village_id_num);
+						await api.send_farmlists(farmlist_ids, Number(village_id));
 						await sleep(get_random_int(.75, 1.25));
 					}
 				}
