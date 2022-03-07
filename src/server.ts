@@ -136,6 +136,13 @@ class server {
 				return;
 			}
 
+			if (ident == 'building') {
+				const { village_id, building_type } = req.query;
+				const building_data: Ibuilding = await village.get_building(Number(village_id), Number(building_type));
+				res.send(building_data);
+				return;
+			}
+
 			if (ident == 'village') {
 				const { village_id } = req.query;
 				const village_data = await village.get_own();
@@ -158,6 +165,21 @@ class server {
 
 			if (ident == 'unit_types') {
 				res.send(unit_types);
+				return;
+			}
+
+			if (ident == 'research') {
+				const { village_id, unit_type } = req.query;
+				const research_ident: string = 'Research:' + village_id;
+				const response: any[] = await api.get_cache([research_ident]);
+				const rv = [];
+				const data = find_state_data(research_ident, response);
+				for (let research_unit of data.units) {
+					if (unit_type && research_unit.unitType != unit_type)
+						continue;
+					rv.push(research_unit);
+				}
+				res.send(rv);
 				return;
 			}
 

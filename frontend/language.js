@@ -37,6 +37,7 @@ const languages = {
 		lang_feature_desc_trade_route: 'sends merchants from the origin village to the desination at a given interval.',
 		lang_feature_desc_train_troops: 'train troops in a given interval, if the amount is 0, it will train as many troops as possible.',
 		lang_feature_desc_robber_hideouts: 'check for robber hideouts and send the given units to attack them, it will retry with the same hideout until its destroyed, and then it will move on to the next and so on.',
+		lang_feature_desc_improve_troops: 'checks if it can upgrade given units in given order. first it checks unit and if it is not available or is maxed out, it will try to upgrade the next unit, you can increase the list as long as you want to.',
 
 		lang_home_features: 'your features',
 		lang_home_name: 'feature name',
@@ -70,6 +71,10 @@ const languages = {
 		lang_table_name: 'name',
 		lang_table_lvl: 'lvl',
 		lang_table_pos: 'pos',
+
+		lang_table_unittype: 'unit',
+		lang_table_level: 'level',
+		lang_table_options: 'options',
 
 		lang_button_submit: 'submit',
 		lang_button_cancel: 'cancel',
@@ -202,6 +207,9 @@ const languages = {
 		lang_table_name: 'name',
 		lang_table_lvl: 'lvl',
 		lang_table_pos: 'pos',
+
+		lang_table_unittype: 'einheitstyp',
+		lang_table_level: 'level',
 
 		lang_button_submit: 'abschicken',
 		lang_button_cancel: 'abbrechen',

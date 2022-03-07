@@ -30,7 +30,7 @@ export default class FeatureList extends Component {
 			columnDefs: [
 				{ targets: [2,3,4], orderable: false }
 			],
-			pageLength: 8,
+			pageLength: 10,
 			lengthChange: false,
 			rowGroup: true
 		});
