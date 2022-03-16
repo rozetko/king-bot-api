@@ -67,6 +67,7 @@ class robber_feature extends feature_item {
 	options: Ioptions_robber_hideouts;
 
 	send_hero: boolean;
+	send_artillery: boolean;
 
 	set_options(options: Ioptions_robber_hideouts): void {
 		const { uuid, run, error,
@@ -146,13 +147,14 @@ class robber_feature extends feature_item {
 		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
 		while (this.options.run) {
-			const { village_id, interval_min, interval_max, t11 } = this.options;
+			const { village_id, interval_min, interval_max, t7, t8, t11 } = this.options;
 			if (!village_id) {
 				logger.error('stop feature because is not configured', this.params.name);
 				this.options.error = true;
 				break;
 			}
 			this.send_hero = t11 > 0;
+			this.send_artillery = t7 > 0 || t8 > 0;
 			const robber: Ivillage = await this.check_robber();
 			if (robber) {
 				let troops_busy: boolean = await this.check_troops();
@@ -177,8 +179,8 @@ class robber_feature extends feature_item {
 
 	async send_troops(robber_village: Ivillage): Promise<void> {
 		const { village_name, village_id,
-			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11,
-			mission_type, mission_type_name } = this.options;
+			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 } = this.options;
+		var { mission_type, mission_type_name } = this.options;
 
 		// TODO: adding a unit index of -1 will send all units with max number
 		const units: Iunits = {
@@ -222,7 +224,6 @@ class robber_feature extends feature_item {
 
 		// check hero
 		if (this.send_hero) {
-
 			// get hero data
 			const hero_data: Ihero = await hero.get();
 
@@ -239,11 +240,21 @@ class robber_feature extends feature_item {
 			}
 		}
 
-		var hero_sent = '';
+		var not_sent = '';
 		if (this.send_hero == false && units[11] > 0) {
 			// dont send hero
 			units[11] = 0;
-			hero_sent = ', but without hero';
+			not_sent = ', but without hero';
+		}
+		if (this.send_artillery == false && (units[7] > 0 || units[8] > 0)) {
+			// dont send artillery
+			units[7] = 0;
+			units[8] = 0;
+			if (mission_type == 47) {
+				mission_type = 3;
+				mission_type_name = 'Attack';
+			}
+			not_sent += ' and not needed artillery';
 		}
 
 		// send units
@@ -256,7 +267,7 @@ class robber_feature extends feature_item {
 			return;
 		}
 
-		logger.info(`sent ${mission_type_name.toLowerCase()} from ${village_name} to ${robber_village.name}${hero_sent}`, this.params.name);
+		logger.info(`sent ${mission_type_name.toLowerCase()} from ${village_name} to ${robber_village.name}${not_sent}`, this.params.name);
 		return;
 	}
 
@@ -285,15 +296,19 @@ class robber_feature extends feature_item {
 
 		// return any that still has robbers
 		if (robber1.hasNPC != 0 && robber1.npcInfo.troops != null) {
-			if (robber1.npcInfo.troops.units == null)
+			if (robber1.npcInfo.troops.units == null) {
 				this.send_hero = false;
+				this.send_artillery = false;
+			}
 
 			return robber1_village;
 		}
 		if (robber2.hasNPC != 0 && robber2.npcInfo.troops != null) {
 
-			if (robber2.npcInfo.troops.units == null)
+			if (robber2.npcInfo.troops.units == null) {
 				this.send_hero = false;
+				this.send_artillery = false;
+			}
 
 			return robber2_village;
 		}

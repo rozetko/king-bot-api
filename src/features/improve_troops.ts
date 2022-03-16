@@ -103,9 +103,21 @@ class train_feature extends feature_item {
 		for (let unit of units) {
 			const { village_id, village_name, unit_type, unit_type_name, level } = unit;
 
+			if (!current_level[village_id])
+				current_level[village_id] = [];
+			current_level[village_id][unit_type] = 0;
+
 			// get village
 			const villages_data: any = await village.get_own();
 			const village_obj: Ivillage = village.find(village_id, villages_data);
+			if (!village_obj) {
+				logger.error(
+					`improving unit type ${unit_type_name} in village ${village_name} skipped ` +
+					`because couldn't find village width id ${village_id}`,
+					this.params.name);
+				this.options.error = true;
+				continue;
+			}
 
 			// get research and queue
 			const research_ident: string = 'Research:';
@@ -116,10 +128,6 @@ class train_feature extends feature_item {
 			const response: any[] = await api.get_cache(params);
 			const research: Iresearch = find_state_data(research_ident + village_id, response);
 			const research_queue: Iresearch_queue = find_state_data(unit_research_queue_ident + village_id, response);
-
-			if (!current_level[village_id])
-				current_level[village_id] = [];
-			current_level[village_id][unit_type] = 0;
 
 			if (research.upgradeQueueFull) {
 				let finished: number = null;

@@ -160,8 +160,11 @@ class raise extends feature_item {
 			if (finished) {
 				// set sleep time until its finished
 				const res_time: number = get_diff_time(finished);
-				if (res_time > 0)
+				if (res_time > 0) {
 					sleep_time = res_time;
+					if (sleep_time > five_minutes)
+						sleep_time -= five_minutes;
+				}
 			}
 
 			if (!sleep_time)
@@ -188,7 +191,7 @@ class raise extends feature_item {
 			let percent: number = current_res / (storage / 100);
 
 			// add 30 percent storage to crop, since its not that needed
-			if (res == '4') percent += 30;
+			//if (res == '4') percent += 30;
 
 			temp_res_prod.push(percent);
 			temp_dict[percent] = Number(res);
@@ -248,7 +251,7 @@ class raise extends feature_item {
 			// check if building time is less than 5 min
 			if (upgrade_time < five_minutes && finish_earlier.running) {
 				const res: any = await api.finish_now(village_id, 2);
-				if (!res.data) {
+				if (res.data === false) {
 					logger.error(`instant finish on village ${village_name} failed`, this.params.name);
 
 					// check again later if it might be possible
@@ -261,10 +264,11 @@ class raise extends feature_item {
 			}
 
 			// set sleep time
-			if (!sleep_time)
+			if (!sleep_time || upgrade_time < sleep_time) {
 				sleep_time = upgrade_time;
-			else if (upgrade_time < sleep_time)
-				sleep_time = upgrade_time;
+				if (sleep_time > five_minutes)
+					sleep_time -= five_minutes;
+			}
 		}
 
 		if (!sleep_time || sleep_time <= 0)
