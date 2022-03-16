@@ -21,8 +21,7 @@ export default class ImproveTroops extends Component {
 		unit_type: 0,
 		unit_type_name: '',
 		level: 0,
-		button_action: '',
-		button_icon: '',
+		button_edit: false,
 		error_village: false,
 		error_units: false,
 		error_unit_type: false,
@@ -80,13 +79,10 @@ export default class ImproveTroops extends Component {
 				return;
 			}
 		});
-		this.setState({
-			button_action: exists ? 'edit unit' : 'add unit',
-			button_icon: exists ? 'fa-pen' : 'fa-plus'
-		});
+		this.setState({	button_edit: exists });
 	};
 
-	async add_unit() {
+	add_unit = async e => {
 		const { village_name, village_id, unit_type, unit_type_name, level, units } = this.state;
 
 		this.setState({
@@ -120,15 +116,15 @@ export default class ImproveTroops extends Component {
 		units.push(selected_unit);
 		this.setState({ units });
 		this.set_button();
-	}
+	};
 
-	remove_unit(e) {
+	remove_unit = async e => {
 		const { units } = this.state;
 		units.splice(units.indexOf(e), 1);
 		this.setState({ units });
-	}
+	};
 
-	edit_unit(e) {
+	edit_unit = async e => {
 		this.setState({
 			village_id: e.village_id,
 			village_name: e.village_name,
@@ -139,7 +135,7 @@ export default class ImproveTroops extends Component {
 		this.set_button();
 		this.set_research_units();
 		this.set_research_level();
-	}
+	};
 
 	async submit() {
 		this.setState({
@@ -169,7 +165,7 @@ export default class ImproveTroops extends Component {
 			all_villages, unit_types, own_tribe,
 			village_id,	unit_type, level, units,
 			research_units, research_level,
-			button_action, button_icon
+			button_edit
 		} = this.state;
 
 		const village_select_class = classNames({
@@ -209,56 +205,56 @@ export default class ImproveTroops extends Component {
 			tribe_units = [
 				{
 					unit_type: unit_types[own_tribe][1].unit_type,
-					name: unit_types[own_tribe][1].name,
+					name: props.lang_unit_types[own_tribe][1],
 					disabled: research_units
 						? !research_units[unit_types[own_tribe][1].unit_type]
 						: false,
 				},
 				{
 					unit_type: unit_types[own_tribe][2].unit_type,
-					name: unit_types[own_tribe][2].name,
+					name: props.lang_unit_types[own_tribe][2],
 					disabled: research_units
 						? !research_units[unit_types[own_tribe][2].unit_type]
 						: false,
 				},
 				{
 					unit_type: unit_types[own_tribe][3].unit_type,
-					name: unit_types[own_tribe][3].name,
+					name: props.lang_unit_types[own_tribe][3],
 					disabled: research_units
 						? !research_units[unit_types[own_tribe][3].unit_type]
 						: false,
 				},
 				{
 					unit_type: unit_types[own_tribe][4].unit_type,
-					name: unit_types[own_tribe][4].name,
+					name: props.lang_unit_types[own_tribe][4],
 					disabled: research_units
 						? !research_units[unit_types[own_tribe][4].unit_type]
 						: false,
 				},
 				{
 					unit_type: unit_types[own_tribe][5].unit_type,
-					name: unit_types[own_tribe][5].name,
+					name: props.lang_unit_types[own_tribe][5],
 					disabled: research_units
 						? !research_units[unit_types[own_tribe][5].unit_type]
 						: false,
 				},
 				{
 					unit_type: unit_types[own_tribe][6].unit_type,
-					name: unit_types[own_tribe][6].name,
+					name: props.lang_unit_types[own_tribe][6],
 					disabled: research_units
 						? !research_units[unit_types[own_tribe][6].unit_type]
 						: false,
 				},
 				{
 					unit_type: unit_types[own_tribe][7].unit_type,
-					name: unit_types[own_tribe][7].name,
+					name: props.lang_unit_types[own_tribe][7],
 					disabled: research_units
 						? !research_units[unit_types[own_tribe][7].unit_type]
 						: false,
 				},
 				{
 					unit_type: unit_types[own_tribe][8].unit_type,
-					name: unit_types[own_tribe][8].name,
+					name: props.lang_unit_types[own_tribe][8],
 					disabled: research_units
 						? !research_units[unit_types[own_tribe][8].unit_type]
 						: false,
@@ -281,9 +277,9 @@ export default class ImproveTroops extends Component {
 
 					<div className='column'>
 
-						<label class='label'>select unit</label>
+						<label class='label'>{ props.lang_combo_box_unittype }</label>
 						<Select
-							label = 'select unit'
+							label = { props.lang_combo_box_unittype }
 							value = { unit_type }
 							onChange = { e => {
 								this.setState({
@@ -294,12 +290,16 @@ export default class ImproveTroops extends Component {
 							} }
 							options = { own_troops }
 							className = { unit_select_class }
-							button = { <Button action={ button_action } className='is-success' onClick={ this.add_unit.bind(this) } icon={ button_icon } /> }
+							button = { <Button
+								action={ button_edit ? props.lang_improve_troops_edit : props.lang_improve_troops_add }
+								className='is-success'
+								onClick={ this.add_unit.bind(this) }
+								icon={ button_edit ? 'fa-pen' : 'fa-plus' } /> }
 							icon = 'fa-helmet-battle'
 						/>
 
 						<Select
-							label={ props.lang_queue_level }
+							label={ props.lang_combo_box_level }
 							value={ level }
 							onChange={ e => this.setState({ level: e.target.value }) }
 							options = { levels }
@@ -313,7 +313,7 @@ export default class ImproveTroops extends Component {
 					<div className="column">
 
 						<Select
-							label = { props.lang_combo_box_select_village }
+							label = { props.lang_combo_box_village }
 							value = { village_id }
 							onChange = { e => {
 								this.setState({

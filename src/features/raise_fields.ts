@@ -87,7 +87,7 @@ class raise extends feature_item {
 		const { village_name } = this.options;
 
 		if (!village_name)
-			return '<not configured>';
+			return '<n/a>';
 
 		return village_name;
 	}

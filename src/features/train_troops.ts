@@ -79,9 +79,9 @@ class train_feature extends feature_item {
 		const { village_name, unit_type_name, amount, interval_min, interval_max } = this.options;
 
 		if (!village_name)
-			return '<not configured>';
+			return '<n/a>';
 
-		return `${village_name} -> ${unit_type_name} (${amount > 0 ? amount : 'max'}) | ${interval_min} - ${interval_max}s`;
+		return `${village_name} -> ${unit_type_name} (${amount}) | ${interval_min} - ${interval_max}s`;
 	}
 
 	get_long_description(): string {

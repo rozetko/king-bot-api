@@ -19,7 +19,7 @@ export default class RoberHideouts extends Component {
 		target_x: '',
 		target_y: '',
 		target_style: null,
-		target_help: 'fill x and y coordinates from any robber hideout',
+		target_help: null,
 		target_help_css: 'help',
 		robber1_village_id: 0,
 		robber2_village_id: 0,
@@ -170,7 +170,7 @@ export default class RoberHideouts extends Component {
 
 		const location_data = location_response.data[0].data;
 		if (!location_data.hasNPC) {
-			target_help = 'error: not a robber village';
+			target_help = 'error_not_robber_village';
 			target_help_css = 'is-danger';
 			this.setState({
 				target_help, target_help_css,
@@ -193,7 +193,7 @@ export default class RoberHideouts extends Component {
 			village_response = await axios
 				.post('/api/find', [`Village: ${robber1_village_id}`]);
 			if (!village_response.data[0].data) {
-				target_help = 'error: unable to find robber village 2!';
+				target_help = 'error_robber_village';
 				target_help_css = 'is-danger';
 				this.setState({
 					target_help, target_help_css,
@@ -203,7 +203,7 @@ export default class RoberHideouts extends Component {
 			}
 		}
 
-		target_help = 'successfully registered robber villages!';
+		target_help = 'success_robber_village';
 		target_help_css = 'is-success';
 		this.setState({ robber1_village_id, robber2_village_id, target_help, target_help_css });
 		setTimeout(async e => {
@@ -318,9 +318,9 @@ export default class RoberHideouts extends Component {
 			mission_type = 3;
 		}
 		const mission_types = [
-			{ value: 3, name: 'Attack' },
-			{ value: 4, name: 'Raid' },
-			{ value: 47, name: 'Siege', disabled: !can_siege }
+			{ value: 3, name: props.lang_mission_type_attack },
+			{ value: 4, name: props.lang_mission_type_raid },
+			{ value: 47, name: props.lang_mission_type_siege, disabled: !can_siege }
 		].map(option =>
 			<option
 				value={ option.value }
@@ -338,14 +338,14 @@ export default class RoberHideouts extends Component {
 					<div className="column">
 
 						<label class="label">
-							<span>robbers registered</span>
+							<span>{ props.lang_robber_hideouts_registered }</span>
 							<span class={ toggle_span }>
 								<i class={ toggle_icon }></i>
 							</span>
 						</label>
 
 						<DoubleInput
-							label = 'target (x / y)'
+							label = { props.lang_common_target }
 							placeholder1 = { 'x' }
 							placeholder2 = { 'y' }
 							value1 = { target_x }
@@ -355,13 +355,25 @@ export default class RoberHideouts extends Component {
 							class1 = { input_class_x }
 							class2 = { input_class_y }
 							parent_style = { target_style }
-							button = { <Button action = 'set robbers' className = 'is-success' onClick = { this.set_robbers } icon = 'fa-campground' /> }
-							help = { <Help className = { target_help_css } content = { target_help } /> }
+							button = { <Button
+								action = { props.lang_robber_hideouts_button_setrobbers }
+								className = 'is-success'
+								onClick = { this.set_robbers }
+								icon = 'fa-campground' /> }
+							help = {
+								<Help
+									className = { target_help_css }
+									content = {
+										target_help == 'error_not_robber_village' ? props.lang_robber_hideouts_help_error_wrong :
+											target_help == 'error_robber_village' ? props.lang_robber_hideouts_help_error_find :
+												target_help == 'success_robber_village' ? props.lang_robber_hideouts_help_success :
+													target_help ?? props.lang_robber_hideouts_help_default }
+								/> }
 							icon = 'fa-map-marker-alt'
 						/>
 
 						<DoubleInput
-							label = { props.lang_farmlist_interval }
+							label = { props.lang_common_interval }
 							placeholder1 = { props.lang_common_min }
 							placeholder2 = { props.lang_common_max }
 							value1 = { interval_min }
@@ -378,7 +390,7 @@ export default class RoberHideouts extends Component {
 					<div className="column">
 
 						<Select
-							label = { props.lang_combo_box_select_village }
+							label = { props.lang_combo_box_village }
 							value = { village_id }
 							onChange = { e => {
 								this.setState({
@@ -393,7 +405,7 @@ export default class RoberHideouts extends Component {
 						/>
 
 						<Select
-							label = { 'mission type' }
+							label = { props.lang_combo_box_missiontype }
 							value = { mission_type }
 							onChange = { e => this.setState({
 								mission_type_name: e.target[e.target.selectedIndex].attributes.mission_type_name.value,

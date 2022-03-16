@@ -131,7 +131,7 @@ export default class SendFarmlist extends Component {
 
 					<div className='column'>
 
-						<label class='label'>{props.lang_combo_box_select_farmlist}</label>
+						<label class='label'>{props.lang_combo_box_farmlist}</label>
 						<Select
 							value = { farmlist }
 							onChange = { e => this.setState({ farmlist: e.target.value }) }
@@ -142,7 +142,7 @@ export default class SendFarmlist extends Component {
 						/>
 
 						<DoubleInput
-							label = { props.lang_farmlist_interval }
+							label = { props.lang_common_interval }
 							placeholder1 = { props.lang_common_min }
 							placeholder2 = { props.lang_common_max }
 							value1 = { interval_min }
@@ -159,7 +159,7 @@ export default class SendFarmlist extends Component {
 					<div className='column'>
 
 						<Select
-							label = { props.lang_combo_box_select_village }
+							label = { props.lang_combo_box_village }
 							value = { village_id }
 							onChange = { e => this.setState({
 								village_name: e.target[e.target.selectedIndex].attributes.village_name.value,

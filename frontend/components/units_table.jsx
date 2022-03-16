@@ -55,17 +55,17 @@ export default class Units extends Component {
 				{own_tribe != 0 && unit_types.length != 0 && (
 					<thead>
 						<tr>
-							<th style={ row_style }> <i class={ tribe_class + 1 } title={ unit_types[own_tribe][1].name }></i> </th>
-							<th style={ row_style }> <i class={ tribe_class + 2 } title={ unit_types[own_tribe][2].name }></i> </th>
-							<th style={ row_style }> <i class={ tribe_class + 3 } title={ unit_types[own_tribe][3].name }></i> </th>
-							<th style={ row_style }> <i class={ tribe_class + 4 } title={ unit_types[own_tribe][4].name }></i> </th>
-							<th style={ row_style }> <i class={ tribe_class + 5 } title={ unit_types[own_tribe][5].name }></i> </th>
-							<th style={ row_style }> <i class={ tribe_class + 6 } title={ unit_types[own_tribe][6].name }></i> </th>
-							<th style={ row_style }> <i class={ tribe_class + 7 } title={ unit_types[own_tribe][7].name }></i> </th>
-							<th style={ row_style }> <i class={ tribe_class + 8 } title={ unit_types[own_tribe][8].name }></i> </th>
-							<th style={ row_style }> <i class={ tribe_class + 9 } title={ unit_types[own_tribe][9].name }></i> </th>
-							<th style={ row_style }> <i class={ tribe_class + 10 } title={ unit_types[own_tribe][10].name }></i> </th>
-							<th style={ row_style }> <i class={ 'unitSmall hero_illu' } title={ 'Hero' }></i> </th>
+							<th style={ row_style }> <i class={ tribe_class + 1 } title={ props.lang_unit_types[own_tribe][1] }></i> </th>
+							<th style={ row_style }> <i class={ tribe_class + 2 } title={ props.lang_unit_types[own_tribe][2] }></i> </th>
+							<th style={ row_style }> <i class={ tribe_class + 3 } title={ props.lang_unit_types[own_tribe][3] }></i> </th>
+							<th style={ row_style }> <i class={ tribe_class + 4 } title={ props.lang_unit_types[own_tribe][4] }></i> </th>
+							<th style={ row_style }> <i class={ tribe_class + 5 } title={ props.lang_unit_types[own_tribe][5] }></i> </th>
+							<th style={ row_style }> <i class={ tribe_class + 6 } title={ props.lang_unit_types[own_tribe][6] }></i> </th>
+							<th style={ row_style }> <i class={ tribe_class + 7 } title={ props.lang_unit_types[own_tribe][7] }></i> </th>
+							<th style={ row_style }> <i class={ tribe_class + 8 } title={ props.lang_unit_types[own_tribe][8] }></i> </th>
+							<th style={ row_style }> <i class={ tribe_class + 9 } title={ props.lang_unit_types[own_tribe][9] }></i> </th>
+							<th style={ row_style }> <i class={ tribe_class + 10 } title={ props.lang_unit_types[own_tribe][10] }></i> </th>
+							<th style={ row_style }> <i class={ 'unitSmall hero_illu' } title={ props.lang_unit_types_hero }></i> </th>
 						</tr>
 					</thead>
 				)}

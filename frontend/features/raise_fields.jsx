@@ -107,8 +107,8 @@ export default class RaiseFields extends Component {
 
 						<div class="field is-grouped">
 							<Input
-								label={ props.lang_queue_wood }
-								placeholder={ props.lang_queue_level }
+								label={ props.lang_common_wood }
+								placeholder={ props.lang_common_level }
 								value={ wood }
 								onChange={ e => this.setState({ wood: e.target.value }) }
 								style={{ width: '5em' }}
@@ -116,8 +116,8 @@ export default class RaiseFields extends Component {
 								className = { input_class_wood }
 							/>
 							<Input
-								label={ props.lang_queue_clay }
-								placeholder={ props.lang_queue_level }
+								label={ props.lang_common_clay }
+								placeholder={ props.lang_common_level }
 								value={ clay }
 								onChange={ e => this.setState({ clay: e.target.value }) }
 								style={{ width: '5em' }}
@@ -125,8 +125,8 @@ export default class RaiseFields extends Component {
 								className = { input_class_clay }
 							/>
 							<Input
-								label={ props.lang_queue_iron }
-								placeholder={ props.lang_queue_level }
+								label={ props.lang_common_iron }
+								placeholder={ props.lang_common_level }
 								value={ iron }
 								onChange={ e => this.setState({ iron: e.target.value }) }
 								style={{ width: '5em' }}
@@ -134,8 +134,8 @@ export default class RaiseFields extends Component {
 								className = { input_class_iron }
 							/>
 							<Input
-								label={ props.lang_queue_crop }
-								placeholder={ props.lang_queue_level }
+								label={ props.lang_common_crop }
+								placeholder={ props.lang_common_level }
 								value={ crop }
 								onChange={ e => this.setState({ crop: e.target.value }) }
 								style={{ width: '5em' }}
@@ -148,7 +148,7 @@ export default class RaiseFields extends Component {
 
 					<div className='column'>
 						<Select
-							label = { props.lang_combo_box_select_village }
+							label = { props.lang_combo_box_village }
 							value = { village_id }
 							onChange = { e => this.setState({
 								village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
