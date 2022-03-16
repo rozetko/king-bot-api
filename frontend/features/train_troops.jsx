@@ -12,6 +12,7 @@ export default class TrainTroops extends Component {
 		all_villages: [],
 		unit_types: '',
 		own_tribe: 0,
+		research_units: [],
 		village_name: '',
 		village_id: '',
 		error_village: false,
@@ -35,6 +36,24 @@ export default class TrainTroops extends Component {
 		axios.get('/api/data?ident=player_tribe').then(res => this.setState({ own_tribe: Number(res.data) }));
 		axios.get('/api/data?ident=unit_types').then(res => this.setState({ unit_types: res.data }));
 	}
+
+	componentDidMount() {
+		this.set_research_units();
+	}
+
+	set_research_units = async e => {
+		var { village_id, unit_type } = this.state;
+		const response = await axios.get(`/api/data?ident=research&village_id=${village_id}`);
+		let research_units = [];
+		if (response.data != null) {
+			for (let unit_data of response.data) {
+				research_units[unit_data.unitType] = unit_data.canResearch;
+			}
+		}
+		if (!research_units[unit_type])
+			unit_type = 0;
+		this.setState({ research_units, unit_type });
+	};
 
 	async submit() {
 		this.setState({
@@ -65,6 +84,7 @@ export default class TrainTroops extends Component {
 			all_villages, unit_types, own_tribe,
 			village_id,	unit_type, amount,
 			interval_min, interval_max,
+			research_units,
 		} = this.state;
 
 		const village_select_class = classNames({
@@ -107,20 +127,69 @@ export default class TrainTroops extends Component {
 		var tribe_units = [];
 		if (own_tribe != 0 && unit_types != '') {
 			tribe_units = [
-				{ unit_type: unit_types[own_tribe][1].unit_type, name: unit_types[own_tribe][1].name },
-				{ unit_type: unit_types[own_tribe][2].unit_type, name: unit_types[own_tribe][2].name },
-				{ unit_type: unit_types[own_tribe][3].unit_type, name: unit_types[own_tribe][3].name },
-				{ unit_type: unit_types[own_tribe][4].unit_type, name: unit_types[own_tribe][4].name },
-				{ unit_type: unit_types[own_tribe][5].unit_type, name: unit_types[own_tribe][5].name },
-				{ unit_type: unit_types[own_tribe][6].unit_type, name: unit_types[own_tribe][6].name },
-				{ unit_type: unit_types[own_tribe][7].unit_type, name: unit_types[own_tribe][7].name },
-				{ unit_type: unit_types[own_tribe][8].unit_type, name: unit_types[own_tribe][8].name }
+				{
+					unit_type: unit_types[own_tribe][1].unit_type,
+					name: props.lang_unit_types[own_tribe][1],
+					disabled: research_units
+						? !research_units[unit_types[own_tribe][1].unit_type]
+						: false,
+				},
+				{
+					unit_type: unit_types[own_tribe][2].unit_type,
+					name: props.lang_unit_types[own_tribe][2],
+					disabled: research_units
+						? !research_units[unit_types[own_tribe][2].unit_type]
+						: false,
+				},
+				{
+					unit_type: unit_types[own_tribe][3].unit_type,
+					name: props.lang_unit_types[own_tribe][3],
+					disabled: research_units
+						? !research_units[unit_types[own_tribe][3].unit_type]
+						: false,
+				},
+				{
+					unit_type: unit_types[own_tribe][4].unit_type,
+					name: props.lang_unit_types[own_tribe][4],
+					disabled: research_units
+						? !research_units[unit_types[own_tribe][4].unit_type]
+						: false,
+				},
+				{
+					unit_type: unit_types[own_tribe][5].unit_type,
+					name: props.lang_unit_types[own_tribe][5],
+					disabled: research_units
+						? !research_units[unit_types[own_tribe][5].unit_type]
+						: false,
+				},
+				{
+					unit_type: unit_types[own_tribe][6].unit_type,
+					name: props.lang_unit_types[own_tribe][6],
+					disabled: research_units
+						? !research_units[unit_types[own_tribe][6].unit_type]
+						: false,
+				},
+				{
+					unit_type: unit_types[own_tribe][7].unit_type,
+					name: props.lang_unit_types[own_tribe][7],
+					disabled: research_units
+						? !research_units[unit_types[own_tribe][7].unit_type]
+						: false,
+				},
+				{
+					unit_type: unit_types[own_tribe][8].unit_type,
+					name: props.lang_unit_types[own_tribe][8],
+					disabled: research_units
+						? !research_units[unit_types[own_tribe][8].unit_type]
+						: false,
+				},
 			];
 		}
 		const own_troops = tribe_units.map(troop =>
 			<option
 				value={ troop.unit_type }
 				unit_type_name={ troop.name }
+				disabled = { troop.disabled }
 			>
 				{troop.name}
 			</option>
@@ -129,6 +198,38 @@ export default class TrainTroops extends Component {
 		return (
 			<div>
 				<div className="columns">
+
+					<div className="column">
+
+						<Select
+							label = { props.lang_combo_box_village }
+							value = { village_id }
+							onChange = { e => {
+								this.setState({
+									village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
+									village_id: e.target.value
+								});
+								this.set_research_units();
+							} }
+							options = { villages }
+							className = { village_select_class }
+							icon='fa-home'
+						/>
+
+						<DoubleInput
+							label = { props.lang_common_interval }
+							placeholder1 = { props.lang_common_min }
+							placeholder2 = { props.lang_common_max }
+							value1 = { interval_min }
+							value2 = { interval_max }
+							onChange1 = { e => this.setState({ interval_min: e.target.value }) }
+							onChange2 = { e => this.setState({ interval_max: e.target.value }) }
+							class1 = { input_class_min }
+							class2 = { input_class_max }
+							icon = 'fa-stopwatch'
+						/>
+
+					</div>
 
 					<div className='column'>
 
@@ -152,35 +253,6 @@ export default class TrainTroops extends Component {
 							className={ input_class_amount }
 							width= '7.5em'
 							icon = 'fa-sort-amount-up'
-						/>
-
-						<DoubleInput
-							label = { props.lang_common_interval }
-							placeholder1 = { props.lang_common_min }
-							placeholder2 = { props.lang_common_max }
-							value1 = { interval_min }
-							value2 = { interval_max }
-							onChange1 = { e => this.setState({ interval_min: e.target.value }) }
-							onChange2 = { e => this.setState({ interval_max: e.target.value }) }
-							class1 = { input_class_min }
-							class2 = { input_class_max }
-							icon = 'fa-stopwatch'
-						/>
-
-					</div>
-
-					<div className="column">
-
-						<Select
-							label = { props.lang_combo_box_village }
-							value = { village_id }
-							onChange = { e => this.setState({
-								village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
-								village_id: e.target.value,
-							}) }
-							options = { villages }
-							className = { village_select_class }
-							icon='fa-home'
 						/>
 
 					</div>
