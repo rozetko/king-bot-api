@@ -43,16 +43,18 @@ export default class TrainTroops extends Component {
 
 	set_research_units = async e => {
 		var { village_id, unit_type } = this.state;
-		const response = await axios.get(`/api/data?ident=research&village_id=${village_id}`);
-		let research_units = [];
-		if (response.data != null) {
-			for (let unit_data of response.data) {
-				research_units[unit_data.unitType] = unit_data.canResearch;
+		if (village_id) {
+			const response = await axios.get(`/api/data?ident=research&village_id=${village_id}`);
+			let research_units = [];
+			if (response.data != null) {
+				for (let unit_data of response.data) {
+					research_units[unit_data.unitType] = unit_data.canResearch;
+				}
 			}
+			if (!research_units[unit_type])
+				unit_type = 0;
+			this.setState({ research_units, unit_type });
 		}
-		if (!research_units[unit_type])
-			unit_type = 0;
-		this.setState({ research_units, unit_type });
 	};
 
 	async submit() {
