@@ -275,6 +275,27 @@ export default class ImproveTroops extends Component {
 			<div>
 				<div className="columns">
 
+					<div className="column">
+
+						<Select
+							label = { props.lang_combo_box_village }
+							value = { village_id }
+							onChange = { e => {
+								this.setState({
+									village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
+									village_id: e.target.value,
+								});
+								this.set_button();
+								this.set_research_units();
+								this.set_research_level();
+							} }
+							options = { villages }
+							className = { village_select_class }
+							icon='fa-home'
+						/>
+
+					</div>
+
 					<div className='column'>
 
 						<label class='label'>{ props.lang_combo_box_unittype }</label>
@@ -306,27 +327,6 @@ export default class ImproveTroops extends Component {
 							className={ level_select_class }
 							width= '7.5em'
 							icon = 'fa-sort-amount-up'
-						/>
-
-					</div>
-
-					<div className="column">
-
-						<Select
-							label = { props.lang_combo_box_village }
-							value = { village_id }
-							onChange = { e => {
-								this.setState({
-									village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
-									village_id: e.target.value,
-								});
-								this.set_button();
-								this.set_research_units();
-								this.set_research_level();
-							} }
-							options = { villages }
-							className = { village_select_class }
-							icon='fa-home'
 						/>
 
 					</div>
