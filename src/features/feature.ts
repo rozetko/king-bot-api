@@ -95,9 +95,9 @@ export abstract class feature_single implements feature {
 			this.running = true;
 			await this.run();
 		} catch (error:any) {
-			logger.error(error.message, 'feature_single');
+			logger.error(error.message, this.params.name);
 			if (error.stack)
-				logger.debug(error.stack, 'feature_single');
+				logger.debug(error.stack, this.params.name);
 
 			this.running = false;
 			this.set_options({ ...this.get_options(), run: false, error: true });
@@ -346,9 +346,9 @@ export abstract class feature_item {
 			await this.run();
 			this.save();
 		} catch (error:any) {
-			logger.error(error.message, 'feature_item');
+			logger.error(error.message, this.params.name);
 			if (error.stack)
-				logger.debug(error.stack, 'feature_item');
+				logger.debug(error.stack, this.params.name);
 
 			this.running = false;
 			this.set_options({ ...this.get_options(), run: false, error: true });

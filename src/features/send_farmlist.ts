@@ -1,10 +1,7 @@
-import { log, find_state_data, sleep, list_remove, get_random_int, get_date } from '../util';
-import { Ifarmlist, Ivillage } from '../interfaces';
-import { Ifeature, Irequest, feature_collection, feature_item, Ioptions } from './feature';
+import { sleep, get_random_int, get_date } from '../util';
+import { feature_collection, feature_item, Ioptions } from './feature';
 import { farming, village } from '../gamedata';
 import api from '../api';
-import database from '../database';
-import uniqid from 'uniqid';
 import { clean_farmlist } from '../utilities/clean_farmlist';
 import logger from '../logger';
 

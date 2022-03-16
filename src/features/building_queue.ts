@@ -157,8 +157,11 @@ class queue extends feature_item {
 			if (finished) {
 				// set sleep time until its finished
 				const res_time: number = get_diff_time(finished);
-				if (res_time > 0)
+				if (res_time > 0) {
 					sleep_time = res_time;
+					if (sleep_time > five_minutes)
+						sleep_time -= five_minutes;
+				}
 			}
 
 			if (!sleep_time)
@@ -214,7 +217,7 @@ class queue extends feature_item {
 			// check if building time is less than 5 min
 			if (upgrade_time < five_minutes && finish_earlier.running && canUseInstant) {
 				const res: any = await api.finish_now(village_id, queue_type);
-				if (!res.data) {
+				if (res.data === false) {
 					logger.error(`instant finish on village ${village_name} failed`, this.params.name);
 
 					// check again later if it might be possible
@@ -229,10 +232,12 @@ class queue extends feature_item {
 				return 1;
 			}
 
-			if (!sleep_time)
+			// set sleep time
+			if (!sleep_time || upgrade_time < sleep_time) {
 				sleep_time = upgrade_time;
-			else if (upgrade_time < sleep_time)
-				sleep_time = upgrade_time;
+				if (sleep_time > five_minutes)
+					sleep_time -= five_minutes;
+			}
 		}
 
 		// upgrade building using queue slot
