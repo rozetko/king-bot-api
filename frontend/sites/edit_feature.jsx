@@ -1,5 +1,5 @@
 import { h, render, Component } from 'preact';
-import { route } from 'preact-router';
+import { route, getCurrentUrl } from 'preact-router';
 import axios from 'axios';
 import uniqid from 'uniqid';
 import { connect } from 'unistore/preact';
@@ -89,7 +89,7 @@ export default class EditFeature extends Component {
 		const feature = h(features[ident].component, featureProps);
 
 		return (
-			<div>
+			<div key={ getCurrentUrl() }>
 				<h1
 					className='subtitle is-4'
 					syle={{ marginBottom: '2rem' }}

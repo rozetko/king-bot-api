@@ -122,7 +122,7 @@ export default class Feature extends Component {
 				<td style={ rowStyle }>
 					{this.props[`lang_feature_${this.state.ident}`]}
 				</td>
-				<td style={{ verticalAlign: 'middle', textAlign: 'left' }}>
+				<td style={{ verticalAlign: 'middle', textAlign: 'left', whiteSpace: 'pre-line' }}>
 					{this.state.description}
 				</td>
 				<td style={ rowStyle }>

@@ -236,7 +236,7 @@ export default class TimedSend extends Component {
 			const diff_time_ms = send_time_ms - current_time_ms;
 			const is_late = diff_time_ms < 0;
 			if (is_late) {
-				arrival_help = 'error: travel duration time exceeds arrival';
+				arrival_help = 'error_duration_exceeded';
 				arrival_help_css = 'is-danger';
 				error_date = true;
 				error_time = true;
@@ -293,7 +293,7 @@ export default class TimedSend extends Component {
 		}
 		const village_data = village_response.data[0].data;
 		if (!village_data) {
-			target_help = 'something went wrong, is your target a robber?';
+			target_help = 'error_target_wrong';
 			target_help_css = 'is-danger';
 			this.setState({
 				target_help, target_help_css,
@@ -476,12 +476,12 @@ export default class TimedSend extends Component {
 			mission_type = 3;
 		}
 		const mission_types = [
-			{ value: 5, name: 'Support' },
-			{ value: 3, name: 'Attack' },
-			{ value: 4, name: 'Raid' },
-			{ value: 6, name: 'Spy' },
-			{ value: 47, name: 'Siege', disabled: !can_siege },
-			{ value: 10, name: 'Settle' }
+			{ value: 5, name: props.lang_mission_type_support },
+			{ value: 3, name: props.lang_mission_type_attack },
+			{ value: 4, name: props.lang_mission_type_raid },
+			{ value: 6, name: props.lang_mission_type_spy },
+			{ value: 47, name: props.lang_mission_type_siege, disabled: !can_siege },
+			{ value: 10, name: props.lang_mission_type_settle }
 		].map(option =>
 			<option
 				value={ option.value }
@@ -499,7 +499,7 @@ export default class TimedSend extends Component {
 					<div className="column">
 
 						<DoubleInput
-							label = { `arrival date / time (${timetype_name}${timezone_name})` }
+							label = { props.lang_timed_send_arrival + ` (${timetype_name}${timezone_name})` }
 							type1 = 'date'
 							type2 = 'time'
 							value1 = { date }
@@ -517,11 +517,15 @@ export default class TimedSend extends Component {
 							icon1 = 'fa-calendar'
 							icon2 = 'fa-clock'
 							width = { null }
-							help = { <Help className = { arrival_help_css } content = { arrival_help } /> }
+							help = {
+								<Help
+									className = { arrival_help_css }
+									content = { arrival_help == 'error_duration_exceeded' ? props.lang_timed_send_error_arrival_duration : null }
+								/> }
 						/>
 
 						<DoubleInput
-							label = 'target (x / y)'
+							label = { props.lang_common_target }
 							placeholder1 = { 'x' }
 							placeholder2 = { 'y' }
 							value1 = { target_x }
@@ -530,8 +534,18 @@ export default class TimedSend extends Component {
 							onChange2 = { e => this.setState({ target_y: e.target.value }) }
 							class1 = { input_class_x }
 							class2 = { input_class_y }
-							button = { <Button action = 'set target' className = 'is-success' onClick = { this.set_target } icon = 'fa-bullseye-pointer' /> }
-							help = { <Help className = { target_help_css } content = { target_help } /> }
+							button = { <Button
+								action = { props.lang_timed_send_button_settarget }
+								className = 'is-success'
+								onClick = { this.set_target }
+								icon = 'fa-bullseye-pointer' /> }
+							help = {
+								<Help
+									className = { target_help_css }
+									content = {
+										target_help == 'error_target_wrong' ? props.lang_timed_send_help_error_wrong :
+											target_help ?? '' }
+								/> }
 							icon = 'fa-map-marker-alt'
 						/>
 					</div>
@@ -539,7 +553,7 @@ export default class TimedSend extends Component {
 					<div className="column">
 
 						<Select
-							label = { props.lang_combo_box_select_village }
+							label = { props.lang_combo_box_village }
 							value = { village_id }
 							onChange = { e => {
 								this.setState({
@@ -554,7 +568,7 @@ export default class TimedSend extends Component {
 						/>
 
 						<Select
-							label = { 'mission type' }
+							label = { props.lang_combo_box_missiontype }
 							value = { mission_type }
 							onChange = { e => {
 								this.setState({
@@ -579,10 +593,10 @@ export default class TimedSend extends Component {
 						<table className="table is-narrow is-fullwidth">
 							<thead>
 								<tr>
-									<th style={ row_style }>village</th>
-									<th style={ row_style }>player</th>
-									<th style={ row_style }>distance</th>
-									<th style={ row_style }>duration</th>
+									<th style={ row_style }>{props.lang_table_village}</th>
+									<th style={ row_style }>{props.lang_table_player}</th>
+									<th style={ row_style }>{props.lang_table_distance}</th>
+									<th style={ row_style }>{props.lang_table_duration}</th>
 								</tr>
 							</thead>
 							<tbody>

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { connect } from 'unistore/preact';
 
 import Feature from '../components/feature';
-import { storeKeys } from '../language';
+import lang, { storeKeys } from '../language';
 
 var jQuery = require( 'jquery' );
 import 'datatables.net';
@@ -32,7 +32,10 @@ export default class FeatureList extends Component {
 			],
 			pageLength: 10,
 			lengthChange: false,
-			rowGroup: true
+			rowGroup: true,
+			language: {
+				url: '/i18n/' + lang.currentLanguage + '.json'
+			}
 		});
 
 		jQuery('#table_search input').on('keyup', function () {

@@ -133,7 +133,7 @@ export default class TrainTroops extends Component {
 					<div className='column'>
 
 						<Select
-							label = 'select unit'
+							label = { props.lang_combo_box_unittype }
 							value = { unit_type }
 							onChange = { e => this.setState({
 								unit_type_name: e.target[e.target.selectedIndex].attributes.unit_type_name.value,
@@ -145,7 +145,7 @@ export default class TrainTroops extends Component {
 						/>
 
 						<Input
-							label={ props.lang_easy_scout_amount }
+							label={ props.lang_common_amount }
 							//placeholder='0: max'
 							value={ amount }
 							onChange={ e => this.setState({ amount: e.target.value }) }
@@ -155,7 +155,7 @@ export default class TrainTroops extends Component {
 						/>
 
 						<DoubleInput
-							label = { props.lang_farmlist_interval }
+							label = { props.lang_common_interval }
 							placeholder1 = { props.lang_common_min }
 							placeholder2 = { props.lang_common_max }
 							value1 = { interval_min }
@@ -172,7 +172,7 @@ export default class TrainTroops extends Component {
 					<div className="column">
 
 						<Select
-							label = { props.lang_combo_box_select_village }
+							label = { props.lang_combo_box_village }
 							value = { village_id }
 							onChange = { e => this.setState({
 								village_name: e.target[e.target.selectedIndex].attributes.village_name.value,

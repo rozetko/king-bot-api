@@ -222,7 +222,7 @@ export default class BuildingQueue extends Component {
 
 					<div className='column'>
 
-						<label class="label">{ props.lang_combo_box_select_village }</label>
+						<label class="label">{ props.lang_combo_box_village }</label>
 						<div class='field is-grouped'>
 							<Select
 								value = { village_id }

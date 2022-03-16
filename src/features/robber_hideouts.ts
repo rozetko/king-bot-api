@@ -133,7 +133,7 @@ class robber_feature extends feature_item {
 		const { village_name, interval_min, interval_max } = this.options;
 
 		if (!village_name)
-			return '<not configured>';
+			return '<n/a>';
 
 		return `${village_name} | ${interval_min} - ${interval_max}s`;
 	}
@@ -263,11 +263,11 @@ class robber_feature extends feature_item {
 		// check errors
 		if (response.errors) {
 			for (let error of response.errors)
-				logger.error(`send ${mission_type_name.toLowerCase()} from ${village_name} failed: ${error.message}`, this.params.name);
+				logger.error(`send ${mission_type_name} from ${village_name} failed: ${error.message}`, this.params.name);
 			return;
 		}
 
-		logger.info(`sent ${mission_type_name.toLowerCase()} from ${village_name} to ${robber_village.name}${not_sent}`, this.params.name);
+		logger.info(`sent ${mission_type_name} from ${village_name} to ${robber_village.name}${not_sent}`, this.params.name);
 		return;
 	}
 

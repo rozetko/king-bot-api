@@ -1,8 +1,8 @@
 import { h, render, Component } from 'preact';
 import classNames from 'classnames';
 import axios from 'axios';
-import { route } from 'preact-router';
-import uniqid from 'uniqid';
+// getCurrentUrl: https://github.com/jgthms/bulma/issues/2514#issuecomment-710771267
+import { route, getCurrentUrl } from 'preact-router';
 import { connect } from 'unistore/preact';
 
 import features from './features';
@@ -20,7 +20,11 @@ export default class NavBar extends Component {
 
 	componentWillMount() {
 		this.availableLanguages = lang.availableLanguages.map(x =>
-			<a className='navbar-item' onClick={ () => lang.changeLanguage(x) }>{x}</a>
+			<a className='navbar-item' onClick={ () =>
+			{
+				this.setState({ burger: false });
+				lang.changeLanguage(x);
+			} }>{x}</a>
 		);
 	}
 
@@ -36,8 +40,6 @@ export default class NavBar extends Component {
 	};
 
 	get_new = async ident => {
-		this.setState({ burger: false });
-
 		const payload = {
 			action: 'new',
 			feature: { ident },
@@ -54,7 +56,7 @@ export default class NavBar extends Component {
 
 		const { uuid } = data;
 
-		route(`/edit_feature/${ident}/${uuid}`);
+		this.route(`/edit_feature/${ident}/${uuid}`);
 	};
 
 	route = name => {
@@ -88,7 +90,7 @@ export default class NavBar extends Component {
 				<div class="container">
 					<div class="navbar-brand">
 						<span class="navbar-item">
-							<a href="/" title={ this.props.lang_navbar_home }>
+							<a href="/">
 								<h1 style="margin-bottom: 0.3em; line-height: 0;" class="navbar-item title is-3">
 									{this.props.lang_navbar_king_bot_api}
 								</h1>
@@ -106,7 +108,7 @@ export default class NavBar extends Component {
 					<div class={ menu_class }>
 						<div class="navbar-start">
 
-							<div class="navbar-item has-dropdown is-hoverable">
+							<div class="navbar-item has-dropdown is-hoverable" key={ 'features' + getCurrentUrl() }>
 								<a class="navbar-link">
 									{this.props.lang_navbar_add_feature}
 								</a>
@@ -115,15 +117,15 @@ export default class NavBar extends Component {
 								</div>
 							</div>
 
-							<div class='navbar-item has-dropdown is-hoverable'>
+							<div class='navbar-item has-dropdown is-hoverable' key={ 'extras' + getCurrentUrl() }>
 								<a class='navbar-link'>
 									{this.props.lang_navbar_extras}
 								</a>
 								<div class="navbar-dropdown is-radiusless">
-									<a className="navbar-item" href="/easy_scout">
+									<a className="navbar-item" onclick={ () => this.route('/easy_scout') }>
 										{this.props.lang_navbar_easy_scout}
 									</a>
-									<a className="navbar-item" href="/inactive_finder">
+									<a className="navbar-item" onclick={ () => this.route('/inactive_finder') }>
 										{this.props.lang_navbar_inactive_finder}
 									</a>
 								</div>
@@ -137,10 +139,10 @@ export default class NavBar extends Component {
 									<input
 										class = "input is-radiusless is-small"
 										type = "search"
-										placeholder = "search features"
+										placeholder = { this.props.lang_navbar_search }
 										autocomplete = "off"
 										spellcheck = "false"
-										style = {{ width: '12em' }}
+										style = {{ width: '13em' }}
 									/>
 									<span class="icon is-small is-left">
 										<i class="fas fa-search"></i>
@@ -151,8 +153,8 @@ export default class NavBar extends Component {
 								</div>
 							</div>
 
-							<div class="navbar-item has-dropdown is-hoverable">
-								<a class="navbar-link">options</a>
+							<div class="navbar-item has-dropdown is-hoverable" key={ 'options' + getCurrentUrl() }>
+								<a class="navbar-link">{this.props.lang_home_options}</a>
 
 								<div class="navbar-dropdown is-radiusless">
 
@@ -164,10 +166,10 @@ export default class NavBar extends Component {
 											{this.availableLanguages}
 										</div>
 									</div>
-									<a class="navbar-item" href="/logger">
+									<a class="navbar-item" onclick={ () => this.route('/logger') }>
 										{this.props.lang_navbar_logger}
 									</a>
-									<a class="navbar-item" href="/login">
+									<a class="navbar-item" onclick={ () => this.route('/login') }>
 										{this.props.lang_navbar_change_login}
 									</a>
 									<a class="navbar-item" target="_blank" href="https://github.com/pkeweloh/king-bot-api">

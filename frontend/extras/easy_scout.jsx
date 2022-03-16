@@ -111,7 +111,7 @@ export default class EasyScout extends Component {
 					<div className='column'>
 
 						<Select
-							label = { props.lang_combo_box_select_farmlist }
+							label = { props.lang_combo_box_farmlist }
 							value = { farmlist }
 							onChange = { e => this.setState({ farmlist: e.target.value }) }
 							options = { farmlists }
@@ -133,7 +133,7 @@ export default class EasyScout extends Component {
 					<div className='column'>
 
 						<Select
-							label = { props.lang_combo_box_select_village }
+							label = { props.lang_combo_box_village }
 							value = { village_id }
 							onChange = { e => this.setState({
 								village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
@@ -145,7 +145,7 @@ export default class EasyScout extends Component {
 						/>
 
 						<Input
-							label={ props.lang_easy_scout_amount }
+							label={ props.lang_common_amount }
 							placeholder={ props.lang_finder_default + ': 1' }
 							value={ amount }
 							onChange={ e => this.setState({ amount: e.target.value }) }

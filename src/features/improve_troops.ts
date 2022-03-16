@@ -57,9 +57,23 @@ class train_feature extends feature_item {
 		const { units } = this.options;
 
 		if (units.length == 0)
-			return '<not configured>';
+			return '<n/a>';
 
-		return `improving ${units.length} units`;
+		var villages: string[] = [];
+		for (let unit of units) {
+			const { village_name } = unit;
+			if (!villages.includes(village_name))
+				villages.push(village_name);
+		}
+
+		var description = '';
+		for (let village_name of villages) {
+			if (description != '')
+				description += ', ';
+			description += village_name;
+		}
+
+		return `${description} (${units.length})`;
 	}
 
 	get_long_description(): string {
