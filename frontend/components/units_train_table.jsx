@@ -19,9 +19,9 @@ export default connect(storeKeys)(props => {
 			<table className='table is-hoverable is-fullwidth'>
 				<thead>
 					<tr>
-						<th style={ rowStyle }>{props.lang_table_unittype}</th>
-						<th style={ rowStyle }>{props.lang_table_level}</th>
 						<th style={ rowStyle }>{props.lang_table_village}</th>
+						<th style={ rowStyle }>{props.lang_table_unittype}</th>
+						<th style={ rowStyle }>{props.lang_table_amount}</th>
 						<th style={ rowStyle }>{props.lang_table_options}</th>
 					</tr>
 				</thead>
@@ -34,13 +34,13 @@ export default connect(storeKeys)(props => {
 const UnitType = ({ content, remove_unit, edit_unit }) => (
 	<tr>
 		<td style={ rowStyle }>
+			{content.village_name}
+		</td>
+		<td style={ rowStyle }>
 			{content.unit_type_name}
 		</td>
 		<td style={ rowStyle }>
-			{content.level}
-		</td>
-		<td style={ rowStyle }>
-			{content.village_name}
+			{content.amount}
 		</td>
 		<td style={ rowStyle }>
 			<a class='has-text-black' onClick={ () => edit_unit(content) }>

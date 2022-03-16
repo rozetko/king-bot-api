@@ -142,7 +142,7 @@ class Login extends Component {
 								<div class='media-content'>
 
 									<div class='content'>
-										<h1 class="title is-3">login</h1>
+										<h1 class="title is-3">{ props.lang_login_title }</h1>
 
 										<Input
 											label={ props.lang_login_gameworld }
@@ -203,8 +203,8 @@ class Login extends Component {
 										</div>
 
 										<div className='control' style={{ marginTop: '30px' }}>
-											<Button action='login' onClick={ this.submit } className={ button_class_login } style={{ margin: '0 1rem 1rem 0' }} icon = 'fa-sign-in' />
-											<Button action='start bot based on last login' onClick={ this.start } className={ button_class_start } style={{ margin: '0 1rem 1rem 0' }} icon = 'fa-play' />
+											<Button action={ props.lang_login_title } onClick={ this.submit } className={ button_class_login } style={{ margin: '0 1rem 1rem 0' }} icon = 'fa-sign-in' />
+											<Button action={ props.lang_login_start } onClick={ this.start } className={ button_class_start } style={{ margin: '0 1rem 1rem 0' }} icon = 'fa-play' />
 										</div>
 
 									</div>

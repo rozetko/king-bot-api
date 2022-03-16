@@ -110,7 +110,7 @@ export default class Login extends Component {
 						<article class='media'>
 							<div class='media-content'>
 								<div class='content'>
-									<h1 class="title is-3">login</h1>
+									<h1 class="title is-3">{ props.lang_login_change_login }</h1>
 
 									<Input
 										label={ props.lang_login_gameworld }
@@ -171,7 +171,7 @@ export default class Login extends Component {
 									</div>
 
 									<div className='control' style={{ marginTop: '30px' }}>
-										<Button action='change login' className='is-success' onClick={ this.submit.bind(this) } icon='fa-edit' />
+										<Button action={ props.lang_login_change_login } className='is-success' onClick={ this.submit.bind(this) } icon='fa-edit' />
 									</div>
 
 								</div>

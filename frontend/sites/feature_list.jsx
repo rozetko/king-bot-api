@@ -24,6 +24,7 @@ export default class FeatureList extends Component {
 	async componentDidMount() {
 		await axios.get('/api/allfeatures').then(({ data }) => this.setState({ features: data }));
 
+		// TODO: Absolute sorting: https://datatables.net/plug-ins/sorting/absolute
 		const table = jQuery('#table').DataTable({
 			dom: 'frtip',
 			order: [],

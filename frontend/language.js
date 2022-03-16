@@ -29,7 +29,7 @@ const languages = {
 		lang_feature_desc_farming: 'will just send the farmlist in a given interval.',
 		lang_feature_desc_trade_route: 'sends merchants from the origin village to the desination at a given interval.',
 		lang_feature_desc_timed_send: 'send troops at a scheduled time, consider the travel time of the units for the arrival time.',
-		lang_feature_desc_train_troops: 'train troops in a given interval, if the amount is 0, it will train as many troops as possible.',
+		lang_feature_desc_train_troops: 'train troops in a given interval and order, it goes through the entire list at each interval, if the amount is greater than the cost of the available resources, it will train as many troops as possible.',
 		lang_feature_desc_robber_hideouts: 'check for robber hideouts and send the given units to attack them, it will retry with the same hideout until its destroyed, and then it will move on to the next and so on.',
 		lang_feature_desc_improve_troops: 'checks if it can upgrade given units in given order, first it checks unit and if it is not available or is maxed out, it will try to upgrade the next unit, you can increase the list as long as you want to.',
 
@@ -68,6 +68,7 @@ const languages = {
 		lang_table_pos: 'pos',
 		lang_table_unittype: 'unit',
 		lang_table_level: 'level',
+		lang_table_amount: 'amount',
 		lang_table_options: 'options',
 
 		lang_button_submit: 'submit',
@@ -101,9 +102,6 @@ const languages = {
 		lang_timed_send_error_arrival_duration: 'error: travel duration time exceeds arrival',
 		lang_timed_send_help_error_wrong: 'something went wrong, is your target a robber?',
 
-		lang_improve_troops_add: 'add unit',
-		lang_improve_troops_edit: 'edit unit',
-
 		lang_finder_default: 'default',
 		lang_finder_name: 'inactive finder',
 		lang_finder_distance_to: 'distance relative to',
@@ -120,9 +118,11 @@ const languages = {
 		lang_log_message: 'message',
 		lang_log_timestamp: 'time',
 
+		lang_login_title: 'login',
+		lang_login_change_login: 'change login',
+		lang_login_start: 'start bot based on last login',
 		lang_login_notification: 'the bot is going to shut down.... restart it, so the changes take effect.',
 		lang_login_reset_features: 'this will reset all features you configured!',
-		lang_login_login: 'login',
 		lang_login_gameworld: 'gameworld',
 		lang_login_email: 'email',
 		lang_login_password: 'password',
@@ -133,7 +133,6 @@ const languages = {
 
 		lang_trade_source_village: 'select source village',
 		lang_trade_dest_village: 'select destination village',
-		lang_trade_interval: 'interval in seconds (min / max)',
 		lang_trade_send_ress: 'send (wood|clay|iron|crop)',
 		lang_trade_source_greater: 'when source is greater than (wood|clay|iron|crop)',
 		lang_trade_dest_less: 'and destination is less than (wood|clay|iron|crop)',
@@ -149,51 +148,53 @@ const languages = {
 		lang_common_crop: 'crop',
 		lang_common_interval: 'interval in seconds (min / max)',
 		lang_common_target: 'target (x / y)',
+		lang_common_add_unit: 'add unit',
+		lang_common_add_edit: 'edit unit',
 
-		lang_mission_type_support: 'Reinforcement',
-		lang_mission_type_attack: 'Attack',
-		lang_mission_type_raid: 'Raid',
-		lang_mission_type_spy: 'Scouting',
-		lang_mission_type_siege: 'Siege',
-		lang_mission_type_settle: 'Settle',
+		lang_mission_type_support: 'reinforcement',
+		lang_mission_type_attack: 'attack',
+		lang_mission_type_raid: 'raid',
+		lang_mission_type_spy: 'scouting',
+		lang_mission_type_siege: 'siege',
+		lang_mission_type_settle: 'settle',
 
-		lang_unit_types_hero: 'Hero',
+		lang_unit_types_hero: 'hero',
 		lang_unit_types: {
 			1: {
-				1: 'Legionnaire',
-				2: 'Praetorian',
-				3: 'Imperian',
-				4: 'Equites Legati',
-				5: 'Equites Imperatoris',
-				6: 'Equites Caesaris',
-				7: 'Battering Ram',
-				8: 'Fire Catapult',
-				9: 'Senator',
-				10: 'Settler'
+				1: 'legionnaire',
+				2: 'praetorian',
+				3: 'imperian',
+				4: 'equites legati',
+				5: 'equites imperatoris',
+				6: 'equites caesaris',
+				7: 'battering ram',
+				8: 'fire catapult',
+				9: 'senator',
+				10: 'settler'
 			},
 			2: {
-				1: 'Clubswinger',
-				2: 'Spearfighter',
-				3: 'Axefighter',
-				4: 'Scout',
-				5: 'Paladin',
-				6: 'Teutonic Knight',
-				7: 'Ram',
-				8: 'Catapult',
-				9: 'Chief',
-				10: 'Settler'
+				1: 'clubswinger',
+				2: 'spearfighter',
+				3: 'axefighter',
+				4: 'scout',
+				5: 'paladin',
+				6: 'teutonic knight',
+				7: 'ram',
+				8: 'catapult',
+				9: 'chief',
+				10: 'settler'
 			},
 			3: {
-				1: 'Phalanx',
-				2: 'Swordsman',
-				3: 'Pathfinder',
-				4: 'Theutates Thunder',
-				5: 'Druidrider',
-				6: 'Haeduan',
-				7: 'Ram',
-				8: 'Trebuchet',
-				9: 'Chieftain',
-				10: 'Settler'
+				1: 'phalanx',
+				2: 'swordsman',
+				3: 'pathfinder',
+				4: 'theutates thunder',
+				5: 'druidrider',
+				6: 'haeduan',
+				7: 'ram',
+				8: 'trebuchet',
+				9: 'chieftain',
+				10: 'settler'
 			}
 		}
 	},
@@ -212,7 +213,7 @@ const languages = {
 		lang_feature_hero: 'auto aventura',
 		lang_feature_farming: 'enviar lista de vacas',
 		lang_feature_queue: 'cola de construcción',
-		lang_feature_raise_fields: 'subir campos',
+		lang_feature_raise_fields: 'subir recursos',
 		lang_feature_trade_route: 'ruta comercial',
 		lang_feature_timed_send: 'envío programado',
 		lang_feature_train_troops: 'entrenar tropas',
@@ -221,11 +222,11 @@ const languages = {
 
 		lang_feature_desc_hero: 'envía al héroe automáticamente a una aventura si la salud está por encima del porcentaje dado.',
 		lang_feature_desc_queue: 'esta es una cola de construcción interminable, no cambies la aldea una vez que esté establecida, si quieres cambiar la aldea, simplemente crea otra función de cola de construcción con tu aldea deseada.',
-		lang_feature_desc_raise_fields: 'subirá todos tus campos a un nivel determinado automáticamente, siempre actualizará el tipo que tenga el almacenamiento más bajo.',
+		lang_feature_desc_raise_fields: 'subirá todos tus recursos a un nivel determinado automáticamente, siempre actualizará el tipo que tenga el almacenamiento más bajo.',
 		lang_feature_desc_farming: 'se limitará a enviar la lista de vacas en un intervalo determinado.',
 		lang_feature_desc_trade_route: 'envía a los comerciantes de la aldea de origen a la de destino en un intervalo determinado.',
 		lang_feature_desc_timed_send: 'enviar tropas a una hora programada, considera la duración del viaje de las unidades para la hora de llegada.',
-		lang_feature_desc_train_troops: 'entrenar tropas en un intervalo determinado, si la cantidad es 0, entrenará todas las tropas posibles.',
+		lang_feature_desc_train_troops: 'entrenar tropas en un intervalo y orden determinado, recorre toda la lista en cada intervalo, si la cantidad es mayor que el coste de los recursos disponibles, entrenará las tropas posibles.',
 		lang_feature_desc_robber_hideouts: 'comprueba los escondites de los ladrones y envía las unidades dadas para atacarlos, volverá a intentar con el mismo escondite hasta que sea destruido, y entonces pasará al siguiente y así sucesivamente.',
 		lang_feature_desc_improve_troops: 'comprueba si puede mejorar las unidades dadas en un orden determinado, primero comprueba la unidad y si no está disponible o está al máximo, intentará mejorar la siguiente unidad, puedes aumentar la lista tanto como quieras.',
 
@@ -264,6 +265,7 @@ const languages = {
 		lang_table_pos: 'pos',
 		lang_table_unittype: 'unidad',
 		lang_table_level: 'nivel',
+		lang_table_amount: 'cantidad',
 		lang_table_options: 'opciones',
 
 		lang_button_submit: 'guardar',
@@ -297,9 +299,6 @@ const languages = {
 		lang_timed_send_error_arrival_duration: 'error: la duración del viaje es superior a la de la llegada',
 		lang_timed_send_help_error_wrong: 'algo salió mal, ¿tu objetivo es un ladrón?',
 
-		lang_improve_troops_add: 'añadir',
-		lang_improve_troops_edit: 'editar',
-
 		lang_finder_default: 'pred',
 		lang_finder_name: 'buscador de inactivos',
 		lang_finder_distance_to: 'distancia relativa a',
@@ -316,9 +315,11 @@ const languages = {
 		lang_log_message: 'mensaje',
 		lang_log_timestamp: 'tiempo',
 
+		lang_login_title: 'login',
+		lang_login_change_login: 'cambiar login',
+		lang_login_start: 'iniciar el bot basándose en el último login',
 		lang_login_notification: 'el bot se va a apagar.... reinícialo, para que los cambios surtan efecto.',
 		lang_login_reset_features: '¡esto restablecerá todas las funciones que hayas configurado!',
-		lang_login_login: 'login',
 		lang_login_gameworld: 'mundo de juego',
 		lang_login_email: 'correo electrónico',
 		lang_login_password: 'contraseña',
@@ -329,7 +330,6 @@ const languages = {
 
 		lang_trade_source_village: 'seleccionar aldea de origen',
 		lang_trade_dest_village: 'seleccionar aldea de destino',
-		lang_trade_interval: 'intervalo en segundos (mín. / máx.)',
 		lang_trade_send_ress: 'enviar (madera|barro|hierro|cereal)',
 		lang_trade_source_greater: 'cuando el origen es mayor que (madera|barro|hierro|cereal)',
 		lang_trade_dest_less: 'y el destino es inferior a (madera|barro|hierro|cereal)',
@@ -345,6 +345,8 @@ const languages = {
 		lang_common_crop: 'cereal',
 		lang_common_interval: 'intervalo en segundos (mín. / máx.)',
 		lang_common_target: 'objetivo (x / y)',
+		lang_common_add_unit: 'añadir',
+		lang_common_add_edit: 'editar',
 
 		lang_mission_type_support: 'refuerzo',
 		lang_mission_type_attack: 'ataque',
@@ -384,7 +386,7 @@ const languages = {
 				2: 'guerrero de espada',
 				3: 'rastreador',
 				4: 'rayo de theutates',
-				5: 'jinete druidra',
+				5: 'jinete druida',
 				6: 'jinete eduo',
 				7: 'ariete galo',
 				8: 'catapulta de guerra',
@@ -421,7 +423,7 @@ const languages = {
 		lang_feature_desc_farming: 'verschickt farmlisten automatisch in einem bestimmten intervall.',
 		lang_feature_desc_trade_route: 'händler werden automatisch zwischen zwei städten geschickt.',
 		lang_feature_desc_timed_send: 'schickt truppen zu einer geplanten zeit, wobei die reisezeit der einheiten für die ankunftszeit berücksichtigt wird.',
-		lang_feature_desc_train_troops: 'truppen in einem bestimmten intervall ausbilden, wenn die menge 0 ist, werden so viele truppen wie möglich ausgebildet.',
+		lang_feature_desc_train_troops: 'truppen in einem bestimmten intervall und in einer bestimmten reihenfolge auszubilden, geht es in jedem intervall die gesamte liste durch, wenn die menge größer ist als die kosten der verfügbaren ressourcen, bildet es so viele truppen wie möglich aus.',
 		lang_feature_desc_robber_hideouts: 'sucht nach räuberverstecken und schickt die entsprechenden truppen zum angriff. er versucht es so lange mit demselben versteck, bis es zerstört ist, und geht dann zum nächsten weiter usw.',
 		lang_feature_desc_improve_troops: 'prüft, ob bestimmte einheiten in einer bestimmten reihenfolge aufgerüstet werden können, zuerst wird die einheit geprüft und wenn sie nicht verfügbar ist oder das maximum erreicht hat, wird versucht, die nächste einheit aufzurüsten, die liste kann beliebig verlängert werden.',
 
@@ -458,9 +460,10 @@ const languages = {
 		lang_table_name: 'name',
 		lang_table_lvl: 'lvl',
 		lang_table_pos: 'pos',
-
-		lang_table_unittype: 'einheitstyp',
+		lang_table_unittype: 'einheit',
 		lang_table_level: 'level',
+		lang_table_amount: 'menge',
+		lang_table_options: 'optionen',
 
 		lang_button_submit: 'abschicken',
 		lang_button_cancel: 'abbrechen',
@@ -493,9 +496,6 @@ const languages = {
 		lang_timed_send_error_arrival_duration: 'fehlermeldung: reisedauer überschreitet ankunftszeit',
 		lang_timed_send_help_error_wrong: 'etwas ist schief gelaufen, ist dein ziel ein räuber?',
 
-		lang_improve_troops_add: 'einheit hinzufügen',
-		lang_improve_troops_edit: 'einheit editieren',
-
 		lang_finder_default: 'standard',
 		lang_finder_name: 'inaktiven sucher',
 		lang_finder_distance_to: 'distanz relativ zu',
@@ -512,9 +512,11 @@ const languages = {
 		lang_log_message: 'meldung',
 		lang_log_timestamp: 'zeit',
 
+		lang_login_title: 'einloggen',
+		lang_login_change_login: 'login ändern',
+		lang_login_start: 'start des bots basierend auf der letzten anmeldung',
 		lang_login_notification: 'der bot beendet sich nun.... starte ihn neu damit die änderungen funktionieren',
 		lang_login_reset_features: 'dies wird alle deine features zurücksetzen!',
-		lang_login_login: 'einloggen',
 		lang_login_gameworld: 'spielwelt',
 		lang_login_email: 'email',
 		lang_login_password: 'passwort',
@@ -525,7 +527,6 @@ const languages = {
 
 		lang_trade_source_village: 'ursprungsdorf wählen',
 		lang_trade_dest_village: 'zieldorf wählen',
-		lang_trade_interval: 'interval in sekunden (min / max)',
 		lang_trade_send_ress: 'schicke (holz|lehm|eisen|getreide)',
 		lang_trade_source_greater: 'wenn ursprung ist größer als (holz|lehm|eisen|getreide)',
 		lang_trade_dest_less: 'wenn ziel ist kleiner als (holz|lehm|eisen|getreide)',
@@ -541,6 +542,8 @@ const languages = {
 		lang_common_crop: 'getreide',
 		lang_common_interval: 'interval in sekunden (min / max)',
 		lang_common_target: 'ziel (x / y)',
+		lang_common_add_unit: 'hinzufügen',
+		lang_common_add_edit: 'editieren',
 
 		lang_mission_type_support: 'unterstützung',
 		lang_mission_type_attack: 'angriff',

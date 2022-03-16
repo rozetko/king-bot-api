@@ -170,7 +170,7 @@ export default class TradeRoute extends Component {
 					<div className='column'>
 
 						<DoubleInput
-							label = { props.lang_trade_interval }
+							label = { props.lang_common_interval }
 							placeholder1 = { props.lang_common_min }
 							placeholder2 = { props.lang_common_max }
 							value1 = { interval_min }
