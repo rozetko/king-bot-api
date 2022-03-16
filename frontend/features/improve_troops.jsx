@@ -4,7 +4,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { connect } from 'unistore/preact';
 import { storeKeys } from '../language';
-import UnitTypeTable from '../components/unittype_table';
+import UnitTypeTable from '../components/units_improve_table';
 import { Select, Button } from '../components/form';
 
 @connect(storeKeys)
@@ -22,8 +22,8 @@ export default class ImproveTroops extends Component {
 		unit_type_name: '',
 		level: 0,
 		button_edit: false,
-		error_village: false,
 		error_units: false,
+		error_village: false,
 		error_unit_type: false,
 		error_level: false
 	};
@@ -64,7 +64,7 @@ export default class ImproveTroops extends Component {
 		if (response.data) {
 			research_level = response.data.lvl;
 		}
-		if (Number(level) > Number(research_level))
+		if (Number(level) > Number(research_level) || Number(research_level) == 0)
 			level = 0;
 		this.setState({ research_level, level });
 	};
@@ -95,11 +95,11 @@ export default class ImproveTroops extends Component {
 			return;
 
 		const selected_unit = {
+			village_id,
+			village_name,
 			unit_type,
 			unit_type_name,
-			level,
-			village_name,
-			village_id
+			level
 		};
 
 		var is_already = false;
@@ -130,7 +130,10 @@ export default class ImproveTroops extends Component {
 			village_name: e.village_name,
 			unit_type: e.unit_type,
 			unit_type_name: e.unit_type_name,
-			level: e.level
+			level: e.level,
+			error_village: false,
+			error_unit_type: false,
+			error_level: false
 		});
 		this.set_button();
 		this.set_research_units();
@@ -139,13 +142,13 @@ export default class ImproveTroops extends Component {
 
 	async submit() {
 		this.setState({
+			error_units: this.state.units.length < 1,
 			error_village: (this.state.village_id == 0),
-			error_units: (this.state.units.length < 1),
 			error_unit_type: (this.state.unit_type == 0),
 			error_level: (this.state.level == 0)
 		});
 
-		if (this.state.error_village || this.state.error_units ||
+		if (this.state.error_units || this.state.error_village ||
 			this.state.error_unit_type || this.state.error_level)
 			return;
 
@@ -187,8 +190,11 @@ export default class ImproveTroops extends Component {
 		for (let level = 1; level <= 20; level++) {
 			range.push({ level, disabled: level > research_level });
 		}
+		range.push({ level: -1, disabled: research_level == 0 });
 		const levels = range.map(option =>
-			<option	value={ option.level } disabled={ option.disabled }>{option.level}</option>
+			<option	value={ option.level } disabled={ option.disabled }>
+				{option.level == -1 ? `(${props.lang_common_max})` : option.level}
+			</option>
 		);
 
 		const villages = all_villages.map(village =>
@@ -312,10 +318,10 @@ export default class ImproveTroops extends Component {
 							options = { own_troops }
 							className = { unit_select_class }
 							button = { <Button
-								action={ button_edit ? props.lang_improve_troops_edit : props.lang_improve_troops_add }
-								className='is-success'
-								onClick={ this.add_unit.bind(this) }
-								icon={ button_edit ? 'fa-pen' : 'fa-plus' } /> }
+								action = { button_edit ? props.lang_common_add_edit : props.lang_common_add_unit }
+								className = 'is-success'
+								onClick = { this.add_unit.bind(this) }
+								icon = { button_edit ? 'fa-pen' : 'fa-plus' } /> }
 							icon = 'fa-helmet-battle'
 						/>
 
@@ -325,7 +331,6 @@ export default class ImproveTroops extends Component {
 							onChange={ e => this.setState({ level: e.target.value }) }
 							options = { levels }
 							className={ level_select_class }
-							width= '7.5em'
 							icon = 'fa-sort-amount-up'
 						/>
 

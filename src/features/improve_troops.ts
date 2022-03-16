@@ -59,21 +59,14 @@ class train_feature extends feature_item {
 		if (units.length == 0)
 			return '<n/a>';
 
-		var villages: string[] = [];
-		for (let unit of units) {
-			const { village_name } = unit;
-			if (!villages.includes(village_name))
-				villages.push(village_name);
-		}
-
 		var description = '';
-		for (let village_name of villages) {
+		for (let unit of units) {
+			const { village_name, unit_type_name, level } = unit;
 			if (description != '')
-				description += ', ';
-			description += village_name;
+				description += '\n';
+			description += `${village_name} -> ${unit_type_name} (${level == -1 ? 'max' : level })`;
 		}
-
-		return `${description} (${units.length})`;
+		return description;
 	}
 
 	get_long_description(): string {
@@ -119,7 +112,7 @@ class train_feature extends feature_item {
 
 			if (!current_level[village_id])
 				current_level[village_id] = [];
-			current_level[village_id][unit_type] = 0;
+			current_level[village_id][unit_type] = false;
 
 			// get village
 			const villages_data: any = await village.get_own();
@@ -178,10 +171,10 @@ class train_feature extends feature_item {
 				continue;
 			}
 
-			current_level[village_id][unit_type] = unit_data.unitLevel;
-
 			// check if done
-			if (Number(unit_data.unitLevel) >= Number(level)) {
+			var unit_level: number = level == -1 ? unit_data.maxLevel : level;
+			if (Number(unit_data.unitLevel) >= Number(unit_level)) {
+				current_level[village_id][unit_type] = true;
 				continue;
 			}
 
@@ -195,11 +188,10 @@ class train_feature extends feature_item {
 				continue;
 			}
 			if (!unit_data.canUpgrade) {
-				logger.error(
+				logger.warn(
 					`improving unit type ${unit_type_name} in village ${village_name} skipped ` +
 					'because unit type is maxed out',
 					this.params.name);
-				this.options.error = true;
 				continue;
 			}
 
@@ -269,8 +261,7 @@ class train_feature extends feature_item {
 				if (Object.prototype.hasOwnProperty.call(current_level, Number(village_id))) {
 					if (Object.prototype.hasOwnProperty.call(current_level[Number(village_id)], Number(unit_type))) {
 						is_done = is_done
-							&& Number(current_level[Number(village_id)][Number(unit_type)])
-							>= (Number(unit.level));
+							&& Boolean(current_level[Number(village_id)][Number(unit_type)]);
 					}
 				}
 			}

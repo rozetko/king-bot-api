@@ -4,6 +4,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { connect } from 'unistore/preact';
 import { storeKeys } from '../language';
+import UnitTypeTable from '../components/units_train_table';
 import { Input, DoubleInput, Select, Button } from '../components/form';
 
 @connect(storeKeys)
@@ -15,14 +16,17 @@ export default class TrainTroops extends Component {
 		research_units: [],
 		village_name: '',
 		village_id: '',
-		error_village: false,
+		units: [],
 		unit_type: 0,
 		unit_type_name: '',
 		amount: 0,
 		interval_min: 0,
 		interval_max: 0,
+		button_edit: false,
+		error_units: false,
+		error_village: false,
 		error_amount: false,
-		error_unit: false,
+		error_unit_type: false,
 		error_interval_max: false,
 		error_interval_min: false
 	};
@@ -37,9 +41,6 @@ export default class TrainTroops extends Component {
 		axios.get('/api/data?ident=unit_types').then(res => this.setState({ unit_types: res.data }));
 	}
 
-	componentDidMount() {
-		this.set_research_units();
-	}
 
 	set_research_units = async e => {
 		var { village_id, unit_type } = this.state;
@@ -57,16 +58,96 @@ export default class TrainTroops extends Component {
 		}
 	};
 
-	async submit() {
+	set_button = async e => {
+		var { units, village_id, unit_type } = this.state;
+		var exists = false;
+		units.forEach((unit) => {
+			if (unit.village_id == village_id &&
+				unit.unit_type == unit_type) {
+				exists = true;
+				return;
+			}
+		});
+		this.setState({	button_edit: exists });
+	};
+
+	add_unit = async e => {
+		const {
+			village_name, village_id,
+			unit_type, unit_type_name,
+			amount, units
+		} = this.state;
+
 		this.setState({
 			error_village: (this.state.village_id == 0),
-			error_unit: (this.state.unit_type == 0),
+			error_unit_type: (this.state.unit_type == 0),
 			error_amount: (this.state.amount == 0),
 			error_interval_min: (this.state.interval_min == 0),
 			error_interval_max: (this.state.interval_max == 0)
 		});
 
-		if (this.state.error_village || this.state.error_unit || this.state.error_amount ||
+		if (this.state.error_village || this.state.error_unit_type || this.state.error_amount)
+			return;
+
+		const selected_unit = {
+			village_id,
+			village_name,
+			unit_type,
+			unit_type_name,
+			amount
+		};
+
+		var is_already = false;
+		units.forEach((unit) => {
+			if (unit.village_id != village_id)
+				return;
+			if (unit.unit_type != unit_type)
+				return;
+			is_already = true;
+			unit.amount = amount;
+		});
+		if (is_already)
+			return; // unit already added
+		units.push(selected_unit);
+		this.setState({ units });
+		this.set_button();
+	};
+
+	remove_unit = async e => {
+		const { units } = this.state;
+		units.splice(units.indexOf(e), 1);
+		this.setState({ units });
+	};
+
+	edit_unit = async e => {
+		this.setState({
+			village_id: e.village_id,
+			village_name: e.village_name,
+			unit_type: e.unit_type,
+			unit_type_name: e.unit_type_name,
+			amount: e.amount,
+			error_village: false,
+			error_unit_type: false,
+			error_amount: false,
+			error_interval_min: (this.state.interval_min == 0),
+			error_interval_max: (this.state.interval_max == 0)
+		});
+		this.set_button();
+		this.set_research_units();
+	};
+
+	async submit() {
+		this.setState({
+			error_units: this.state.units.length < 1,
+			error_village: (this.state.village_id == 0),
+			error_unit_type: (this.state.unit_type == 0),
+			error_amount: (this.state.amount == 0),
+			error_interval_min: (this.state.interval_min == 0),
+			error_interval_max: (this.state.interval_max == 0)
+		});
+
+		if (this.state.error_units || this.state.error_village ||
+			this.state.error_unit_type || this.state.error_amount ||
 			this.state.error_interval_min || this.state.error_interval_max)
 			return;
 
@@ -85,8 +166,8 @@ export default class TrainTroops extends Component {
 		var {
 			all_villages, unit_types, own_tribe,
 			village_id,	unit_type, amount,
-			interval_min, interval_max,
-			research_units,
+			interval_min, interval_max, units,
+			research_units, button_edit
 		} = this.state;
 
 		const village_select_class = classNames({
@@ -96,7 +177,7 @@ export default class TrainTroops extends Component {
 
 		const unit_select_class = classNames({
 			select: true,
-			'is-danger': this.state.error_unit,
+			'is-danger': this.state.error_unit_type,
 		});
 
 		const input_class_amount = classNames({
@@ -211,6 +292,7 @@ export default class TrainTroops extends Component {
 									village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
 									village_id: e.target.value
 								});
+								this.set_button();
 								this.set_research_units();
 							} }
 							options = { villages }
@@ -235,15 +317,24 @@ export default class TrainTroops extends Component {
 
 					<div className='column'>
 
+						<label class='label'>{ props.lang_combo_box_unittype }</label>
 						<Select
 							label = { props.lang_combo_box_unittype }
 							value = { unit_type }
-							onChange = { e => this.setState({
-								unit_type_name: e.target[e.target.selectedIndex].attributes.unit_type_name.value,
-								unit_type: e.target.value,
-							}) }
+							onChange = { e => {
+								this.setState({
+									unit_type_name: e.target[e.target.selectedIndex].attributes.unit_type_name.value,
+									unit_type: e.target.value
+								});
+								this.set_button();
+							} }
 							options = { own_troops }
 							className = { unit_select_class }
+							button = { <Button
+								action = { button_edit ? props.lang_common_add_edit : props.lang_common_add_unit }
+								className = 'is-success'
+								onClick = { this.add_unit.bind(this) }
+								icon = { button_edit ? 'fa-pen' : 'fa-plus' } /> }
 							icon = 'fa-helmet-battle'
 						/>
 
@@ -255,6 +346,20 @@ export default class TrainTroops extends Component {
 							className={ input_class_amount }
 							width= '7.5em'
 							icon = 'fa-sort-amount-up'
+						/>
+
+					</div>
+
+				</div>
+
+				<div className="columns">
+
+					<div className="column">
+
+						<UnitTypeTable
+							content={ units }
+							remove_unit={ this.remove_unit.bind(this) }
+							edit_unit={ this.edit_unit.bind(this) }
 						/>
 
 					</div>

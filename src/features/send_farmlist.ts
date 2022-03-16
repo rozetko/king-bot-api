@@ -66,21 +66,14 @@ class farm_feature extends feature_item {
 		if (farmlists.length == 0)
 			return '<n/a>';
 
-		var villages: string[] = [];
-		for (let unit of farmlists) {
-			const { village_name } = unit;
-			if (!villages.includes(village_name))
-				villages.push(village_name);
-		}
-
 		var description = '';
-		for (let village_name of villages) {
+		for (let list of farmlists) {
+			const { farmlist, village_name } = list;
 			if (description != '')
-				description += ', ';
-			description += village_name;
+				description += '\n';
+			description += `${village_name} -> ${farmlist} | ${interval_min} - ${interval_max}s`;
 		}
-
-		return `${description} (${farmlists.length}): ${interval_min} - ${interval_max}s`;
+		return description;
 	}
 
 	get_long_description(): string {
