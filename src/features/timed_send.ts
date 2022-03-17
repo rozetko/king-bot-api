@@ -176,7 +176,7 @@ class timed_send_feature extends feature_item {
 		const { village_name, mission_type_name, target_village_name, date, time, timetype_name, timezone_name } = this.options;
 
 		if (!village_name)
-			return '<n/a>';
+			return 'lang_home_not_configured';
 
 		const lang = database.get('language').value();
 		const format_options: any = { weekday: 'long', month: 'long', day: 'numeric' };

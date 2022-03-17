@@ -133,7 +133,7 @@ class robber_feature extends feature_item {
 		const { village_name, interval_min, interval_max } = this.options;
 
 		if (!village_name)
-			return '<n/a>';
+			return 'lang_home_not_configured';
 
 		return `${village_name} | ${interval_min} - ${interval_max}s`;
 	}

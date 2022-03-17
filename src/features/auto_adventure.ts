@@ -38,6 +38,10 @@ class auto_adventure extends feature_single {
 		return 'hero';
 	}
 
+	get_description(): string {
+		return (this.options.type == 0) ? 'lang_adventure_short' : 'lang_adventure_long';
+	}
+
 	set_options(options: Ioptions_hero): void {
 		const { run, error, type, min_health, uuid } = options;
 		this.options = {
@@ -52,10 +56,6 @@ class auto_adventure extends feature_single {
 
 	get_options(): Ioptions {
 		return { ...this.options };
-	}
-
-	get_description(): string {
-		return (this.options.type == 0) ? 'short' : 'long';
 	}
 
 	update(options: Ioptions_hero): Iresponse {

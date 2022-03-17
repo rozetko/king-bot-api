@@ -64,7 +64,7 @@ class farm_feature extends feature_item {
 		const { farmlists, interval_min, interval_max } = this.options;
 
 		if (farmlists.length == 0)
-			return '<n/a>';
+			return 'lang_home_not_configured';
 
 		var description = '';
 		for (let list of farmlists) {
