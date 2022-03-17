@@ -3,7 +3,7 @@ import { route } from 'preact-router';
 import axios from 'axios';
 import classNames from 'classnames';
 import { connect } from 'unistore/preact';
-import { storeKeys } from '../language';
+import lang, { storeKeys } from '../language';
 import { DoubleInput, Select, Button, Help } from '../components/form';
 import UnitsTable from '../components/units_table';
 
@@ -293,7 +293,7 @@ export default class TimedSend extends Component {
 		}
 		const village_data = village_response.data[0].data;
 		if (!village_data) {
-			target_help = 'error_target_wrong';
+			target_help = lang.translate('lang_timed_send_help_error_wrong');
 			target_help_css = 'is-danger';
 			this.setState({
 				target_help, target_help_css,
@@ -539,13 +539,7 @@ export default class TimedSend extends Component {
 								className = 'is-success'
 								onClick = { this.set_target }
 								icon = 'fa-bullseye-pointer' /> }
-							help = {
-								<Help
-									className = { target_help_css }
-									content = {
-										target_help == 'error_target_wrong' ? props.lang_timed_send_help_error_wrong :
-											target_help ?? '' }
-								/> }
+							help = { <Help className = { target_help_css } content = { target_help ?? '' } /> }
 							icon = 'fa-map-marker-alt'
 						/>
 					</div>

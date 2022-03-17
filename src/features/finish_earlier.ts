@@ -26,8 +26,13 @@ class finish_earlier extends feature_single {
 		};
 	}
 
+	get_long_description(): string {
+		// key in the frontend language.js file
+		return 'finish_earlier';
+	}
+
 	get_description(): string {
-		return '5 min earlier';
+		return 'lang_finish_earlier_description';
 	}
 
 	set_options(options: Ioptions): void {

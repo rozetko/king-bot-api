@@ -38,6 +38,7 @@ const languages = {
 		lang_home_status: 'status',
 		lang_home_off_on: 'off / on',
 		lang_home_options: 'options',
+		lang_home_not_configured: '<not configured>',
 
 		lang_easy_scout_title: 'easy scout',
 		lang_easy_scout_description: 'send scouts to every farm in the given farmlist',
@@ -82,6 +83,8 @@ const languages = {
 		lang_adventure_min_health: 'minimum health',
 		lang_adventure_max: 'max',
 		lang_adventure_health: 'health',
+
+		lang_finish_earlier_description: '5 min earlier',
 
 		lang_queue_res_fields: 'resource fields',
 		lang_queue_buildings: 'buildings',
@@ -209,7 +212,7 @@ const languages = {
 		lang_navbar_language: 'idioma',
 		lang_navbar_search: 'buscar funciones',
 
-		lang_feature_finish_earlier: 'terminar antes',
+		lang_feature_finish_earlier: 'finalizar instantáneo',
 		lang_feature_hero: 'auto aventura',
 		lang_feature_farming: 'enviar lista de vacas',
 		lang_feature_queue: 'cola de construcción',
@@ -235,6 +238,7 @@ const languages = {
 		lang_home_status: 'estado',
 		lang_home_off_on: 'off / on',
 		lang_home_options: 'opciones',
+		lang_home_not_configured: '<no configurada>',
 
 		lang_easy_scout_title: 'espionaje',
 		lang_easy_scout_description: 'envia exploradores a todas las vacas de una lista de vacas determinada.',
@@ -279,6 +283,8 @@ const languages = {
 		lang_adventure_min_health: 'salud mínima',
 		lang_adventure_max: 'máx.',
 		lang_adventure_health: 'salud',
+
+		lang_finish_earlier_description: '5 minutos antes',
 
 		lang_queue_res_fields: 'campos de recursos',
 		lang_queue_buildings: 'edificios',
@@ -406,8 +412,8 @@ const languages = {
 		lang_navbar_language: 'sprache',
 		lang_navbar_search: 'features suchen',
 
-		lang_feature_finish_earlier: 'schneller bauen',
-		lang_feature_hero: 'automatisches abenteuer',
+		lang_feature_finish_earlier: 'sofortige fertigstellung',
+		lang_feature_hero: 'autoabenteuer',
 		lang_feature_farming: 'farmlisten schicken',
 		lang_feature_queue: 'endlose bauschleife',
 		lang_feature_raise_fields: 'ressourcenfelder ausbau',
@@ -432,6 +438,7 @@ const languages = {
 		lang_home_status: 'status',
 		lang_home_off_on: 'aus / an',
 		lang_home_options: 'optionen',
+		lang_home_not_configured: '<nicht eingestellt>',
 
 		lang_easy_scout_title: 'einfaches spähen',
 		lang_easy_scout_description: 'schicke 1 scout an jedes dorf in einer farmliste',
@@ -476,6 +483,8 @@ const languages = {
 		lang_adventure_min_health: 'minimum gesundheit',
 		lang_adventure_max: 'max',
 		lang_adventure_health: 'gesundheit',
+
+		lang_finish_earlier_description: '5 minuten früher',
 
 		lang_queue_res_fields: 'ressourcen felder',
 		lang_queue_buildings: 'gebäude',
