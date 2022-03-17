@@ -13,7 +13,7 @@ const statusDict = {
 	'online': 'fa-check',
 };
 
-const rowStyle = {
+const cellStyle = {
 	verticalAlign: 'middle',
 	textAlign: 'center',
 };
@@ -106,39 +106,45 @@ export default class Feature extends Component {
 	}
 
 	render() {
-		var toggle_icon = classNames({
+
+		const isFinishEarlier = this.state.ident == 'finish_earlier';
+		const isAutoAdventure = this.state.ident == 'hero';
+		var rowClass = classNames({
+			'has-background-white-bis': isFinishEarlier || isAutoAdventure
+		});
+		rowClass = null;
+		var canEdit = isFinishEarlier ?
+			{ display: 'none' } : {};
+
+		var toggleIcon = classNames({
 			fas: true,
 			'fa-lg': true,
 			'fa-toggle-on': this.state.run,
 			'fa-toggle-off': !this.state.run,
 		});
 
-		var visibleStyle = this.state.ident == 'finish_earlier' ?
-			{ display: 'none' } : {};
-
-		// TODO translate description
 		return (
-			<tr>
-				<td style={ rowStyle }>
+			<tr class = { rowClass }>
+				<td style={ cellStyle }>
 					{this.props[`lang_feature_${this.state.ident}`]}
 				</td>
 				<td style={{ verticalAlign: 'middle', textAlign: 'left', whiteSpace: 'pre-line' }}>
-					{this.state.description}
+					{lang.translate(this.state.description)}
 				</td>
-				<td style={ rowStyle }>
+				<td style={ cellStyle }>
 					<span class='icon is-large'>
 						<i class={ 'fas fa-lg ' + statusDict[this.state.status] }></i>
 					</span>
 				</td>
-				<td style={ rowStyle }>
+				<td style={ cellStyle }>
 					<a class='has-text-black' onClick={ this.toggle.bind(this) }>
 						<span class='icon is-medium'>
-							<i class={ toggle_icon }></i>
+							<i class={ toggleIcon }></i>
 						</span>
 					</a>
 				</td>
-				<td style={ rowStyle }>
-					<a class='has-text-black' onClick={ this.edit.bind(this) } style={ visibleStyle }>
+				<td style={ cellStyle }>
+					<a class='has-text-black' onClick={ this.edit.bind(this) } style={ canEdit }>
 						<span class='icon is-medium'>
 							<i class='fas fa-lg fa-edit'></i>
 						</span>

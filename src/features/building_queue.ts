@@ -68,7 +68,7 @@ class queue extends feature_item {
 		const { village_name } = this.options;
 
 		if (!village_name)
-			return '<n/a>';
+			return 'lang_home_not_configured';
 
 		return village_name;
 	}

@@ -57,7 +57,7 @@ class train_feature extends feature_item {
 		const { units } = this.options;
 
 		if (units.length == 0)
-			return '<n/a>';
+			return 'lang_home_not_configured';
 
 		var description = '';
 		for (let unit of units) {

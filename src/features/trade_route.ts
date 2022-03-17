@@ -126,7 +126,7 @@ class trade_feature extends feature_item {
 		const { source_village_name, destination_village_name, interval_min, interval_max } = this.options;
 
 		if (!source_village_name)
-			return '<n/a>';
+			return 'lang_home_not_configured';
 
 		return `${source_village_name} -> ${destination_village_name} | ${interval_min} - ${interval_max}s`;
 	}

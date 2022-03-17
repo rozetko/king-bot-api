@@ -8,6 +8,7 @@ import lang, { storeKeys } from '../language';
 var jQuery = require( 'jquery' );
 import 'datatables.net';
 import 'datatables-bulma';
+import 'plugins/datatables.absolute.js';
 
 const rowStyle = {
 	verticalAlign: 'middle',
@@ -24,11 +25,21 @@ export default class FeatureList extends Component {
 	async componentDidMount() {
 		await axios.get('/api/allfeatures').then(({ data }) => this.setState({ features: data }));
 
-		// TODO: Absolute sorting: https://datatables.net/plug-ins/sorting/absolute
+		// Absolute sorting
+		// https://datatables.net/plug-ins/sorting/absolute
+		var absoluteOrder = jQuery.fn.dataTable.absoluteOrder([
+			{ value: lang.translate('lang_feature_finish_earlier'), position: 'top' },
+			{ value: lang.translate('lang_finish_earlier_description'), position: 'top' },
+			{ value: lang.translate('lang_feature_hero'), position: 'top' },
+			{ value: lang.translate('lang_adventure_short'), position: 'top' },
+			{ value: lang.translate('lang_adventure_long'), position: 'top' }
+		]);
+
 		const table = jQuery('#table').DataTable({
 			dom: 'frtip',
 			order: [],
 			columnDefs: [
+				{ type: absoluteOrder, targets: [0,1] },
 				{ targets: [2,3,4], orderable: false }
 			],
 			pageLength: 10,

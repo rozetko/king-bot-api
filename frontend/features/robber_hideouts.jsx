@@ -3,7 +3,7 @@ import { route } from 'preact-router';
 import axios from 'axios';
 import classNames from 'classnames';
 import { connect } from 'unistore/preact';
-import { storeKeys } from '../language';
+import lang, { storeKeys } from '../language';
 import { DoubleInput, Select, Button, Help } from '../components/form';
 import UnitsTable from '../components/units_table';
 
@@ -170,7 +170,7 @@ export default class RoberHideouts extends Component {
 
 		const location_data = location_response.data[0].data;
 		if (!location_data.hasNPC) {
-			target_help = 'error_not_robber_village';
+			target_help = lang.translate('lang_robber_hideouts_help_error_wrong');
 			target_help_css = 'is-danger';
 			this.setState({
 				target_help, target_help_css,
@@ -193,7 +193,7 @@ export default class RoberHideouts extends Component {
 			village_response = await axios
 				.post('/api/find', [`Village: ${robber1_village_id}`]);
 			if (!village_response.data[0].data) {
-				target_help = 'error_robber_village';
+				target_help = lang.translate('lang_robber_hideouts_help_error_find');
 				target_help_css = 'is-danger';
 				this.setState({
 					target_help, target_help_css,
@@ -203,7 +203,7 @@ export default class RoberHideouts extends Component {
 			}
 		}
 
-		target_help = 'success_robber_village';
+		target_help = lang.translate('lang_robber_hideouts_help_success');
 		target_help_css = 'is-success';
 		this.setState({ robber1_village_id, robber2_village_id, target_help, target_help_css });
 		setTimeout(async e => {
@@ -363,11 +363,7 @@ export default class RoberHideouts extends Component {
 							help = {
 								<Help
 									className = { target_help_css }
-									content = {
-										target_help == 'error_not_robber_village' ? props.lang_robber_hideouts_help_error_wrong :
-											target_help == 'error_robber_village' ? props.lang_robber_hideouts_help_error_find :
-												target_help == 'success_robber_village' ? props.lang_robber_hideouts_help_success :
-													target_help ?? props.lang_robber_hideouts_help_default }
+									content = { target_help ?? props.lang_robber_hideouts_help_default }
 								/> }
 							icon = 'fa-map-marker-alt'
 						/>
