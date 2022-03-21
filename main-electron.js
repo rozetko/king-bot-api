@@ -42,7 +42,15 @@ server.post('/api/login', (req, res) => {
 	kingbot.start_server().then(() => {
 		window.loadURL('http://localhost:3000');
 	});
+});
 
+server.get('/api/settings', (req, res) => {
+	var data = settings.read_credentials();
+	res.send(data ? {
+		email: data.email,
+		gameworld: data.gameworld,
+		avatar_name: data.sitter_name
+	} : null);
 });
 
 server.get('/api/start', (req, res) => {

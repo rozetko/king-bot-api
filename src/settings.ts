@@ -66,7 +66,7 @@ class settings {
 
 		let credString: string = `${email};${password};${gameworld}`;
 		if (sitter_type && sitter_name)
-			credString += `;${sitter_type};${sitter_name}`;
+			credString = credString + `;${sitter_type};${sitter_name}`;
 
 		fs.writeFileSync(filename, credString);
 
