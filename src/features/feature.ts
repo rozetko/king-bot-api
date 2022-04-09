@@ -335,7 +335,16 @@ export abstract class feature_item {
 	}
 
 	save(): void {
-		database.set(`${this.params.ident}.options`, [this.get_options()]).write();
+		let options: Ioptions[] = database.get(`${this.params.ident}.options`).value();
+
+		if (!options) return;
+
+		for (var option = 0; option < options.length; option++) {
+			if (options[option].uuid == this.get_options().uuid)
+				options[option] = this.get_options();
+		}
+
+		database.set(`${this.params.ident}.options`, options).write();
 	}
 
 	async start(): Promise<void> {
