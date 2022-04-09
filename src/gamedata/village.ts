@@ -16,7 +16,10 @@ class village {
 
 	find(id: number, data: any): Ivillage {
 		const villages = find_state_data(this.collection_own_ident, data);
-
+		if (!villages) {
+			logger.error('couldn\'t get own villages data!', 'village');
+			return null;
+		}
 		const village = villages.find((x: any) => x.data.villageId == id);
 
 		if (!village) {

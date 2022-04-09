@@ -140,6 +140,10 @@ class raise extends feature_item {
 		];
 		const response: any[] = await api.get_cache(params);
 		const queue_data: Ibuilding_queue = find_state_data(village.building_queue_ident + village_id, response);
+		if (queue_data == null) {
+			logger.error(`could not get building queue data on village ${village_name}`, this.params.name);
+			return 60; // sleep 1 minute
+		}
 
 		let sleep_time: number = null;
 		const five_minutes: number = 5 * 60;
@@ -174,9 +178,6 @@ class raise extends feature_item {
 			return sleep_time;
 		}
 
-		// village got free res slot
-		const village_data: Ibuilding_collection[] = find_state_data(village.building_collection_ident + village_id, response);
-
 		// sort resource type by it's storage
 		const sorted_res_types: number[] = [];
 		const temp_res_prod: number[] = [];
@@ -207,6 +208,9 @@ class raise extends feature_item {
 		// queue loop
 		let upgrade_building: Ibuilding = null;
 		let done: boolean = true;
+
+		// village got free res slot
+		const village_data: Ibuilding_collection[] = find_state_data(village.building_collection_ident + village_id, response);
 
 		// iterate over resource by its priority based on production
 		for (let res of sorted_res_types) {

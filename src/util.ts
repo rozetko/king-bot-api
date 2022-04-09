@@ -23,15 +23,17 @@ export function get_date(): number {
 }
 
 export function find_state_data(ident: string, data: any[], contains: boolean = false): any {
-	if (data) {
-		const found_obj = data.find((x: any) => {
-			return contains ? x.name.includes(ident) : x.name == ident;
-		});
-		if (found_obj)
-			return found_obj.data;
-		logger.error(found_obj, 'find_state_data');
-	}
-	return [];
+	if (!data)
+		return [];
+	if (typeof data.find !== 'function')
+		return []; // avoid TypeError
+
+	const found_obj = data.find((x: any) => {
+		return contains ? x.name.includes(ident) : x.name == ident;
+	});
+	if (found_obj)
+		return found_obj.data;
+	logger.error(found_obj, 'find_state_data');
 }
 
 export function get_random_int(min: number, max: number): number {

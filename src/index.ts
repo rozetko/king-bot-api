@@ -53,6 +53,7 @@ class kingbot {
 		api.init(proxy);
 		if (proxy)
 			await api.test_proxy();
+		logger.info('start login...', 'api');
 		await api.login(email, password, gameworld, sitter_type, sitter_name);
 	}
 

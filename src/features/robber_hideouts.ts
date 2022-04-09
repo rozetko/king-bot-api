@@ -285,14 +285,30 @@ class robber_feature extends feature_item {
 		const village2_ident = village.ident + robber2_village_id;
 		const villages_data: any[] = await api.get_cache([village1_ident, village2_ident]);
 		const robber1_village: Ivillage = find_state_data(village1_ident, villages_data);
+		if (robber1_village == null) {
+			logger.error('could not get village data of robber 1', this.params.name);
+			return null;
+		}
 		const robber2_village: Ivillage = find_state_data(village2_ident, villages_data);
+		if (robber2_village == null) {
+			logger.error('could not get village data of robber 2', this.params.name);
+			return null;
+		}
 
 		// get robber map positions
 		const position1_ident = village.map_details_ident + robber1_village.position;
 		const position2_ident = village.map_details_ident + robber2_village.position;
 		const position_data: any[] = await api.get_cache([position1_ident, position2_ident]);
 		const robber1: Imap_details = find_state_data(position1_ident, position_data);
+		if (robber1 == null) {
+			logger.error('could not get position data of robber 1', this.params.name);
+			return null;
+		}
 		const robber2: Imap_details = find_state_data(position2_ident, position_data);
+		if (robber2 == null) {
+			logger.error('could not get position data of robber 2', this.params.name);
+			return null;
+		}
 
 		// return any that still has robbers
 		if (robber1.hasNPC != 0 && robber1.npcInfo.troops != null) {
@@ -323,7 +339,15 @@ class robber_feature extends feature_item {
 			village.ident + robber2_village_id
 		]);
 		const robber1_village: Ivillage = find_state_data(village.ident + robber1_village_id, villages_data);
+		if (robber1_village == null) {
+			logger.error('could not get village data of robber 1', this.params.name);
+			return true;
+		}
 		const robber2_village: Ivillage = find_state_data(village.ident + robber2_village_id, villages_data);
+		if (robber2_village == null) {
+			logger.error('could not get village data of robber 2', this.params.name);
+			return true;
+		}
 
 		const troops_collection: Itroops_collection[] = await troops.get(village_id, troops_type.moving);
 		for (let troop of troops_collection) {

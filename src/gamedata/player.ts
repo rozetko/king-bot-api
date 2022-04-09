@@ -8,11 +8,10 @@ class player {
 
 	async get(): Promise<Iplayer> {
 		const villages_data: any = await village.get_own();
-		const player_id: string = find_state_data(village.collection_own_ident, villages_data)[0].data.playerId;
+		const villages: any = find_state_data(village.collection_own_ident, villages_data);
+		const player_id: string = villages[0]?.data?.playerId;
 
-		const params = [ this.ident + player_id ];
-
-		const response = await api.get_cache(params);
+		const response = await api.get_cache([ this.ident + player_id ]);
 		const player_data: Iplayer = find_state_data(this.ident + player_id, response);
 
 		return player_data;

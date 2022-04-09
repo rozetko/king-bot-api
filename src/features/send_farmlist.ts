@@ -111,6 +111,12 @@ class farm_feature extends feature_item {
 
 			for (let farmlistinfo of farmlists) {
 				const list_obj = farming.find(farmlistinfo.farmlist, response);
+				if (!list_obj) {
+					logger.error('stop feature because farmlist can not be found', this.params.name);
+					this.options.run = false;
+					this.options.error = true;
+					break;
+				}
 				const village_id: number = farmlistinfo.village_id;
 
 				const lastSent: number = Number(list_obj.lastSent);

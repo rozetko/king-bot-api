@@ -80,8 +80,12 @@ class finish_earlier extends feature_single {
 			for (let data of find_state_data(village.collection_own_ident, villages_data)) {
 				const village_obj: Ivillage = data.data;
 				const queue_data: Ibuilding_queue = find_state_data(this.building_queue_ident + village_obj.villageId, response);
-				const queues: number[] = [1, 2];
+				if (queue_data == null) {
+					logger.error(`could not get building queue data on village ${village_obj.name}`, this.params.name);
+					sleep(60); // sleep 1 minute
+				}
 
+				const queues: number[] = [1, 2];
 				// for building and resource queue
 				for (let queue_type of queues) {
 					const actual_queue: any[] = queue_data.queues[queue_type];

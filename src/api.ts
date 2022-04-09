@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import createHttpsProxy from 'https-proxy-agent';
 import { clash_obj, get_date, camelcase_to_string } from './util';
 import manage_login from './login';
-import settings from './settings';
+import settings, { Icredentials } from './settings';
 import database from './database';
 import { Iunits } from './interfaces';
 import { default_Iunits } from './data';
@@ -14,6 +14,7 @@ class api {
 	session: string = '';
 	token: string = '';
 	msid: string = '';
+	is_busy = false;
 
 	/*
 	// old fashion
@@ -71,9 +72,25 @@ class api {
 		database.set('account.proxy_ip', https_ip).write();
 	}
 
-	async login(email: string, password: string, gameworld: string, sitter_type: string, sitter_name: string) {
-		logger.info('start login...', 'api');
+	async refresh_token() {
+		if (!this.is_busy) {
+			this.is_busy = true;
+			logger.info('refresh token...', 'api');
 
+			// read credentials
+			let cred: Icredentials = settings.read_credentials();
+			if (!cred) {
+				logger.error('credentials not found', 'api');
+				return;
+			}
+
+			// log back in
+			await this.login(cred.email, cred.password, cred.gameworld, cred.sitter_type, cred.sitter_name);
+			this.is_busy = false;
+		}
+	}
+
+	async login(email: string, password: string, gameworld: string, sitter_type: string, sitter_name: string) {
 		// manage gameworld login
 		await manage_login(this.ax, email, password, gameworld, sitter_type, sitter_name);
 
@@ -103,10 +120,12 @@ class api {
 			session
 		};
 
-		const response = await this.ax.post(`/?c=cache&a=get&t${get_date()}`, payload);
-
+		const response: any = await this.ax.post(`/?c=cache&a=get&t${get_date()}`, payload);
+		if (response.data?.error?.type == 'ClientException') {
+			logger.error('authentication failed', 'cache.get');
+			await this.refresh_token();
+		}
 		response.data = this.handle_errors(response.data, 'cache.get');
-
 		return this.merge_data(response.data);
 	}
 
@@ -307,7 +326,10 @@ class api {
 		};
 
 		const response: any = await this.ax.post(`/?t${get_date()}`, payload);
-
+		if (response.data?.error?.type == 'ClientException') {
+			logger.error('authentication failed', `${controller}.${action}`);
+			await this.refresh_token();
+		}
 		response.data = this.handle_errors(response.data, `${controller}.${action}`);
 
 		return this.merge_data(response.data);
@@ -334,11 +356,16 @@ class api {
 
 		if (data.error) {
 			logger.debug(data, `${group}.handle_error`);
-			return this.handle_errors({
+			if (data.error.message.split(' ').length == 1)
+				data.error.message = camelcase_to_string(data.error.message);
+			return {
 				response: {
-					errors: [data.error]
+					errors: [{
+						message: data.error.message,
+						type: data.error.type
+					}]
 				}
-			});
+			};
 		}
 		return data;
 	};

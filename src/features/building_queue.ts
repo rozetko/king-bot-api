@@ -135,6 +135,10 @@ class queue extends feature_item {
 		];
 		const response: any[] = await api.get_cache(params);
 		const queue_data: Ibuilding_queue = find_state_data(village.building_queue_ident + village_id, response);
+		if (queue_data == null) {
+			logger.error(`could not get building queue data on village ${village_name}`, this.params.name);
+			return 60; // sleep 1 minute
+		}
 
 		const free: boolean = queue_data.freeSlots[queue_type] == 1;
 		const queue_free: boolean = queue_data.freeSlots[4] == 1;

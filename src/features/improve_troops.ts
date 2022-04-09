@@ -134,7 +134,15 @@ class train_feature extends feature_item {
 			params.push(research_ident + village_id);
 			const response: any[] = await api.get_cache(params);
 			const research: Iresearch = find_state_data(research_ident + village_id, response);
+			if (research == null) {
+				logger.error(`could not get research data on village ${village_name}`, this.params.name);
+				continue;
+			}
 			const research_queue: Iresearch_queue = find_state_data(unit_research_queue_ident + village_id, response);
+			if (research_queue == null) {
+				logger.error(`could not get research queue data on village ${village_name}`, this.params.name);
+				continue;
+			}
 
 			if (research.upgradeQueueFull) {
 				let finished: number = null;
@@ -282,7 +290,7 @@ class train_feature extends feature_item {
 		params.push(research_ident + village_id);
 		const response: any[] = await api.get_cache(params);
 		const research: Iresearch = find_state_data(research_ident + village_id, response);
-		return research.upgradeQueueFull;
+		return research != null ? research.upgradeQueueFull : true;
 	}
 }
 
