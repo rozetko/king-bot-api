@@ -221,7 +221,7 @@ class timed_send_feature extends feature_item {
 		const { village_id, village_name,
 			target_village_id, target_village_name, target_durations,
 			mission_type, mission_type_name,
-			arrival_date, arrival_time, date, time,
+			arrival_date, arrival_time,
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 } = this.options;
 
 		const units: Iunits = {
@@ -280,7 +280,6 @@ class timed_send_feature extends feature_item {
 
 		// arrival time
 		const arrival_time_ms = new Date(arrival_date + 'T' + arrival_time + 'Z').getTime();
-		const player_time_ms = new Date(date + 'T' + time + 'Z').getTime();
 
 		// send time
 		const send_time_ms = arrival_time_ms - duration;
@@ -351,6 +350,19 @@ class timed_send_feature extends feature_item {
 			// less than 2 seconds
 			if (send_time_ms < current_time_ms + 2000) {
 
+				// to late
+				if (diff_time_ms < -999) {
+
+					var seconds_late = Math.floor(diff_time_ms / 1000);
+					if (seconds_late < 0) // multiply number with -1 to make it positive
+						seconds_late = seconds_late * -1;
+
+					logger.error(`timed ${mission_type_name} aborted from ${village_name} to ${target_village_name} ` +
+					`because it would not arrive in time with a delay of ${seconds_late} seconds (${diff_time_ms} ms)`, this.params.name);
+					this.options.error = true;
+					return; // stop
+				}
+
 				// send units
 				if (send_time.getSeconds() <= current_time.getSeconds()) {
 					var response: any = await api.send_units(village_id, target_village_id, units, mission_type);
@@ -361,22 +373,9 @@ class timed_send_feature extends feature_item {
 						return; // stop
 					}
 					logger.info(`sent timed ${mission_type_name} from ${village_name} to ${target_village_name} ` +
-					`arriving on ${logger.get_timestamp(new Date(player_time_ms))} ` +
+					`arriving on ${this.get_player_time()} ` +
 					`(duration: ${this.get_duration(duration)})`, this.params.name);
 					this.options.run = false;
-					return; // stop
-				}
-
-				// to late
-				if (send_time.getSeconds() > current_time.getSeconds()) {
-
-					var seconds_late = Math.floor(diff_time_ms / 1000);
-					if (seconds_late < 0) // multiply number with -1 to make it positive
-						seconds_late = seconds_late * -1;
-
-					logger.error(`timed ${mission_type_name} aborted from ${village_name} to ${target_village_name} ` +
-					`because it would not arrive in time with a delay of ${seconds_late} seconds (${diff_time_ms} ms)`, this.params.name);
-					this.options.error = true;
 					return; // stop
 				}
 
@@ -402,6 +401,21 @@ class timed_send_feature extends feature_item {
 		return `${(hours < 10) ? '0' + hours : hours}:` +
 			`${(minutes < 10) ? '0' + minutes : minutes}:` +
 			`${(seconds < 10) ? '0' + seconds : seconds}`;
+	}
+
+	get_player_time(): string {
+		const { date, time } = this.options;
+		const player_time = new Date(date + 'T' + time + 'Z');
+		var year = player_time.toJSON().split('T')[0].split('-')[0];
+		var month = player_time.toJSON().split('T')[0].split('-')[1];
+		var day = player_time.toJSON().split('T')[0].split('-')[2];
+		return `${day}-${month}-${year} ${time}`;
+	}
+
+	is_dst(date: Date): boolean {
+		let jan = new Date(date.getFullYear(), 0, 1).getTimezoneOffset();
+		let jul = new Date(date.getFullYear(), 6, 1).getTimezoneOffset();
+		return Math.max(jan, jul) !== date.getTimezoneOffset();
 	}
 }
 

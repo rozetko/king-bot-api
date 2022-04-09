@@ -111,8 +111,10 @@ export default class TimedSend extends Component {
 					this.setState({ arrival_time });
 					break;
 				case '2': // gameworld time
-					var gt_timezine = 1; // Servers located in Germany
-					offset = (gt_timezine * 60) * 60 * 1000;
+					var gt_timezone = 1; // Servers located in Germany
+					if (this.is_dst(datetime))
+						gt_timezone++;
+					offset = (gt_timezone * 60) * 60 * 1000;
 					var dateGT = new Date(datetime.getTime() - offset);
 					arrival_date = this.format_date(dateGT);
 					arrival_time = this.format_time(dateGT);
@@ -221,7 +223,7 @@ export default class TimedSend extends Component {
 	};
 
 	validate_duration = async e => {
-		const { date, time, duration } = this.state;
+		const { date, time, duration, timetype, timezone } = this.state;
 		let { arrival_help, arrival_help_css,
 			error_date, error_time, error_duration } = this.state;
 		arrival_help = null;
@@ -231,10 +233,30 @@ export default class TimedSend extends Component {
 		error_duration = false;
 		if (duration) {
 			const datetime = new Date(date + ' ' + time);
-			const send_time_ms = datetime.getTime() - duration;
+
+			let send_time_ms;
+			switch (timetype) {
+				case '0': // utc
+					var offset = (datetime.getTimezoneOffset() + (timezone * 60)) * 60 * 1000;
+					send_time_ms = datetime.getTime() - offset - duration;
+					break;
+				case '1': // local time
+					send_time_ms = datetime.getTime() - duration;
+					break;
+				case '2': // gameworld time
+					var gt_timezone = 1; // Servers located in Germany
+					if (this.is_dst(datetime))
+						gt_timezone++;
+					offset = (datetime.getTimezoneOffset() + (gt_timezone * 60)) * 60 * 1000;
+					send_time_ms = datetime.getTime() - offset - duration;
+					break;
+				default:
+					return;
+			}
+
 			const current_time_ms = Date.now();
 			const diff_time_ms = send_time_ms - current_time_ms;
-			const is_late = diff_time_ms < 0;
+			const is_late = isNaN(diff_time_ms) || diff_time_ms < 0;
 			if (is_late) {
 				arrival_help = 'error_duration_exceeded';
 				arrival_help_css = 'is-danger';
@@ -329,6 +351,12 @@ export default class TimedSend extends Component {
 		return hours + ':' + minutes + ':' + seconds;
 	};
 
+	is_dst = function(date) {
+		let jan = new Date(date.getFullYear(), 0, 1).getTimezoneOffset();
+		let jul = new Date(date.getFullYear(), 6, 1).getTimezoneOffset();
+		return Math.max(jan, jul) !== date.getTimezoneOffset();
+	};
+
 	get_duration(duration) {
 		const seconds = Math.floor((duration / 1000) % 60),
 			minutes = Math.floor((duration / (1000 * 60)) % 60),
@@ -402,15 +430,17 @@ export default class TimedSend extends Component {
 					}
 					break;
 				case '2': // gameworld time
-					var gt_timezine = 1; // Servers located in Germany
+					var gt_timezone = 1; // Servers located in Germany
+					if (this.is_dst(curDate))
+						gt_timezone++;
 					if (!date) {
-						offset = (curDate.getTimezoneOffset() + (gt_timezine * 60)) * 60 * 1000;
+						offset = (curDate.getTimezoneOffset() + (gt_timezone * 60)) * 60 * 1000;
 						curUTCDate = new Date(curDate.getTime() + offset);
 						date = this.format_date(curUTCDate);
 						this.setState({ date });
 					}
 					if (!time) {
-						offset = (curDate.getTimezoneOffset() + (gt_timezine * 60)) * 60 * 1000;
+						offset = (curDate.getTimezoneOffset() + (gt_timezone * 60)) * 60 * 1000;
 						curUTCTime = new Date(curDate.getTime() + offset);
 						time = this.format_time(curUTCTime);
 						this.setState({ time });
