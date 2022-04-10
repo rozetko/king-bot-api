@@ -2,7 +2,7 @@ import { sleep, sleep_ms } from '../util';
 import { Iunits, Ihero, Iplayer, Idurations } from '../interfaces';
 import { feature_collection, feature_item, Ioptions } from './feature';
 import { player, hero, troops } from '../gamedata';
-import { unit_types, tribe, hero_status, mission_type, troops_status, troops_type } from '../data';
+import { unit_types, tribe, hero_status, mission_types, troops_status, troops_type } from '../data';
 import api from '../api';
 import database from '../database';
 import logger from '../logger';
@@ -17,7 +17,7 @@ interface Ioptions_timed_send extends Ioptions {
 	target_distance: string,
 	target_player_name: string,
 	target_durations: Idurations,
-	mission_type: mission_type,
+	mission_type: mission_types,
 	mission_type_name: string,
 	arrival_date: string,
 	arrival_time: string,
@@ -220,9 +220,30 @@ class timed_send_feature extends feature_item {
 	async timed_send(loop: number): Promise<void> {
 		const { village_id, village_name,
 			target_village_id, target_village_name, target_durations,
-			mission_type, mission_type_name,
-			arrival_date, arrival_time,
+			mission_type, arrival_date, arrival_time,
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 } = this.options;
+
+		let mission_type_name: string;
+		switch (mission_type) {
+			case mission_types.attack:
+				mission_type_name = 'attack';
+				break;
+			case mission_types.raid:
+				mission_type_name = 'raid';
+				break;
+			case mission_types.support:
+				mission_type_name = 'reinforcement';
+				break;
+			case mission_types.spy:
+				mission_type_name = 'scouting';
+				break;
+			case mission_types.siege:
+				mission_type_name = 'siege';
+				break;
+			case mission_types.settle:
+				mission_type_name = 'settle';
+				break;
+		}
 
 		const units: Iunits = {
 			1: Number(t1),

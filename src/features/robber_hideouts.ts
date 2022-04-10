@@ -2,7 +2,7 @@ import { find_state_data, sleep, get_random_int } from '../util';
 import { Iunits, Ihero, Ivillage, Imap_details, Itroops_collection } from '../interfaces';
 import { feature_collection, feature_item, Ioptions } from './feature';
 import { hero, village, troops } from '../gamedata';
-import { hero_status, mission_type, troops_status, troops_type } from '../data';
+import { hero_status, mission_types, troops_status, troops_type } from '../data';
 import api from '../api';
 import logger from '../logger';
 
@@ -13,7 +13,7 @@ interface Ioptions_robber_hideouts extends Ioptions {
 	interval_max: number,
 	robber1_village_id: number,
 	robber2_village_id: number,
-	mission_type: mission_type,
+	mission_type: mission_types,
 	mission_type_name: string,
 	t1: number,
 	t2: number,
@@ -180,7 +180,28 @@ class robber_feature extends feature_item {
 	async send_troops(robber_village: Ivillage): Promise<void> {
 		const { village_name, village_id,
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 } = this.options;
-		var { mission_type, mission_type_name } = this.options;
+		let { mission_type, mission_type_name } = this.options;
+
+		switch (mission_type) {
+			case mission_types.attack:
+				mission_type_name = 'attack';
+				break;
+			case mission_types.raid:
+				mission_type_name = 'raid';
+				break;
+			case mission_types.support:
+				mission_type_name = 'reinforcement';
+				break;
+			case mission_types.spy:
+				mission_type_name = 'scouting';
+				break;
+			case mission_types.siege:
+				mission_type_name = 'siege';
+				break;
+			case mission_types.settle:
+				mission_type_name = 'settle';
+				break;
+		}
 
 		// TODO: adding a unit index of -1 will send all units with max number
 		const units: Iunits = {
@@ -250,9 +271,9 @@ class robber_feature extends feature_item {
 			// dont send artillery
 			units[7] = 0;
 			units[8] = 0;
-			if (mission_type == 47) {
-				mission_type = 3;
-				mission_type_name = 'Attack';
+			if (mission_type == mission_types.siege) {
+				mission_type = mission_types.attack;
+				mission_type_name = 'attack';
 			}
 			not_sent += ' and not needed artillery';
 		}

@@ -18,6 +18,19 @@ const cellStyle = {
 	textAlign: 'center',
 };
 
+const cellNameStyle = {
+	verticalAlign: 'top',
+	textAlign: 'center',
+	whiteSpace: 'nowrap',
+	lineHeight: '3em'
+};
+
+const cellDescStyle = {
+	verticalAlign: 'middle',
+	textAlign: 'left',
+	whiteSpace: 'pre-line'
+};
+
 @connect(`notifications,${storeKeys}`, actions)
 export default class Feature extends Component {
 	state = {
@@ -125,10 +138,10 @@ export default class Feature extends Component {
 
 		return (
 			<tr class = { rowClass }>
-				<td style={ cellStyle }>
+				<td style={ cellNameStyle }>
 					{this.props[`lang_feature_${this.state.ident}`]}
 				</td>
-				<td style={{ verticalAlign: 'middle', textAlign: 'left', whiteSpace: 'pre-line' }}>
+				<td style={ cellDescStyle }>
 					{lang.translate(this.state.description)}
 				</td>
 				<td style={ cellStyle }>

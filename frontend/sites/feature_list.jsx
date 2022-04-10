@@ -16,6 +16,11 @@ const rowStyle = {
 	whiteSpace: 'nowrap'
 };
 
+const rowDescStyle = {
+	verticalAlign: 'middle',
+	textAlign: 'left'
+};
+
 @connect(storeKeys)
 export default class FeatureList extends Component {
 	state = {
@@ -37,7 +42,7 @@ export default class FeatureList extends Component {
 
 		const table = jQuery('#table').DataTable({
 			dom: 'frtip',
-			order: [],
+			order: [[ 0, 'asc' ], [ 1, 'asc' ]],
 			columnDefs: [
 				{ type: absoluteOrder, targets: [0,1] },
 				{ targets: [2,3,4], orderable: false }
@@ -86,9 +91,7 @@ export default class FeatureList extends Component {
 					<thead>
 						<tr>
 							<th style={ rowStyle }>{props.lang_home_name}</th>
-							<th style={{ verticalAlign: 'middle', textAlign: 'left' }}>
-								{props.lang_home_description}
-							</th>
+							<th style={ rowDescStyle }>{props.lang_home_description}</th>
 							<th style={ rowStyle }>{props.lang_home_status}</th>
 							<th style={ rowStyle }>{props.lang_home_off_on}</th>
 							<th style={ rowStyle }>{props.lang_home_options}</th>

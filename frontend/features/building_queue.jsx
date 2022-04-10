@@ -15,7 +15,6 @@ const headerStyle = {
 export default class BuildingQueue extends Component {
 	state = {
 		all_villages: [],
-		building_types: [],
 		village_name: '',
 		village_id: 0,
 		buildings: [],
@@ -43,7 +42,6 @@ export default class BuildingQueue extends Component {
 		}
 
 		axios.get('/api/data?ident=villages').then(res => this.setState({ all_villages: res.data }));
-		axios.get('/api/data?ident=building_types').then(res => this.setState({ building_types: res.data }));
 	}
 
 	async submit() {
@@ -133,79 +131,70 @@ export default class BuildingQueue extends Component {
 		this.setState({ queue: [ ...queues ] });
 	}
 
-	render(props, { name, all_villages, village_id, queue, buildings, resources, building_types }) {
+	render(props, { all_villages, village_id, buildings, resources, queue }) {
 		const village_select_class = classNames({
 			select: true,
 			'is-danger': this.state.error_village,
 		});
 
-		let resource_options = [];
-		if (building_types) {
-			resource_options = resources.map(building =>
-				<tr>
-					<td style={ headerStyle }>{ building.locationId }</td>
-					<td>{ building_types[building.buildingType] }</td>
-					<td style={ headerStyle }>{ building.lvl }</td>
-					<td style={ headerStyle }>
-						<a class='has-text-black' onClick={ () => this.upgrade(building) }>
-							<span class='icon is-medium'>
-								<i class='far fa-lg fa-arrow-alt-circle-up'></i>
-							</span>
-						</a>
-					</td>
-				</tr>
-			);
-		}
+		const resource_options = resources.map(building =>
+			<tr>
+				<td style={ headerStyle }>{ building.locationId }</td>
+				<td>{ props.lang_building_types[building.buildingType] }</td>
+				<td style={ headerStyle }>{ building.lvl }</td>
+				<td style={ headerStyle }>
+					<a class='has-text-black' onClick={ () => this.upgrade(building) }>
+						<span class='icon is-medium'>
+							<i class='far fa-lg fa-arrow-alt-circle-up'></i>
+						</span>
+					</a>
+				</td>
+			</tr>
+		);
 
-		let buildings_options = [];
-		if (building_types) {
-			buildings_options = buildings.map(building =>
-				<tr>
-					<td style={ headerStyle }>{ building.locationId }</td>
-					<td>{ building_types[building.buildingType] }</td>
-					<td style={ headerStyle }>{ building.lvl }</td>
-					<td style={ headerStyle }>
-						<a class='has-text-black' onClick={ () => this.upgrade(building) }>
-							<span class='icon is-medium'>
-								<i class='far fa-lg fa-arrow-alt-circle-up'></i>
-							</span>
-						</a>
-					</td>
-				</tr>
-			);
-		}
+		const buildings_options = buildings.map(building =>
+			<tr>
+				<td style={ headerStyle }>{ building.locationId }</td>
+				<td>{ props.lang_building_types[building.buildingType] }</td>
+				<td style={ headerStyle }>{ building.lvl }</td>
+				<td style={ headerStyle }>
+					<a class='has-text-black' onClick={ () => this.upgrade(building) }>
+						<span class='icon is-medium'>
+							<i class='far fa-lg fa-arrow-alt-circle-up'></i>
+						</span>
+					</a>
+				</td>
+			</tr>
+		);
 
-		let queue_options = [];
-		if (building_types) {
-			queue_options = queue.map((building, index) =>
-				<tr>
-					<td style={ headerStyle }>{ index + 1 }</td>
-					<td style={ headerStyle }>{ building.location }</td>
-					<td>{ building_types[building.type] }</td>
-					<td style={ headerStyle }>
-						<a class='has-text-black' onClick={ () => this.move_up(building) }>
-							<span class='icon is-medium'>
-								<i class='fas fa-lg fa-long-arrow-alt-up'></i>
-							</span>
-						</a>
-					</td>
-					<td style={ headerStyle }>
-						<a class='has-text-black' onClick={ () => this.move_down(building) }>
-							<span class='icon is-medium'>
-								<i class='fas fa-lg fa-long-arrow-alt-down'></i>
-							</span>
-						</a>
-					</td>
-					<td style={ headerStyle }>
-						<a class='has-text-black' onClick={ () => this.delete_item(building) }>
-							<span class='icon is-medium'>
-								<i class='far fa-lg fa-trash-alt'></i>
-							</span>
-						</a>
-					</td>
-				</tr>
-			);
-		}
+		const queue_options = queue.map((building, index) =>
+			<tr>
+				<td style={ headerStyle }>{ index + 1 }</td>
+				<td style={ headerStyle }>{ building.location }</td>
+				<td>{ props.lang_building_types[building.type] }</td>
+				<td style={ headerStyle }>
+					<a class='has-text-black' onClick={ () => this.move_up(building) }>
+						<span class='icon is-medium'>
+							<i class='fas fa-lg fa-long-arrow-alt-up'></i>
+						</span>
+					</a>
+				</td>
+				<td style={ headerStyle }>
+					<a class='has-text-black' onClick={ () => this.move_down(building) }>
+						<span class='icon is-medium'>
+							<i class='fas fa-lg fa-long-arrow-alt-down'></i>
+						</span>
+					</a>
+				</td>
+				<td style={ headerStyle }>
+					<a class='has-text-black' onClick={ () => this.delete_item(building) }>
+						<span class='icon is-medium'>
+							<i class='far fa-lg fa-trash-alt'></i>
+						</span>
+					</a>
+				</td>
+			</tr>
+		);
 
 		const villages = all_villages.map(village =>
 			<option

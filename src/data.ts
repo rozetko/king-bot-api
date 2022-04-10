@@ -23,7 +23,7 @@ export enum tribe {
 	natars = '5'
 }
 
-export enum mission_type {
+export enum mission_types {
 	attack = 3,
 	raid = 4,
 	support = 5,
