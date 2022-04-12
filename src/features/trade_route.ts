@@ -188,7 +188,23 @@ class trade_feature extends feature_item {
 
 		const villages_data: any = await village.get_own();
 		const source_village: Ivillage = village.find(source_village_id, villages_data);
+		if (!source_village) {
+			logger.error(
+				`trade ${source_village_name} -> ${destination_village_name} failed ` +
+				`because couldn't find source village width id ${source_village_id}`,
+				this.params.name);
+			await sleep(get_random_int(300, 600));
+			return;
+		}
 		const destination_village: Ivillage = village.find(destination_village_id, villages_data);
+		if (!destination_village) {
+			logger.error(
+				`trade ${source_village_name} -> ${destination_village_name} failed ` +
+				`because couldn't find destination village width id ${destination_village_id}`,
+				this.params.name);
+			await sleep(get_random_int(300, 600));
+			return;
+		}
 
 		var resources = [0, 0, 0, 0, 0];
 		resources[1] = Math.floor(Math.min(send_wood, source_village.storage['1']));
@@ -235,6 +251,14 @@ class trade_feature extends feature_item {
 
 		const villages_data: any = await village.get_own();
 		const source_village: Ivillage = village.find(source_village_id, villages_data);
+		if (!source_village) {
+			logger.error(
+				`trade ${source_village_name} -> ${destination_village_name} failed ` +
+				`because couldn't find source village width id ${source_village_id}`,
+				this.params.name);
+			await sleep(get_random_int(300, 600));
+			return;
+		}
 
 		var resources = [0, 0, 0, 0, 0];
 		resources[1] = Math.floor(Math.min(send_wood, source_village.storage['1']));

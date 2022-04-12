@@ -104,14 +104,14 @@ class train_feature extends feature_item {
 		const {	units } = this.options;
 
 		for (let unit of units) {
-			const { village_id, village_name, unit_type, unit_type_name, amount } = unit;
+			const { village_id, village_name, unit_type, amount } = unit;
 
 			// get village
 			const villages_data: any = await village.get_own();
 			const village_obj: Ivillage = village.find(village_id, villages_data);
 			if (!village_obj) {
 				logger.error(
-					`training unit type of ${unit_type_name} in village ${village_name} skipped ` +
+					`training units type id ${unit_type} in village ${village_name} skipped ` +
 					`because couldn't find village width id ${village_id}`,
 					this.params.name);
 				this.options.error = true;
@@ -129,6 +129,9 @@ class train_feature extends feature_item {
 					break;
 				}
 			}
+
+			// unit type name
+			const unit_type_name = String(unit_data.name).toLowerCase();
 
 			// get resources cost
 			let costs = unit_data.costs;

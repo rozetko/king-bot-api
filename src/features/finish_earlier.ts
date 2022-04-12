@@ -65,22 +65,29 @@ class finish_earlier extends feature_single {
 			const villages_data: any = await village.get_own();
 
 			let params: string[] = [];
-
 			for (let data of find_state_data(village.collection_own_ident, villages_data)) {
+				if (!data) {
+					logger.error('could not get own villages data', this.params.name);
+					sleep(60); // sleep 1 minute
+				}
 				const village_obj: Ivillage = data.data;
 				params.push(this.building_queue_ident + village_obj.villageId);
 			}
 
-			// fetch latest data needed
+			// fetch building queue data
 			let response: any[] = await api.get_cache(params);
 
 			let sleep_time: number = null;
 			const five_minutes: number = 5 * 60;
 
 			for (let data of find_state_data(village.collection_own_ident, villages_data)) {
+				if (!data) {
+					logger.error('could not get own villages data', this.params.name);
+					sleep(60); // sleep 1 minute
+				}
 				const village_obj: Ivillage = data.data;
 				const queue_data: Ibuilding_queue = find_state_data(this.building_queue_ident + village_obj.villageId, response);
-				if (queue_data == null) {
+				if (!queue_data) {
 					logger.error(`could not get building queue data on village ${village_obj.name}`, this.params.name);
 					sleep(60); // sleep 1 minute
 				}

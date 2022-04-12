@@ -128,10 +128,19 @@ class raise extends feature_item {
 
 	async upgrade_field(): Promise<number> {
 		const { village_id } = this.options;
+		let { village_name } = this.options;
 
 		const villages_data: any = await village.get_own();
 		const village_obj: Ivillage = village.find(village_id, villages_data);
-		const village_name = village_obj.name;
+		if (!village_obj) {
+			logger.error(
+				`raise fields in village ${village_name} skipped ` +
+				`because couldn't find village width id ${village_id}`,
+				this.params.name);
+			this.options.error = true;
+			return 60; // sleep 1 minute
+		}
+		village_name = village_obj.name;
 
 		// fetch latest data needed
 		const params: string[] = [

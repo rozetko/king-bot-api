@@ -489,7 +489,7 @@ const languages = {
 			29: 'gran cuartel',
 			30: 'gran establo',
 			31: 'muralla de piedra',
-			32: 'muro de tierra',
+			32: 'terraplén',
 			33: 'empalizada',
 			34: 'cantero',
 			35: 'cervecería',
@@ -592,7 +592,7 @@ const languages = {
 
 		lang_queue_res_fields: 'ressourcen felder',
 		lang_queue_buildings: 'gebäude',
-		lang_queue_queue: 'schleife',
+		lang_queue_queue: 'bauschleife',
 
 		lang_farmlist_add: 'farmlist hinzufügen',
 		lang_farmlist_losses: 'sortiere farmen mit verlusten zu',

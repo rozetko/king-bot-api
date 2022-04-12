@@ -2,6 +2,7 @@ import { find_state_data, sleep, get_diff_time } from '../util';
 import { Ivillage, Ibuilding, Iresearch, Iresearch_unit, Iresearch_queue } from '../interfaces';
 import { feature_collection, feature_item, Ioptions } from './feature';
 import { village } from '../gamedata';
+import { unit_types } from '../data';
 import api from '../api';
 import logger from '../logger';
 
@@ -108,7 +109,7 @@ class train_feature extends feature_item {
 		const current_level: any = {};
 
 		for (let unit of units) {
-			const { village_id, village_name, unit_type, unit_type_name, level } = unit;
+			const { village_id, village_name, unit_type, level } = unit;
 
 			if (!current_level[village_id])
 				current_level[village_id] = [];
@@ -119,11 +120,23 @@ class train_feature extends feature_item {
 			const village_obj: Ivillage = village.find(village_id, villages_data);
 			if (!village_obj) {
 				logger.error(
-					`improving unit type ${unit_type_name} in village ${village_name} skipped ` +
+					`improving unit type id ${unit_type} in village ${village_name} skipped ` +
 					`because couldn't find village width id ${village_id}`,
 					this.params.name);
 				this.options.error = true;
 				continue;
+			}
+
+			// get tribe
+			const own_tribe = village_obj.tribeId;
+
+			// get unit_type name
+			let unit_type_name: string = '';
+			for (var i = 1; i < 11; i++) {
+				if (unit_types[own_tribe][i].unit_type == unit_type) {
+					unit_type_name = String(unit_types[own_tribe][i].name).toLowerCase();
+					break;
+				}
 			}
 
 			// get research and queue
@@ -222,15 +235,14 @@ class train_feature extends feature_item {
 			// add to list
 			if (!units_to_improve[village_id])
 				units_to_improve[village_id] = [];
-			units_to_improve[village_id].push({ unit: unit, unit_data: unit_data });
+			units_to_improve[village_id].push({ unit_type, unit_type_name, village_name, unit_data });
 		}
 
 		if (Object.keys(units_to_improve).length > 0) {
 			for (var village_id in units_to_improve) {
 				if (Object.prototype.hasOwnProperty.call(units_to_improve, village_id)) {
 					for (var units_from_village of units_to_improve[village_id]) {
-						const { unit, unit_data } = units_from_village;
-						const { village_name, unit_type, unit_type_name } = unit;
+						const { unit_type, unit_type_name, village_name, unit_data } = units_from_village;
 
 						// get building data
 						const building_data: Ibuilding = await village.get_building(Number(village_id), building_type);

@@ -109,7 +109,7 @@ class queue extends feature_item {
 
 	async upgrade_queue(): Promise<number> {
 		const { village_id, queue } = this.options;
-		var { village_name } = this.options;
+		let { village_name } = this.options;
 
 		if (queue.length < 1) {
 			logger.info(`building queue done on ${village_name}!`, this.params.name);
@@ -126,6 +126,14 @@ class queue extends feature_item {
 
 		const villages_data: any = await village.get_own();
 		const village_obj: Ivillage = village.find(village_id, villages_data);
+		if (!village_obj) {
+			logger.error(
+				`building queue in village ${village_name} skipped ` +
+				`because couldn't find village width id ${village_id}`,
+				this.params.name);
+			this.options.error = true;
+			return 60; // sleep 1 minute
+		}
 		village_name = village_obj.name;
 
 		// fetch latest data needed
