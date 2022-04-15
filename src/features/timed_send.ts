@@ -224,7 +224,7 @@ class timed_send_feature extends feature_item {
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 } = this.options;
 
 		let mission_type_name: string;
-		switch (mission_type) {
+		switch (Number(mission_type)) {
 			case mission_types.attack:
 				mission_type_name = 'attack';
 				break;

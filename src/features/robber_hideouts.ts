@@ -182,7 +182,7 @@ class robber_feature extends feature_item {
 			t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 } = this.options;
 		let { mission_type, mission_type_name } = this.options;
 
-		switch (mission_type) {
+		switch (Number(mission_type)) {
 			case mission_types.attack:
 				mission_type_name = 'attack';
 				break;
@@ -271,7 +271,7 @@ class robber_feature extends feature_item {
 			// dont send artillery
 			units[7] = 0;
 			units[8] = 0;
-			if (mission_type == mission_types.siege) {
+			if (Number(mission_type) == mission_types.siege) {
 				mission_type = mission_types.attack;
 				mission_type_name = 'attack';
 			}
@@ -297,6 +297,8 @@ class robber_feature extends feature_item {
 
 		// get available robber villages amount (kingdom: 0 = robber hideouts)
 		const response = await api.get_robber_villages_amount(0);
+		if (!response)
+			return null;
 		const amount: number = response.data;
 		if (amount == 0)
 			return null;
@@ -333,7 +335,7 @@ class robber_feature extends feature_item {
 
 		// return any that still has robbers
 		if (robber1.hasNPC != 0 && robber1.npcInfo.troops != null) {
-			if (robber1.npcInfo.troops.units == null) {
+			if (robber1.npcInfo.troops.units == null || Object.keys(robber1.npcInfo.troops.units).length == 0) {
 				this.send_hero = false;
 				this.send_artillery = false;
 			}
@@ -342,7 +344,7 @@ class robber_feature extends feature_item {
 		}
 		if (robber2.hasNPC != 0 && robber2.npcInfo.troops != null) {
 
-			if (robber2.npcInfo.troops.units == null) {
+			if (robber2.npcInfo.troops.units == null || Object.keys(robber2.npcInfo.troops.units).length == 0) {
 				this.send_hero = false;
 				this.send_artillery = false;
 			}
