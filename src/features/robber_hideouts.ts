@@ -373,22 +373,23 @@ class robber_feature extends feature_item {
 		}
 
 		const troops_collection: Itroops_collection[] = await troops.get(village_id, troops_type.moving);
-		for (let troop of troops_collection) {
-			if (troop.data.movement) {
+		if (troops_collection)
+			for (let troop of troops_collection) {
+				if (troop.data.movement) {
 
-				// troops are already going to robber
-				if (troop.data.movement.villageIdTarget == robber1_village.position ||
-					troop.data.movement.villageIdTarget == robber2_village.position) {
-					return true;
-				}
+					// troops are already going to robber
+					if (troop.data.movement.villageIdTarget == robber1_village.position ||
+						troop.data.movement.villageIdTarget == robber2_village.position) {
+						return true;
+					}
 
-				// troops are still returning from robber
-				if (troop.data.movement.villageIdStart == robber1_village_id ||
-					troop.data.movement.villageIdStart == robber2_village_id) {
-					return true;
+					// troops are still returning from robber
+					if (troop.data.movement.villageIdStart == robber1_village_id ||
+						troop.data.movement.villageIdStart == robber2_village_id) {
+						return true;
+					}
 				}
 			}
-		}
 
 		// no troops in transit
 		return false;

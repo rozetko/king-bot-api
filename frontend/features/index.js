@@ -7,6 +7,7 @@ import TimedSend from './timed_send';
 import TrainTroops from './train_troops';
 import ImproveTroops from './improve_troops';
 import RobberHideouts from './robber_hideouts';
+import Celebrations from './celebrations';
 
 const features = {
 	hero: {
@@ -44,6 +45,10 @@ const features = {
 	robber_hideouts: {
 		navbar: true,
 		component: RobberHideouts,
+	},
+	celebrations: {
+		navbar: true,
+		component: Celebrations,
 	}
 };
 

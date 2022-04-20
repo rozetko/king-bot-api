@@ -22,6 +22,7 @@ const languages = {
 		lang_feature_train_troops: 'train troops',
 		lang_feature_robber_hideouts: 'robber hideouts',
 		lang_feature_improve_troops: 'improve troops',
+		lang_feature_celebrations: 'celebrations',
 
 		lang_feature_desc_hero: 'sends the hero automaticly on an adventure if the health is above given percentage.',
 		lang_feature_desc_queue: 'this is an endless building queue. don\'t change the village once it\'s set, if you want to change the village, just do another building queue feature with your desired village.',
@@ -32,6 +33,7 @@ const languages = {
 		lang_feature_desc_train_troops: 'train troops in a given interval and order, it goes through the entire list at each interval, if the amount is greater than the cost of the available resources, it will train as many troops as possible.',
 		lang_feature_desc_robber_hideouts: 'check for robber hideouts and send the given units to attack them, it will retry with the same hideout until its destroyed, and then it will move on to the next and so on.',
 		lang_feature_desc_improve_troops: 'checks if it can upgrade given units in given order, first it checks unit and if it is not available or is maxed out, it will try to upgrade the next unit, you can increase the list as long as you want to.',
+		lang_feature_desc_celebrations: 'checks if it can hold celebrations for the given villages, it will try to always hold a celebration and plan another one if possible.',
 
 		lang_home_name: 'feature name',
 		lang_home_description: 'description',
@@ -48,6 +50,7 @@ const languages = {
 		lang_combo_box_unittype: 'select unit',
 		lang_combo_box_level: 'select level',
 		lang_combo_box_missiontype: 'mission type',
+		lang_combo_box_celebrationtype: 'celebration type',
 
 		lang_label_spy_for: 'spy for',
 		lang_label_ressources: 'resources',
@@ -71,6 +74,7 @@ const languages = {
 		lang_table_level: 'level',
 		lang_table_amount: 'amount',
 		lang_table_options: 'options',
+		lang_table_celebrationtype: 'celebration type',
 
 		lang_button_submit: 'submit',
 		lang_button_cancel: 'cancel',
@@ -164,6 +168,10 @@ const languages = {
 		lang_mission_type_spy: 'scouting',
 		lang_mission_type_siege: 'siege',
 		lang_mission_type_settle: 'settle',
+
+		lang_celebration_small: 'small celebration',
+		lang_celebration_large: 'large celebration',
+		lang_celebration_brewery: 'brewery festival',
 
 		lang_unit_types_hero: 'hero',
 		lang_unit_types: {
@@ -274,6 +282,7 @@ const languages = {
 		lang_feature_train_troops: 'entrenar tropas',
 		lang_feature_robber_hideouts: 'escondites de ladrones',
 		lang_feature_improve_troops: 'mejorar tropas',
+		lang_feature_celebrations: 'celebraciones',
 
 		lang_feature_desc_hero: 'envía al héroe automáticamente a una aventura si la salud está por encima del porcentaje dado.',
 		lang_feature_desc_queue: 'esta es una cola de construcción interminable, no cambies la aldea una vez que esté establecida, si quieres cambiar la aldea, simplemente crea otra función de cola de construcción con tu aldea deseada.',
@@ -284,6 +293,7 @@ const languages = {
 		lang_feature_desc_train_troops: 'entrenar tropas en un intervalo y orden determinado, recorre toda la lista en cada intervalo, si la cantidad es mayor que el coste de los recursos disponibles, entrenará las tropas posibles.',
 		lang_feature_desc_robber_hideouts: 'comprueba los escondites de los ladrones y envía las unidades dadas para atacarlos, volverá a intentar con el mismo escondite hasta que sea destruido, y entonces pasará al siguiente y así sucesivamente.',
 		lang_feature_desc_improve_troops: 'comprueba si puede mejorar las unidades dadas en un orden determinado, primero comprueba la unidad y si no está disponible o está al máximo, intentará mejorar la siguiente unidad, puedes aumentar la lista tanto como quieras.',
+		lang_feature_desc_celebrations: 'comprueba si puede realizar celebraciones para las aldeas determinadas, siempre intentará realizar una celebración y planificar otra si es posible.',
 
 		lang_home_name: 'nombre función',
 		lang_home_description: 'descripción',
@@ -300,6 +310,7 @@ const languages = {
 		lang_combo_box_unittype: 'seleccionar unidad',
 		lang_combo_box_level: 'seleccionar nivel',
 		lang_combo_box_missiontype: 'tipo de misión',
+		lang_combo_box_celebrationtype: 'tipo de fiesta',
 
 		lang_label_spy_for: 'espiar para',
 		lang_label_ressources: 'recursos',
@@ -323,6 +334,7 @@ const languages = {
 		lang_table_level: 'nivel',
 		lang_table_amount: 'cantidad',
 		lang_table_options: 'opciones',
+		lang_table_celebrationtype: 'tipo de fiesta',
 
 		lang_button_submit: 'guardar',
 		lang_button_cancel: 'cancelar',
@@ -416,6 +428,10 @@ const languages = {
 		lang_mission_type_spy: 'acecho',
 		lang_mission_type_siege: 'asedio',
 		lang_mission_type_settle: 'colonizar',
+
+		lang_celebration_small: 'celebración pequeña',
+		lang_celebration_large: 'gran celebración',
+		lang_celebration_brewery: 'festival cervecería',
 
 		lang_unit_types_hero: 'héroe',
 		lang_unit_types: {
@@ -526,6 +542,7 @@ const languages = {
 		lang_feature_train_troops: 'truppen ausbilden',
 		lang_feature_robber_hideouts: 'räuberverstecke',
 		lang_feature_improve_troops: 'truppen verbessern',
+		lang_feature_celebrations: 'feste',
 
 		lang_feature_desc_hero: 'der held wird automatisch auf abenteuer geschickt wenn er eine gewisse mindestprozentzahl an gesundheit hat.',
 		lang_feature_desc_queue: 'dies ist eine endlose bauschleife. falls du die stadt ändern willst, lege ein neues feature mit einer neuen stadt an. sonst kommt es zu problemen.',
@@ -536,6 +553,7 @@ const languages = {
 		lang_feature_desc_train_troops: 'truppen in einem bestimmten intervall und in einer bestimmten reihenfolge auszubilden, geht es in jedem intervall die gesamte liste durch, wenn die menge größer ist als die kosten der verfügbaren ressourcen, bildet es so viele truppen wie möglich aus.',
 		lang_feature_desc_robber_hideouts: 'sucht nach räuberverstecken und schickt die entsprechenden truppen zum angriff. er versucht es so lange mit demselben versteck, bis es zerstört ist, und geht dann zum nächsten weiter usw.',
 		lang_feature_desc_improve_troops: 'prüft, ob bestimmte einheiten in einer bestimmten reihenfolge aufgerüstet werden können, zuerst wird die einheit geprüft und wenn sie nicht verfügbar ist oder das maximum erreicht hat, wird versucht, die nächste einheit aufzurüsten, die liste kann beliebig verlängert werden.',
+		lang_feature_desc_celebrations: 'prüft, ob bestimmte dörfer feste veranstalten können, versucht immer, ein fest zu veranstalten, und plant nach möglichkeit ein weiteres.',
 
 		lang_home_name: 'feature name',
 		lang_home_description: 'beschreibung',
@@ -552,6 +570,7 @@ const languages = {
 		lang_combo_box_unittype: 'einheit auswählen',
 		lang_combo_box_level: 'level auswählen',
 		lang_combo_box_missiontype: 'missionsart',
+		lang_combo_box_celebrationtype: 'veranstaltungsart',
 
 		lang_label_spy_for: 'spähen für',
 		lang_label_ressources: 'ressource',
@@ -575,6 +594,7 @@ const languages = {
 		lang_table_level: 'level',
 		lang_table_amount: 'menge',
 		lang_table_options: 'optionen',
+		lang_table_celebrationtype: 'veranstaltungsart',
 
 		lang_button_submit: 'abschicken',
 		lang_button_cancel: 'abbrechen',
@@ -668,6 +688,10 @@ const languages = {
 		lang_mission_type_spy: 'spionieren',
 		lang_mission_type_siege: 'belaregung',
 		lang_mission_type_settle: 'siedeln',
+
+		lang_celebration_small: 'kleines fest',
+		lang_celebration_large: 'großes fest',
+		lang_celebration_brewery: 'brauereifest',
 
 		lang_unit_types_hero: 'held',
 		lang_unit_types: {

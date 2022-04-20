@@ -283,7 +283,7 @@ export default class TradeRoute extends Component {
 								placeholder= '0'
 								value={ source_crop }
 								onChange={ e => this.setState({ source_crop: e.target.value }) }
-								style={{ width: '7.5em' }}
+								style={ input_style }
 								parent_field = { false }
 							/>
 						</div>

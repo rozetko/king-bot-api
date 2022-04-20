@@ -117,6 +117,7 @@ export default class TrainTroops extends Component {
 		const { units } = this.state;
 		units.splice(units.indexOf(e), 1);
 		this.setState({ units });
+		this.set_button();
 	};
 
 	edit_unit = async e => {

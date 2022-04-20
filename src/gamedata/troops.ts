@@ -1,6 +1,6 @@
 import { find_state_data } from '../util';
 import { Itroops_collection, Iunits } from '../interfaces';
-import { troops_type, troops_status } from '../data';
+import { troops_type, troops_status, default_Iunits } from '../data';
 import api from '../api';
 
 class troops {
@@ -35,11 +35,13 @@ class troops {
 
 	async get_units(village_id: number, type: troops_type, status: troops_status): Promise<Iunits> {
 		const troops_collection: Itroops_collection[] = await this.get(village_id, type);
-		for (let troop of troops_collection) {
-			if (troop.data.status == status) {
-				return troop.data.units;
+		if (troops_collection)
+			for (let troop of troops_collection) {
+				if (troop.data.status == status) {
+					return troop.data.units;
+				}
 			}
-		}
+		return default_Iunits;
 	}
 }
 

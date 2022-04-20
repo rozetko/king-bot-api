@@ -1,4 +1,4 @@
-import { tribe, hero_status, time_type, time_format } from './data';
+import { tribe, hero_status, time_type, time_format, celebration_types } from './data';
 
 export interface Ifarmlist {
 	listId: number;
@@ -100,7 +100,8 @@ export interface Ivillage {
 	tributesCapacity: number;
 	tributeTreasures: number;
 	tributeProduction: number;
-	tributeProductionDetail: number;
+	tributeProductionWithCrop: number;
+	tributeProductionDetail: Iresources;
 	tributeTime: number;
 	tributesRequiredToFetch: number;
 	estimatedWarehouseLevel: number;
@@ -210,7 +211,7 @@ export interface Iplayer {
 	kingdomId: number,
 	kingdomTag: string,
 	kingdomRole: number,
-	isKing: false,
+	isKing: boolean,
 	kingId: number,
 	kingstatus: number,
 	villages: Ivillage[],
@@ -259,7 +260,8 @@ export interface Iplayer {
 	vacationStateEnd: number,
 	usedVacationDays: number,
 	halloweenBoostTime: number,
-	winterPackageBoughtAmount: number
+	winterPackageBoughtAmount: number,
+	springDealBoughtAmount: number
 }
 
 export interface Itarget {
@@ -455,4 +457,32 @@ export interface Iresearch_strength {
 	attack: number
 	defence: number
 	defenceCavalry: number
+}
+
+export interface Icelebration_queue {
+	queues: {
+		[index: number]: any[]
+		24: Icelebration_queue_item[] // town hall
+		35: Icelebration_queue_item[] // brewery
+	}
+	lastFinished: {
+		[index: number]: number
+		24: number // town hall
+		35: number // brewery
+	}
+}
+
+export interface Icelebration_queue_item {
+	id: number
+	type: celebration_types
+	endTime: number
+	culturePoints: number
+}
+
+export interface Icelebration {
+	costs: Iresources,
+	type: celebration_types,
+	duration: number
+	culturePoints: string
+	maxCount: number
 }

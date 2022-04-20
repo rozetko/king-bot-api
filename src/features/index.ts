@@ -8,6 +8,7 @@ import timed_send from './timed_send';
 import train_troops from './train_troops';
 import improve_troops from './improve_troops';
 import robber_hideouts from './robber_hideouts';
+import celebrations from './celebrations';
 
 export {
 	finish_earlier,
@@ -19,5 +20,6 @@ export {
 	timed_send,
 	train_troops,
 	improve_troops,
-	robber_hideouts
+	robber_hideouts,
+	celebrations
 };

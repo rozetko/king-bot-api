@@ -121,7 +121,8 @@ class api {
 		};
 
 		const response: any = await this.ax.post(`/?c=cache&a=get&t${get_date()}`, payload);
-		if (response.data?.error?.type == 'ClientException') {
+		if (response.data?.error?.type == 'ClientException' &&
+			response.data?.error?.message == 'Authentication failed') {
 			logger.error('authentication failed', 'cache.get');
 			await this.refresh_token();
 		}
@@ -315,6 +316,22 @@ class api {
 		return await this.post('researchUnit', 'building', params);
 	}
 
+	async get_celebration_list(villageId: number, locationId: number): Promise<any> {
+		const params = {
+			villageId,
+			locationId
+		};
+		return await this.post('getCelebrationList', 'building', params);
+	}
+
+	async start_celebration(villageId: number, type: number): Promise<any> {
+		const params = {
+			villageId,
+			type
+		};
+		return await this.post('startCelebration', 'building', params);
+	}
+
 	async post(action: string, controller: string, params: object): Promise<any> {
 		const session = this.session;
 
@@ -326,8 +343,9 @@ class api {
 		};
 
 		const response: any = await this.ax.post(`/?t${get_date()}`, payload);
-		if (response.data?.error?.type == 'ClientException') {
-			logger.error('authentication failed', `${controller}.${action}`);
+		if (response.data?.error?.type == 'ClientException' &&
+			response.data?.error?.message == 'Authentication failed') {
+			logger.error(response.data.error.message, `${controller}.${action}`);
 			await this.refresh_token();
 		}
 		response.data = this.handle_errors(response.data, `${controller}.${action}`);

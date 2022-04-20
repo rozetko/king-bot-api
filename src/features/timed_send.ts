@@ -194,6 +194,11 @@ class timed_send_feature extends feature_item {
 		logger.info(`uuid: ${this.options.uuid} started`, this.params.name);
 
 		const player_data: Iplayer = await player.get();
+		if (!player_data) {
+			logger.error('could not get player data', this.params.name);
+			this.options.error = true;
+			return;
+		}
 		this.own_tribe = player_data.tribeId;
 
 		let loop = 0;

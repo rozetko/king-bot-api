@@ -70,10 +70,10 @@ class kingbot {
 		if (!list_obj) return;
 
 		const list_id: number = list_obj.listId;
-
 		if (!list_id) return;
 
 		const player_data: Iplayer = await player.get();
+		if (!player_data) return;
 		const own_tribe: tribe = player_data.tribeId;
 
 		const units: Iunits = {

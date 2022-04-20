@@ -65,7 +65,9 @@ after configuring you can close the browser window and the bot keeps running unt
 -   custom trade routes
 -   timed send
 -   train troops
+-   improve troops
 -   robber hideouts
+-   celebrations
 -   available in different languages
 -   proxy support
 

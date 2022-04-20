@@ -57,6 +57,13 @@ export enum troops_type {
 	elsewhere = 3
 }
 
+export enum celebration_types {
+	small = 1,
+	large = 2,
+	brewery = 3,
+	teahouse = 4
+}
+
 export const default_Iunits = { 1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0 };
 
 export const building_types: { [index: number]: string } = {

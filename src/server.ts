@@ -19,7 +19,8 @@ import {
 	timed_send,
 	train_troops,
 	improve_troops,
-	robber_hideouts
+	robber_hideouts,
+	celebrations
 } from './features';
 import { farming, village, player, troops } from './gamedata';
 import database from './database';
@@ -37,7 +38,8 @@ class server {
 		timed_send,
 		train_troops,
 		improve_troops,
-		robber_hideouts
+		robber_hideouts,
+		celebrations
 	];
 
 	constructor() {
@@ -96,6 +98,11 @@ class server {
 
 			if (ident == 'player_tribe') {
 				const player_data: Iplayer = await player.get();
+				if (!player_data) {
+					logger.error('could not get player data', 'server');
+					res.send(null);
+					return;
+				}
 				const data: tribe = player_data.tribeId;
 				res.send(data);
 				return;
@@ -103,6 +110,11 @@ class server {
 
 			if (ident == 'player_settings') {
 				const player_data: Iplayer = await player.get();
+				if (!player_data) {
+					logger.error('could not get player data', 'server');
+					res.send(null);
+					return;
+				}
 				const settings_ident: string = 'Settings:' + player_data.playerId;
 				const response: any[] = await api.get_cache([settings_ident]);
 				const settings_data = find_state_data(settings_ident, response);
