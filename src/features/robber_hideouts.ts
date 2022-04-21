@@ -1,4 +1,4 @@
-import { find_state_data, sleep, get_random_int } from '../util';
+import { find_state_data, sleep, get_random_int, get_diff_time } from '../util';
 import { Iunits, Ihero, Ivillage, Imap_details, Itroops_collection } from '../interfaces';
 import { feature_collection, feature_item, Ioptions } from './feature';
 import { hero, village, troops } from '../gamedata';
@@ -66,6 +66,7 @@ class robber_hideouts extends feature_collection {
 class robber_feature extends feature_item {
 	options: Ioptions_robber_hideouts;
 
+	sleep_time: number;
 	send_hero: boolean;
 	send_artillery: boolean;
 
@@ -164,12 +165,15 @@ class robber_feature extends feature_item {
 					await this.send_troops(robber);
 					if (this.options.error)
 						break;
+					// set sleep time
+					await this.check_troops();
 				}
+				await sleep(this.sleep_time); // sleep remaining travel time
 			}
 			else {
 				logger.info('no robber hideouts at this time, will check again later', this.params.name);
+				await sleep(get_random_int(interval_min, interval_max));
 			}
-			await sleep(get_random_int(interval_min, interval_max));
 		}
 
 		this.running = false;
@@ -230,14 +234,14 @@ class robber_feature extends feature_item {
 		}
 
 		// check available units to send
-		const units_avaiable: Iunits = await troops.get_units(village_id, troops_type.stationary, troops_status.home);
+		const units_available: Iunits = await troops.get_units(village_id, troops_type.stationary, troops_status.home);
 		for (var type = 1; type < 11; type++) {
-			if (!units_avaiable[type] || units[type] == 0)
+			if (!units_available[type] || units[type] == 0)
 				continue;
 			if (units[type] == -1) { // adding a unit value of -1 will send all units of this type
-				units[type] = units_avaiable[type];
+				units[type] = units_available[type];
 			}
-			else if (units[type] > Number(units_avaiable[type])) {
+			else if (units[type] > Number(units_available[type])) {
 				logger.info('send aborted because there are not enough units in village to send', this.params.name);
 				return;
 			}
@@ -335,6 +339,7 @@ class robber_feature extends feature_item {
 
 		// return any that still has robbers
 		if (robber1.hasNPC != 0 && robber1.npcInfo.troops != null) {
+
 			if (robber1.npcInfo.troops.units == null || Object.keys(robber1.npcInfo.troops.units).length == 0) {
 				this.send_hero = false;
 				this.send_artillery = false;
@@ -380,12 +385,17 @@ class robber_feature extends feature_item {
 					// troops are already going to robber
 					if (troop.data.movement.villageIdTarget == robber1_village.position ||
 						troop.data.movement.villageIdTarget == robber2_village.position) {
+						const time_travel = troop.data.movement.timeFinish - troop.data.movement.timeStart;
+						const time_left = get_diff_time(troop.data.movement.timeFinish);
+						this.sleep_time = time_left + time_travel;
 						return true;
 					}
 
 					// troops are still returning from robber
 					if (troop.data.movement.villageIdStart == robber1_village_id ||
 						troop.data.movement.villageIdStart == robber2_village_id) {
+						const time_left = get_diff_time(troop.data.movement.timeFinish);
+						this.sleep_time = time_left;
 						return true;
 					}
 				}
