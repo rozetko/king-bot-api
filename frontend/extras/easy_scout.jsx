@@ -119,7 +119,6 @@ export default class EasyScout extends Component {
 							icon = 'fa-cow'
 						/>
 
-
 						<Select
 							label = { props.lang_label_spy_for }
 							value = { spy_mission }
@@ -163,7 +162,7 @@ export default class EasyScout extends Component {
 					<div className="column">
 
 						<div class="buttons">
-							<Button action='send' onClick={ this.submit.bind(this) } className="is-success" icon='fa-share' />
+							<Button action={ props.lang_button_send } onClick={ this.submit.bind(this) } className="is-success" icon='fa-share' />
 							<Button action={ props.lang_button_cancel } onClick={ this.cancel.bind(this) } icon='fa-times' />
 						</div>
 

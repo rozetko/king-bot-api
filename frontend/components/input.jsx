@@ -8,11 +8,11 @@ export default ({
 	parent_style, parent_field = true
 }) => {
 
-	const label_node = parent_field && label && (<label class="label">{ label }</label>);
+	const label_node = parent_field && !button && label && (<label class="label">{ label }</label>);
 
 	const input_node =
 		<p class={ 'control' + (icon ? ' has-icons-left' : '') }>
-			{!parent_field && label && (<label class="label">{ label }</label>)}
+			{!parent_field && !button && label && (<label class="label">{ label }</label>)}
 			<input
 				class = { className && className.includes('input') ? className : 'input ' + className }
 				type = { type }
@@ -28,6 +28,6 @@ export default ({
 	const button_node = parent_field && button && (<p class='control'>{ button }</p>);
 
 	return parent_field
-		? h('div', { className: 'field', ...parent_style ? { style: parent_style } : {} }, [label_node, input_node, button_node] )
+		? h('div', { className: 'field' + (button ? ' has-addons' : ''), ...parent_style ? { style: parent_style } : {} }, [label_node, input_node, button_node] )
 		: input_node;
 };

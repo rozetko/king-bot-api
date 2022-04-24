@@ -62,10 +62,12 @@ const languages = {
 		lang_table_duration: 'duration',
 		lang_table_distance: 'distance',
 		lang_table_population: 'population',
+		lang_table_evolution: 'evolution',
 		lang_table_coordinates: 'coordinates',
 		lang_table_player: 'player',
 		lang_table_kingdom: 'kingdom',
 		lang_table_tribe: 'tribe',
+		lang_table_villages: '# villages',
 		lang_table_id: 'id',
 		lang_table_name: 'name',
 		lang_table_lvl: 'lvl',
@@ -80,6 +82,7 @@ const languages = {
 		lang_button_cancel: 'cancel',
 		lang_button_delete: 'delete',
 		lang_button_search: 'search',
+		lang_button_send: 'send',
 
 		lang_adventure_adventure_type: 'adventure type',
 		lang_adventure_short: 'short',
@@ -114,10 +117,12 @@ const languages = {
 		lang_finder_distance_to: 'distance relative to',
 		lang_finder_player_pop: 'player pop (min / max)',
 		lang_finder_village_pop: 'village pop (min / max)',
-		lang_finder_distance: 'distance (min / max)',
+		lang_finder_villages_max: 'player villages (max)',
+		lang_finder_evolution_max: 'evolution (max / over)',
 		lang_finder_add_list: 'add to farmlist',
 		lang_finder_inactive_for: 'inactive for',
 		lang_finder_days: 'days',
+		lang_finder_villages: 'villages',
 		lang_finder_description: 'searches for inactive players and displays their villages based on distance, once you added them to your farmlist, you can use the easy scout feature to spy them.',
 
 		lang_log_level: 'level',
@@ -172,6 +177,10 @@ const languages = {
 		lang_celebration_small: 'small celebration',
 		lang_celebration_large: 'large celebration',
 		lang_celebration_brewery: 'brewery festival',
+
+		lang_tribe_roman: 'roman',
+		lang_tribe_gaul: 'gaul',
+		lang_tribe_teuton: 'teuton',
 
 		lang_unit_types_hero: 'hero',
 		lang_unit_types: {
@@ -322,10 +331,12 @@ const languages = {
 		lang_table_duration: 'duración',
 		lang_table_distance: 'distancia',
 		lang_table_population: 'población',
+		lang_table_evolution: 'evolución',
 		lang_table_coordinates: 'coordenadas',
 		lang_table_player: 'jugador',
 		lang_table_kingdom: 'reino',
-		lang_table_tribe: 'tribu',
+		lang_table_tribe: 'raza',
+		lang_table_villages: '# aldeas',
 		lang_table_id: 'id',
 		lang_table_name: 'nombre',
 		lang_table_lvl: 'nivel',
@@ -340,6 +351,7 @@ const languages = {
 		lang_button_cancel: 'cancelar',
 		lang_button_delete: 'eliminar',
 		lang_button_search: 'buscar',
+		lang_button_send: 'enviar',
 
 		lang_adventure_adventure_type: 'tipo de aventura',
 		lang_adventure_short: 'corta',
@@ -374,10 +386,12 @@ const languages = {
 		lang_finder_distance_to: 'distancia relativa a',
 		lang_finder_player_pop: 'población jugador (mín. / máx.)',
 		lang_finder_village_pop: 'población aldea (mín. / máx.)',
-		lang_finder_distance: 'distancia (mín. / máx.)',
+		lang_finder_villages_max: 'aldeas jugador (máx.)',
+		lang_finder_evolution_max: 'evolución (máx. / sobre)',
 		lang_finder_add_list: 'añadir a lista de vacas',
 		lang_finder_inactive_for: 'inactivo durante',
 		lang_finder_days: 'días',
+		lang_finder_villages: 'aldeas',
 		lang_finder_description: 'busca a los jugadores inactivos y muestra sus aldeas en función de la distancia, una vez que los hayas añadido a tu lista de vacas, puedes espiarlos fácilmente con la función de espionaje.',
 
 		lang_log_level: 'nivel',
@@ -432,6 +446,10 @@ const languages = {
 		lang_celebration_small: 'celebración pequeña',
 		lang_celebration_large: 'gran celebración',
 		lang_celebration_brewery: 'festival cervecería',
+
+		lang_tribe_roman: 'romano',
+		lang_tribe_gaul: 'galo',
+		lang_tribe_teuton: 'germano',
 
 		lang_unit_types_hero: 'héroe',
 		lang_unit_types: {
@@ -582,10 +600,12 @@ const languages = {
 		lang_table_duration: 'laufzeit',
 		lang_table_distance: 'distanz',
 		lang_table_population: 'bevölkerung',
+		lang_table_evolution: 'entwicklung',
 		lang_table_coordinates: 'koordinaten',
 		lang_table_player: 'spieler',
 		lang_table_kingdom: 'königreich',
 		lang_table_tribe: 'stamm',
+		lang_table_villages: '# dörfer',
 		lang_table_id: 'id',
 		lang_table_name: 'name',
 		lang_table_lvl: 'lvl',
@@ -600,6 +620,7 @@ const languages = {
 		lang_button_cancel: 'abbrechen',
 		lang_button_delete: 'löschen',
 		lang_button_search: 'suchen',
+		lang_button_send: 'senden',
 
 		lang_adventure_adventure_type: 'abenteuer typ',
 		lang_adventure_short: 'kurz',
@@ -634,10 +655,12 @@ const languages = {
 		lang_finder_distance_to: 'distanz relativ zu',
 		lang_finder_player_pop: 'spieler pop (min / max)',
 		lang_finder_village_pop: 'dorf pop (min / max)',
-		lang_finder_distance: 'distanz (min / max)',
+		lang_finder_villages_max: 'spieler dörfer (max)',
+		lang_finder_evolution_max: 'entwicklung (max / über)',
 		lang_finder_add_list: 'zur farmlist hinzufügen',
 		lang_finder_inactive_for: 'inaktiv seit',
 		lang_finder_days: 'tagen',
+		lang_finder_villages: 'dörfer',
 		lang_finder_description: 'sucht inaktive spieler und fügt sie mit einem klick zu einer farmliste hinzu. wenn sie einfach hinzugefügt sind kann man sie mit dem einfach spähen feature auspähen',
 
 		lang_log_level: 'level',
@@ -692,6 +715,10 @@ const languages = {
 		lang_celebration_small: 'kleines fest',
 		lang_celebration_large: 'großes fest',
 		lang_celebration_brewery: 'brauereifest',
+
+		lang_tribe_roman: 'römer',
+		lang_tribe_gaul: 'gallier',
+		lang_tribe_teuton: 'germanen',
 
 		lang_unit_types_hero: 'held',
 		lang_unit_types: {

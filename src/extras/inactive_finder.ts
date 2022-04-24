@@ -3,13 +3,13 @@ import settings from '../settings';
 import api from '../api';
 import { farming, village } from '../gamedata';
 import { find_state_data } from '../util';
-import { Ifarmlist, Ivillage } from '../interfaces';
+import { Ifarmfinder, Ifarmlist, Ivillage } from '../interfaces';
 import { Iresponse } from '../features/feature';
+import logger from '../logger';
 
 class inactive_finder {
-	url: string = 'http://travian.scriptworld.net/inactive';
 
-	async add_inactive_player(farmlist: string, inactive: any): Promise<Iresponse> {
+	async add_inactive_player(farmlist: string, inactive: Ifarmfinder): Promise<Iresponse> {
 		const temp_data: any = await farming.get_own();
 		const farmlist_data: Ifarmlist = farming.find(farmlist, temp_data);
 
@@ -21,7 +21,14 @@ class inactive_finder {
 			};
 		}
 
-		await api.toggle_farmlist_entry(inactive.villageId, farmlist_data.listId);
+		const response: any = await api.toggle_farmlist_entry(inactive.id, farmlist_data.listId);
+		if (response.errors) {
+			return {
+				error: true,
+				message: response.errors[0]?.message,
+				data: null
+			};
+		}
 
 		return {
 			error: false,
@@ -31,53 +38,32 @@ class inactive_finder {
 	}
 
 	async get_new_farms(
-		min_player_pop: string,
-		max_player_pop: string,
-		min_village_pop: string,
-		max_village_pop: string,
 		village_id: number,
-		inactive_for: string,
-		min_distance: string,
-		max_distance: string
+		min_player_pop: number = 0,
+		max_player_pop: number = 1000,
+		min_village_pop: number = 0,
+		max_village_pop: number = 500,
+		max_villages: number = 3,
+		max_evolution: number = 0,
+		days: number = 5
 	): Promise<any> {
 
-		let gameworld: string = settings.gameworld;
-
+		// get village coordinates
 		const village_data = await village.get_own();
 		const found_village: Ivillage = village.find(village_id, village_data);
-
 		if (!found_village) {
 			return {
 				error: true,
-				message: `village ID: ${ village_id } not found.`,
+				message: `couldn't find village with id: ${village_id}!`,
 				data: null
 			};
 		}
-
 		const { x, y } = found_village.coordinates;
 
-		const query: string = `/?gameworld=${gameworld}&
-			min_player_pop=${min_player_pop}&
-			max_player_pop=${max_player_pop}&
-			min_village_pop=${min_village_pop}&
-			max_village_pop=${max_village_pop}&
-			inactive_for=${inactive_for}&
-			min_distance=${min_distance}&
-			max_distance=${max_distance}&
-			x=${x}&
-			y=${y}
-		`.replace(/\s/g, '');
-
-		const res: any = await axios.get(this.url + query);
-		if (res.data.error) {
-			return res.data;
-		}
-
+		// get farmlists
 		const farmlists = await farming.get_own();
 		const data: any[] = find_state_data(farming.farmlist_ident, farmlists);
-
 		const villages_farmlist: Array<number> = [];
-
 		for (let farm of data) {
 			const farm_data: Ifarmlist = farm.data;
 			for (let id of farm_data.villageIds) {
@@ -85,43 +71,101 @@ class inactive_finder {
 			}
 		}
 
+		// get engin9tools servers
+		let servers: any;
+		try {
+			let url: string = 'https://api.travian.engin9tools.com/api/global/servers';
+			servers = await axios.get(url);
+		} catch (error:any) {
+			return {
+				error: true,
+				message: error.response?.data?.message,
+				data: null
+			};
+		}
+
+		// get server id
+		let server_id;
+		for (let group of servers.data.data) {
+			for (let server of group.servers) {
+				if (server.address.includes(`${settings.gameworld}.`)) {
+					server_id = server.id;
+					break;
+				}
+			}
+			if (server_id)
+				break;
+		}
+
+		// find inactives
+		let found = 0;
 		const rv: any[] = [];
+		for (let page = 0; page<10; page++) {
+			const query: string =
+				`/?serverId=${server_id}&x=${x}&y=${y}&days=${days}&maxVillages=${max_villages}&
+				minPopVillage=${min_village_pop}&maxPopVillage=${max_village_pop}&
+				minPopPlayer=${min_player_pop}&maxPopPlayer=${max_player_pop}&
+				maxEvolution=${max_evolution}&onlyNewFarms=${false}&
+				allowRomans=${true}&allowGauls=${true}&allowTeutons=${true}&
+				allowAlliances=${true}&allowCapitals=${true}&page=${page}
+				`.replace(/\s/g, '');
 
-		for (let farm of res.data.data) {
-			if (villages_farmlist.indexOf(Number(farm.villageId)) > -1) continue;
+			let res: any;
+			try {
+				let url = 'https://api.travian.engin9tools.com/api/v1/farm-finder';
+				res = await axios.get(url + query);
+			} catch (error:any) {
+				return {
+					error: true,
+					message: error.response?.data?.message,
+					data: null
+				};
+			}
 
-			rv.push(farm);
+			let count = 0;
+			for (let farm of res.data.data) {
+				count++;
+				if (count == 26)
+					break;
+				if (villages_farmlist.indexOf(Number(farm.id)) > -1)
+					continue;
+				rv.push(farm);
+			}
+			found += res.data.data.length == 26 ?
+				25 : res.data.data.length;
+			if (res.data.data.length < 26)
+				break;
 		}
 
 		// get kingdom names
 		const k_id_params: Set<string> = new Set();
 		for (let farm of rv) {
-			const kID: number = Number(farm.kingdomId);
+			const kID: number = Number(farm.id_kingdom);
 			if (kID == 0) continue;
 			k_id_params.add('Kingdom:' + kID);
 		}
-
 		const kingdom_response = await api.get_cache(Array.from(k_id_params));
-		const kingdom_data: { [index: number]: string } = {};
+		if (kingdom_response) {
+			const kingdom_data: { [index: number]: string } = {};
 
-		for (let k_data of kingdom_response) {
-			const k = k_data.data;
-			kingdom_data[Number(k.groupId)] = k.tag;
-		}
-
-		for (let farm of rv) {
-			const kID: number = Number(farm.kingdomId);
-			if (kID == 0) {
-				farm['kingdom_tag'] = '-';
-				continue;
+			for (let k_data of kingdom_response) {
+				const k = k_data.data;
+				kingdom_data[Number(k.groupId)] = k.tag;
 			}
 
-			farm['kingdom_tag'] = kingdom_data[kID];
+			for (let farm of rv) {
+				const kID: number = Number(farm.id_kingdom);
+				if (kID == 0) {
+					farm['kingdom_tag'] = '-';
+					continue;
+				}
+				farm['kingdom_tag'] = kingdom_data[kID];
+			}
 		}
 
 		return {
 			error: false,
-			message: `${ res.data.data.length } found / ${ rv.length } displayed`,
+			message: `${ found } found / ${ rv.length } displayed`,
 			data: rv
 		};
 	}

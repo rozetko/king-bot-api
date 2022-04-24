@@ -6,7 +6,7 @@ import { storeKeys } from '../language';
 import { handle_response } from '../actions';
 import InactiveTable from '../components/inactive_table';
 import InfoTitle from '../components/info_title';
-import { DoubleInput, Select, Button } from '../components/form';
+import { Input, DoubleInput, Select, Button } from '../components/form';
 
 @connect(`notifications,${storeKeys}`, handle_response)
 export default class InactiveFinder extends Component {
@@ -16,16 +16,16 @@ export default class InactiveFinder extends Component {
 		village_id: 0,
 		all_farmlists: [],
 		all_villages: [],
-		error_village: false,
-		error_farmlist: false,
 		min_player_pop: '',
 		max_player_pop: '',
 		min_village_pop: '',
 		max_village_pop: '',
-		min_distance: '',
-		max_distance: '',
-		inactive_for: '',
+		max_villages: '',
+		max_evolution: '',
+		days: '',
 		inactives: [],
+		error_village: false,
+		error_farmlist: false,
 		loading: false,
 		message: '',
 	};
@@ -86,27 +86,27 @@ export default class InactiveFinder extends Component {
 		this.setState({ loading: true, message: '', inactives: [] });
 
 		const {
+			selected_farmlist,
 			village_id,
 			min_player_pop,
 			max_player_pop,
 			min_village_pop,
 			max_village_pop,
-			min_distance,
-			max_distance,
-			inactive_for,
-			selected_farmlist,
+			max_villages,
+			max_evolution,
+			days
 		} = this.state;
 
 		const payload_data = {
+			selected_farmlist,
 			village_id,
-			min_distance,
-			max_distance,
 			min_player_pop,
 			max_player_pop,
 			min_village_pop,
 			max_village_pop,
-			inactive_for,
-			selected_farmlist,
+			max_villages,
+			max_evolution,
+			days
 		};
 
 		const payload = {
@@ -118,11 +118,13 @@ export default class InactiveFinder extends Component {
 
 		const { error, data, message } = response.data;
 
-		this.setState({ inactives: [ ...data ], loading: false });
-
 		if (error) {
+			this.setState({ loading: false });
 			this.props.handle_response(response.data);
 			return;
+		}
+		else {
+			this.setState({ inactives: [ ...data ], loading: false });
 		}
 
 		this.setState({ message });
@@ -133,8 +135,8 @@ export default class InactiveFinder extends Component {
 		all_villages, all_farmlists,
 		min_player_pop, max_player_pop,
 		min_village_pop, max_village_pop,
-		min_distance, max_distance,
-		inactive_for, inactives, loading, message
+		max_villages, max_evolution, days,
+		inactives, loading, message
 	}) {
 		const village_select_class = classNames({
 			select: true,
@@ -194,23 +196,25 @@ export default class InactiveFinder extends Component {
 						<DoubleInput
 							label = { props.lang_finder_player_pop }
 							placeholder1 = { props.lang_finder_default + ': 0' }
-							placeholder2 = { props.lang_finder_default + ': 500' }
+							placeholder2 = { props.lang_finder_default + ': 1000' }
 							value1 = { min_player_pop }
 							value2 = { max_player_pop }
 							onChange1 = { e => this.setState({ min_player_pop: e.target.value }) }
 							onChange2 = { e => this.setState({ max_player_pop: e.target.value }) }
 							icon = 'fa-users-crown'
+							style = {{ width: '8.1em' }}
 						/>
 
 						<DoubleInput
 							label = { props.lang_finder_village_pop }
 							placeholder1 = { props.lang_finder_default + ': 0' }
-							placeholder2 = { props.lang_finder_default + ': 200' }
+							placeholder2 = { props.lang_finder_default + ': 1000' }
 							value1 = { min_village_pop }
 							value2 = { max_village_pop }
 							onChange1 = { e => this.setState({ min_village_pop: e.target.value }) }
 							onChange2 = { e => this.setState({ max_village_pop: e.target.value }) }
 							icon = 'fa-house-user'
+							style = {{ width: '8.1em' }}
 						/>
 
 						<Button
@@ -222,6 +226,7 @@ export default class InactiveFinder extends Component {
 						/>
 
 					</div>
+
 					<div className='column'>
 
 						<Select
@@ -233,34 +238,39 @@ export default class InactiveFinder extends Component {
 							icon = 'fa-cow'
 						/>
 
-						<DoubleInput
-							label={ props.lang_finder_distance }
-							placeholder1={ props.lang_finder_default + ': 0' }
-							placeholder2={ props.lang_finder_default + ': 100' }
-							value1={ min_distance }
-							value2={ max_distance }
-							onChange1={ e => this.setState({ min_distance: e.target.value }) }
-							onChange2={ e => this.setState({ max_distance: e.target.value }) }
-							icon = 'fa-ruler-horizontal'
+						<label class='label'>{ props.lang_finder_villages_max }</label>
+						<Input
+							placeholder={ props.lang_finder_default + ': 3' }
+							value={ max_villages }
+							onChange={ e => this.setState({ max_villages: e.target.value }) }
+							icon = 'fa-house'
+							button = { <Button action = { props.lang_finder_villages } className = 'button is-static is-radiusless' /> }
 						/>
 
-						<label class='label'>{props.lang_finder_inactive_for}</label>
-						<div class='field has-addons'>
-							<p class='control has-icons-left'>
-								<input
-									class='input is-radiusless'
-									type='text'
-									placeholder={ props.lang_finder_default + ': 5' }
-									value={ inactive_for }
-									onChange={ e => this.setState({ inactive_for: e.target.value }) }
+						<div class="field">
+							<label class="label">{ props.lang_finder_evolution_max }</label>
+							<div class="field has-addons">
+								<Input
+									placeholder = { props.lang_finder_default + ': 0' }
+									value = { max_evolution }
+									onChange = { e => this.setState({ max_evolution: e.target.value }) }
+									style = {{ width: '7.5em', marginRight: '0.85em' }}
+									icon = 'fa-chart-line'
+									parent_field = { false }
 								/>
-								<span class="icon is-left"><i class="fas fa-user-slash"></i></span>
-							</p>
-							<p class='control'>
-								<a class='button is-static is-radiusless'>
-									{props.lang_finder_days}
-								</a>
-							</p>
+								<Input
+									placeholder = { props.lang_finder_default + ': 7' }
+									value = { days }
+									onChange = { e => this.setState({ days: e.target.value }) }
+									style = {{ width: '7.5em' }}
+									icon = 'fa-user-slash'
+									parent_field = { false }
+								/>
+								<Button
+									action = { props.lang_finder_days }
+									className = { 'is-static' }
+								/>
+							</div>
 						</div>
 
 						<div className='content' style={{ marginTop: '1.5rem' }}>
@@ -275,6 +285,7 @@ export default class InactiveFinder extends Component {
 					content={ inactives }
 					clicked={ this.clicked.bind(this) }
 				/>
+
 			</div>
 		);
 	}

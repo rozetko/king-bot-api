@@ -10,8 +10,8 @@ import Notifications from './components/notifications';
 import Login from './sites/login';
 import EditFeature from './sites/edit_feature';
 import EasyScout from './extras/easy_scout';
+import InactiveFinder from './extras/inactive_finder';
 import FeatureList from './sites/feature_list';
-import InactiveFinder from './sites/inactive_finder';
 import Logger from './sites/logger';
 import lang, { languages } from './language';
 

@@ -2,11 +2,12 @@ import { h, render, Component } from 'preact';
 import { connect } from 'unistore/preact';
 import classNames from 'classnames';
 
-import { storeKeys } from '../language';
+import lang, { storeKeys } from '../language';
 
 const rowStyle = {
 	verticalAlign: 'middle',
-	textAlign: 'center',
+	textAlign: 'left',
+	whiteSpace: 'nowrap'
 };
 
 export default connect(storeKeys)(props => {
@@ -19,12 +20,14 @@ export default connect(storeKeys)(props => {
 				<thead>
 					<tr>
 						<th style={ rowStyle }>{props.lang_table_distance}</th>
-						<th style={ rowStyle }>{props.lang_table_population}</th>
+						<th style={ rowStyle }>{props.lang_table_evolution}</th>
 						<th style={ rowStyle }>{props.lang_table_coordinates}</th>
-						<th style={ rowStyle }>{props.lang_table_player}</th>
+						<th style={ rowStyle }>{props.lang_table_population}</th>
 						<th style={ rowStyle }>{props.lang_table_village}</th>
-						<th style={ rowStyle }>{props.lang_table_kingdom}</th>
+						<th style={ rowStyle }>{props.lang_table_player}</th>
 						<th style={ rowStyle }>{props.lang_table_tribe}</th>
+						<th style={ rowStyle }>{props.lang_table_villages}</th>
+						<th style={ rowStyle }>{props.lang_table_kingdom}</th>
 						<th />
 					</tr>
 				</thead>
@@ -39,20 +42,21 @@ class Inactive extends Component {
 		toggled: false,
 	};
 
-	tribe_dict = {
-		'1': 'roman',
-		'2': 'teuton',
-		'3': 'gaul',
-	};
-
 	render({ content, clicked }, { toggled }) {
 		const {
-			distance, player_name, village_name,
-			population, x, y, tribeId, kingdom_tag
+			distance, evolution, x, y, pop, pop_g,
+			name, capital, name_player, tribe,
+			villages, kingdom_tag
 		} = content;
 
-		const coordinates = `( ${x} | ${y} )`;
-		const tribe = this.tribe_dict[tribeId];
+		const coordinates = `(${x}|${y})`;
+
+		let tribe_name;
+		switch (tribe) {
+			case '1': tribe_name = lang.translate('lang_tribe_roman'); break;
+			case '2': tribe_name = lang.translate('lang_tribe_teuton'); break;
+			case '3': tribe_name = lang.translate('lang_tribe_gaul'); break;
+		}
 
 		const icon = classNames({
 			'fas': true,
@@ -67,22 +71,36 @@ class Inactive extends Component {
 					{ Number(distance).toFixed(1) }
 				</td>
 				<td style={ rowStyle }>
-					{ population }
+					{ evolution }
 				</td>
 				<td style={ rowStyle }>
 					{ coordinates }
 				</td>
 				<td style={ rowStyle }>
-					{ player_name }
+					{ pop }/{ pop_g }
 				</td>
 				<td style={ rowStyle }>
-					{ village_name }
+					{ capital == '1' &&
+						<span class="icon-text">
+							<span class="icon">
+								<i class="fas fa-home"></i>
+							</span>
+							<span>{name}</span>
+						</span>
+					}
+					{ capital != '1' && name }
+				</td>
+				<td style={ rowStyle }>
+					{ name_player }
+				</td>
+				<td style={ rowStyle }>
+					{ tribe_name }
+				</td>
+				<td style={ rowStyle }>
+					{ villages }
 				</td>
 				<td style={ rowStyle }>
 					{ kingdom_tag }
-				</td>
-				<td style={ rowStyle }>
-					{ tribe }
 				</td>
 				<td style={ rowStyle }>
 					<a class="has-text-black" onClick={ async e => {

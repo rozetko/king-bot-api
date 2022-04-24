@@ -5,14 +5,14 @@ import { connect } from 'unistore/preact';
 
 import actions from '../actions';
 import features from '../features';
+import InfoTitle from '../components/info_title';
 import { storeKeys } from '../language';
 
 @connect(`notifications,${storeKeys}`, actions)
 export default class EditFeature extends Component {
 	state = {
 		ident: '',
-		show_tips: false,
-		tips_style: { display: 'none' }
+		show_tips: false
 	};
 
 	componentWillMount() {
@@ -43,13 +43,6 @@ export default class EditFeature extends Component {
 			this.setState({ ...data });
 		});
 	}
-
-	toggle_tips = _ => {
-		const { tips_style } = this.state;
-		this.setState({
-			tips_style: Object.keys(tips_style).length === 0 ? { display: 'none' } : {}
-		});
-	};
 
 	async submit(feature) {
 		const { uuid, ident } = this.state;
@@ -84,7 +77,7 @@ export default class EditFeature extends Component {
 		route('/');
 	}
 
-	render({ add_notification }, { ident, long_description, tips_style }) {
+	render(props, { ident, long_description }) {
 		if (!ident) return;
 
 		const featureProps = {
@@ -97,29 +90,10 @@ export default class EditFeature extends Component {
 
 		return (
 			<div key={ getCurrentUrl() }>
-				<h1
-					className='subtitle is-4'
-					style={{ marginBottom: '2rem' }}
-					align='left'
-				>
-					{this.props[`lang_feature_${ident}`]}
-					{long_description &&
-						<a
-							class='has-text-black'
-							//onClick={ () => add_notification(this.props[`lang_feature_desc_${long_description}`], 'info') }
-							onClick={ () => this.toggle_tips() }
-						>
-							<span class='icon is-large'>
-								<i class='fas fa-info'></i>
-							</span>
-						</a>
-					}
-				</h1>
-				<article class="message" style={ tips_style }>
-					<div class="message-body" style={{ marginTop: '-2rem' }}>
-						{this.props[`lang_feature_desc_${long_description}`]}
-					</div>
-				</article>
+				<InfoTitle
+					title={ props[`lang_feature_${ident}`] }
+					description={ props[`lang_feature_desc_${long_description}`] }
+				/>
 				{feature}
 			</div>
 		);

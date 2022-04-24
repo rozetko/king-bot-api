@@ -9,7 +9,8 @@ export default ({
 	class1,
 	class2,
 	type, type1, type2,
-	width = '7.5em', style = { width },
+	width = '7.5em',
+	style = { width }, style1, style2,
 	icon, icon1, icon2,
 	parent_style, button, help
 }) => (
@@ -22,7 +23,7 @@ export default ({
 				placeholder={ placeholder1 }
 				value={ value1 }
 				onChange={ onChange1 }
-				style={ style }
+				style={ style1 ? style1 : style }
 				parent_field = { false }
 				icon = { icon1 ? icon1 : icon }
 			/>
@@ -32,7 +33,7 @@ export default ({
 				placeholder={ placeholder2 }
 				value={ value2 }
 				onChange={ onChange2 }
-				style={ style }
+				style={ style2 ? style2 : style }
 				parent_field = { false }
 				icon = { icon2 ? icon2 : icon }
 			/>

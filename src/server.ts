@@ -239,8 +239,6 @@ class server {
 
 			settings.write_credentials(gameworld, email, password, sitter_type, sitter_name);
 			process.exit();
-
-			res.send('this wont be send anyways...');
 		});
 
 		this.app.post('/api/inactivefinder', async (req: any, res: any) => {
@@ -248,21 +246,25 @@ class server {
 
 			if (action == 'get') {
 				const {
+					village_id,
 					min_player_pop,
 					max_player_pop,
 					min_village_pop,
 					max_village_pop,
-					village_id,
-					inactive_for,
-					min_distance,
-					max_distance
+					max_villages,
+					max_evolution,
+					days
 				} = data;
 
 				const response = await inactive_finder.get_new_farms(
-					min_player_pop, max_player_pop,
-					min_village_pop, max_village_pop,
-					village_id, inactive_for,
-					min_distance, max_distance
+					Number(village_id),
+					min_player_pop ? Number(min_player_pop) : undefined,
+					max_player_pop ? Number(max_player_pop) : undefined,
+					min_village_pop ? Number(min_village_pop) : undefined,
+					max_village_pop ? Number(max_village_pop) : undefined,
+					max_villages ? Number(max_villages) : undefined,
+					max_evolution ? Number(max_evolution) : undefined,
+					days ? Number(days) : undefined,
 				);
 
 				res.send(response);

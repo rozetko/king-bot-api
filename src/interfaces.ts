@@ -42,6 +42,26 @@ export interface Ifarmlist_units {
 	6: number;
 }
 
+export interface Ifarmfinder {
+	id: number,
+	id_player: number,
+	pop: number,
+	x: number,
+	y: number,
+	name: string,
+	capital: number,
+	distance: number,
+	name_player: string,
+	tribe: tribe,
+	villages: number,
+	evolution: number,
+	id_kingdom: number,
+	name_kingdom: string,
+	pop_g: number,
+	inFarmList: number
+	kingdom_tag: string
+}
+
 export interface Iunits {
 	[index: number]: number
 	1: number;
