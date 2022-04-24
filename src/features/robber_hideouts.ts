@@ -168,7 +168,9 @@ class robber_feature extends feature_item {
 					// set sleep time
 					await this.check_troops();
 				}
-				await sleep(this.sleep_time); // sleep remaining travel time
+				this.sleep_time > 0 ?
+					await sleep(this.sleep_time) : // sleep remaining left time
+					await sleep(get_random_int(interval_min, interval_max));
 			}
 			else {
 				logger.info('no robber hideouts at this time, will check again later', this.params.name);
@@ -256,6 +258,9 @@ class robber_feature extends feature_item {
 			{
 				logger.info('send aborted because the hero is ' +
 				hero.get_hero_status(hero_data.status), this.params.name);
+				const time_left = get_diff_time(Number(hero_data.untilTime));
+				if (time_left > 0)
+					this.sleep_time = time_left;
 				return;
 			}
 			if (hero_data.villageId != village_id) {
@@ -385,8 +390,8 @@ class robber_feature extends feature_item {
 					// troops are already going to robber
 					if (troop.data.movement.villageIdTarget == robber1_village.position ||
 						troop.data.movement.villageIdTarget == robber2_village.position) {
-						const time_travel = troop.data.movement.timeFinish - troop.data.movement.timeStart;
-						const time_left = get_diff_time(troop.data.movement.timeFinish);
+						const time_travel = Number(troop.data.movement.timeFinish) - Number(troop.data.movement.timeStart);
+						const time_left = get_diff_time(Number(troop.data.movement.timeFinish));
 						this.sleep_time = time_left + time_travel;
 						return true;
 					}
@@ -394,9 +399,24 @@ class robber_feature extends feature_item {
 					// troops are still returning from robber
 					if (troop.data.movement.villageIdStart == robber1_village_id ||
 						troop.data.movement.villageIdStart == robber2_village_id) {
-						const time_left = get_diff_time(troop.data.movement.timeFinish);
+						const time_left = get_diff_time(Number(troop.data.movement.timeFinish));
 						this.sleep_time = time_left;
 						return true;
+					}
+
+					// get hero movement time
+					if (this.send_hero && troop.data.units[11] > 0) {
+						// hero is leaving the village
+						if (troop.data.movement.villageIdStart == village_id) {
+							const time_travel = Number(troop.data.movement.timeFinish) - Number(troop.data.movement.timeStart);
+							const time_left = get_diff_time(Number(troop.data.movement.timeFinish));
+							this.sleep_time = time_left + time_travel;
+						}
+						// hero is returning to village
+						if (troop.data.movement.villageIdTarget == village_id) {
+							const time_left = get_diff_time(Number(troop.data.movement.timeFinish));
+							this.sleep_time = time_left;
+						}
 					}
 				}
 			}

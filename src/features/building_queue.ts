@@ -187,7 +187,7 @@ class queue extends feature_item {
 		let building: Ibuilding = null;
 		const collection_data: Ibuilding_collection[] = find_state_data(village.building_collection_ident + village_id, response);
 		for (let bd of collection_data) {
-			if (Number(bd.data.buildingType) == queue_item.type) {
+			if (Number(bd.data.buildingType) == queue_item.type && Number(bd.data.locationId) == queue_item.location) {
 				building = bd.data;
 				break;
 			}
