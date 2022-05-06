@@ -5,7 +5,6 @@ import { farming, village } from '../gamedata';
 import { find_state_data } from '../util';
 import { Ifarmfinder, Ifarmlist, Ivillage } from '../interfaces';
 import { Iresponse } from '../features/feature';
-import logger from '../logger';
 
 class inactive_finder {
 

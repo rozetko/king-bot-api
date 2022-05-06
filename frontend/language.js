@@ -31,7 +31,7 @@ const languages = {
 		lang_feature_desc_trade_route: 'sends merchants from the origin village to the desination at a given interval.',
 		lang_feature_desc_timed_send: 'send troops at a scheduled time, consider the travel time of the units for the arrival time.',
 		lang_feature_desc_train_troops: 'train troops in a given interval and order, it goes through the entire list at each interval, if the amount is greater than the cost of the available resources, it will train as many troops as possible.',
-		lang_feature_desc_robber_hideouts: 'check for robber hideouts and send the given units to attack them, it will retry with the same hideout until its destroyed, and then it will move on to the next and so on.',
+		lang_feature_desc_robber_hideouts: 'check for robber hideouts and send the given units to attack them, it will retry with the same hideout until its destroyed, and then it will move on to the next and so on. it is also possible to send all units of a specific type by adding a unit value of \'-1\'.',
 		lang_feature_desc_improve_troops: 'checks if it can upgrade given units in given order, first it checks unit and if it is not available or is maxed out, it will try to upgrade the next unit, you can increase the list as long as you want to.',
 		lang_feature_desc_celebrations: 'checks if it can hold celebrations for the given villages, it will try to always hold a celebration and plan another one if possible.',
 
@@ -300,7 +300,7 @@ const languages = {
 		lang_feature_desc_trade_route: 'envía a los comerciantes de la aldea de origen a la de destino en un intervalo determinado.',
 		lang_feature_desc_timed_send: 'enviar tropas a una hora programada, considera la duración del viaje de las unidades para la hora de llegada.',
 		lang_feature_desc_train_troops: 'entrenar tropas en un intervalo y orden determinado, recorre toda la lista en cada intervalo, si la cantidad es mayor que el coste de los recursos disponibles, entrenará las tropas posibles.',
-		lang_feature_desc_robber_hideouts: 'comprueba los escondites de los ladrones y envía las unidades dadas para atacarlos, volverá a intentar con el mismo escondite hasta que sea destruido, y entonces pasará al siguiente y así sucesivamente.',
+		lang_feature_desc_robber_hideouts: 'comprueba los escondites de los ladrones y envía las unidades dadas para atacarlos, volverá a intentar con el mismo escondite hasta que sea destruido, y entonces pasará al siguiente y así sucesivamente. también es posible enviar todas las unidades de un tipo específico añadiendo un valor de unidad de \'-1\'.',
 		lang_feature_desc_improve_troops: 'comprueba si puede mejorar las unidades dadas en un orden determinado, primero comprueba la unidad y si no está disponible o está al máximo, intentará mejorar la siguiente unidad, puedes aumentar la lista tanto como quieras.',
 		lang_feature_desc_celebrations: 'comprueba si puede realizar celebraciones para las aldeas determinadas, siempre intentará realizar una celebración y planificar otra si es posible.',
 
@@ -569,7 +569,7 @@ const languages = {
 		lang_feature_desc_trade_route: 'händler werden automatisch zwischen zwei städten geschickt.',
 		lang_feature_desc_timed_send: 'schickt truppen zu einer geplanten zeit, wobei die reisezeit der einheiten für die ankunftszeit berücksichtigt wird.',
 		lang_feature_desc_train_troops: 'truppen in einem bestimmten intervall und in einer bestimmten reihenfolge auszubilden, geht es in jedem intervall die gesamte liste durch, wenn die menge größer ist als die kosten der verfügbaren ressourcen, bildet es so viele truppen wie möglich aus.',
-		lang_feature_desc_robber_hideouts: 'sucht nach räuberverstecken und schickt die entsprechenden truppen zum angriff. er versucht es so lange mit demselben versteck, bis es zerstört ist, und geht dann zum nächsten weiter usw.',
+		lang_feature_desc_robber_hideouts: 'sucht nach räuberverstecken und schickt die entsprechenden truppen zum angriff. er versucht es so lange mit demselben versteck, bis es zerstört ist, und geht dann zum nächsten weiter usw. es ist auch möglich, alle einheiten eines bestimmten typs zu senden, indem man einen einheitenwert von \'-1\' hinzufügt.',
 		lang_feature_desc_improve_troops: 'prüft, ob bestimmte einheiten in einer bestimmten reihenfolge aufgerüstet werden können, zuerst wird die einheit geprüft und wenn sie nicht verfügbar ist oder das maximum erreicht hat, wird versucht, die nächste einheit aufzurüsten, die liste kann beliebig verlängert werden.',
 		lang_feature_desc_celebrations: 'prüft, ob bestimmte dörfer feste veranstalten können, versucht immer, ein fest zu veranstalten, und plant nach möglichkeit ein weiteres.',
 

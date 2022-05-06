@@ -75,16 +75,23 @@ export default class TimedSend extends Component {
 	}
 
 	submit = async e => {
+		const unit_count =
+			Number(this.state.t1) + Number(this.state.t2) +
+			Number(this.state.t3) +	Number(this.state.t4) + Number(this.state.t5) +
+			Number(this.state.t6) +	Number(this.state.t7) + Number(this.state.t8) +
+			Number(this.state.t9) +	Number(this.state.t10) + Number(this.state.t11);
+		const is_negative =
+			(Number(this.state.t1) < 0) || (Number(this.state.t2) < 0) ||
+			(Number(this.state.t3) < 0) || (Number(this.state.t4) < 0) || (Number(this.state.t5) < 0) ||
+			(Number(this.state.t6) < 0) || (Number(this.state.t7) < 0) || (Number(this.state.t8) < 0) ||
+			(Number(this.state.t9) < 0) || (Number(this.state.t10) < 0) || (Number(this.state.t11) < 0);
+
 		this.setState({
 			error_village: this.state.village_id == 0,
 			error_mission_type: this.state.mission_type == 0,
 			error_target_x: this.state.target_village_id == 0,
 			error_target_y: this.state.target_village_id == 0,
-			error_units: (
-				this.state.t1 + this.state.t2 + this.state.t3 +
-				this.state.t4 + this.state.t5 + this.state.t6 +
-				this.state.t7 + this.state.t8 + this.state.t9 +
-				this.state.t10 + this.state.t11) == 0
+			error_units: isNaN(unit_count) || is_negative || unit_count < 1
 		});
 
 		if (this.state.error_village || this.state.error_mission_type ||

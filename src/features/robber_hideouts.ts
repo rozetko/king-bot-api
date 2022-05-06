@@ -238,8 +238,10 @@ class robber_feature extends feature_item {
 		// check available units to send
 		const units_available: Iunits = await troops.get_units(village_id, troops_type.stationary, troops_status.home);
 		for (var type = 1; type < 11; type++) {
-			if (!units_available[type] || units[type] == 0)
+			if (!units_available[type] || units[type] == 0) {
+				units[type] = 0;
 				continue;
+			}
 			if (units[type] == -1) { // adding a unit value of -1 will send all units of this type
 				units[type] = units_available[type];
 			}

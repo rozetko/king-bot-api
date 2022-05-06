@@ -138,7 +138,7 @@ export default class NavBar extends Component {
 								<div class="control has-icons-left has-icons-right">
 									<input
 										class = "input is-radiusless is-small"
-										type = "search"
+										type = "text"
 										placeholder = { this.props.lang_navbar_search }
 										autocomplete = "off"
 										spellcheck = "false"

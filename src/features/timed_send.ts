@@ -390,7 +390,7 @@ class timed_send_feature extends feature_item {
 				}
 
 				// send units
-				if (send_time.getSeconds() <= current_time.getSeconds()) {
+				if (send_time.getSeconds() == current_time.getSeconds()) {
 					var response: any = await api.send_units(village_id, target_village_id, units, mission_type);
 					if (response.errors) {
 						for (let error of response.errors)
@@ -405,8 +405,8 @@ class timed_send_feature extends feature_item {
 					return; // stop
 				}
 
-				// sleep half second to retry
-				await sleep(0.5);
+				// sleep a third of second to retry
+				await sleep(0.3);
 				return;
 			}
 

@@ -147,9 +147,9 @@ export default class TrainTroops extends Component {
 			error_interval_max: (this.state.interval_max == 0)
 		});
 
-		if (this.state.error_units || this.state.error_village ||
+		if (this.state.error_units || this.state.error_units && (this.state.error_village ||
 			this.state.error_unit_type || this.state.error_amount ||
-			this.state.error_interval_min || this.state.error_interval_max)
+			this.state.error_interval_min || this.state.error_interval_max))
 			return;
 
 		this.props.submit({ ...this.state });
@@ -178,7 +178,7 @@ export default class TrainTroops extends Component {
 
 		const unit_select_class = classNames({
 			select: true,
-			'is-danger': this.state.error_unit_type,
+			'is-danger': this.state.error_unit_type || this.state.error_units,
 		});
 
 		const input_class_amount = classNames({

@@ -60,8 +60,22 @@ export default class RoberHideouts extends Component {
 	}
 
 	submit = async e => {
-		const robbersAreRegistered = this.state.robber1_village_id != 0 ||
-								this.state.robber2_village_id != 0;
+		const robbersAreRegistered =
+			this.state.robber1_village_id != 0 ||
+			this.state.robber2_village_id != 0;
+		const unit_count =
+			Number(this.state.t1 == -1 ? 1 : this.state.t1) +
+			Number(this.state.t2 == -1 ? 1 : this.state.t2) +
+			Number(this.state.t3 == -1 ? 1 : this.state.t3) +
+			Number(this.state.t4 == -1 ? 1 : this.state.t4) +
+			Number(this.state.t5 == -1 ? 1 : this.state.t5) +
+			Number(this.state.t6 == -1 ? 1 : this.state.t6) +
+			Number(this.state.t7 == -1 ? 1 : this.state.t7) +
+			Number(this.state.t8 == -1 ? 1 : this.state.t8) +
+			Number(this.state.t9 == -1 ? 1 : this.state.t9) +
+			Number(this.state.t10 == -1 ? 1 : this.state.t10) +
+			Number(this.state.t11);
+
 		this.setState({
 			error_village: this.state.village_id == 0,
 			error_interval_min: this.state.interval_min == 0,
@@ -69,11 +83,7 @@ export default class RoberHideouts extends Component {
 			error_mission_type: this.state.mission_type == 0,
 			error_target_x: !robbersAreRegistered,
 			error_target_y: !robbersAreRegistered,
-			error_units: (
-				this.state.t1 + this.state.t2 + this.state.t3 +
-				this.state.t4 + this.state.t5 + this.state.t6 +
-				this.state.t7 + this.state.t8 + this.state.t9 +
-				this.state.t10 + this.state.t11) == 0
+			error_units: isNaN(unit_count) || unit_count == 0
 		});
 
 		if (this.state.error_village || this.state.error_mission_type ||

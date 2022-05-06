@@ -63,12 +63,11 @@ export default class SendFarmlist extends Component {
 	submit() {
 		this.setState({
 			error_farmlist: (this.state.farmlists.length < 1),
-			error_village: (this.state.village_id == 0),
 			error_interval_min: (this.state.interval_min == 0),
 			error_interval_max: (this.state.interval_max == 0)
 		});
 
-		if (this.state.error_farmlist || this.state.error_village ||
+		if (this.state.error_farmlist ||
 			this.state.error_interval_min || this.state.error_interval_max)
 			return;
 

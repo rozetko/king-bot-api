@@ -151,8 +151,8 @@ export default class Celebrations extends Component {
 			error_celebration_type: (this.state.celebration_type == 0)
 		});
 
-		if (this.state.error_celebrations || this.state.error_village ||
-			this.state.error_celebration_type)
+		if (this.state.error_celebrations || this.state.error_celebrations &&
+			(this.state.error_village || this.state.error_celebration_type))
 			return;
 
 		this.props.submit({ ...this.state });
@@ -180,7 +180,7 @@ export default class Celebrations extends Component {
 
 		const celebration_select_class = classNames({
 			select: true,
-			'is-danger': this.state.error_celebration_type,
+			'is-danger': this.state.error_celebration_type || this.state.error_celebrations,
 		});
 
 		const villages = all_villages.map(village =>

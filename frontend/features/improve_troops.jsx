@@ -149,8 +149,8 @@ export default class ImproveTroops extends Component {
 			error_level: (this.state.level == 0)
 		});
 
-		if (this.state.error_units || this.state.error_village ||
-			this.state.error_unit_type || this.state.error_level)
+		if (this.state.error_units || this.state.error_units &&
+			(this.state.error_village || this.state.error_unit_type || this.state.error_level))
 			return;
 
 		this.props.submit({ ...this.state });
@@ -179,7 +179,7 @@ export default class ImproveTroops extends Component {
 
 		const unit_select_class = classNames({
 			select: true,
-			'is-danger': this.state.error_unit_type,
+			'is-danger': this.state.error_unit_type || this.state.error_units,
 		});
 
 		const level_select_class = classNames({
