@@ -62,7 +62,7 @@ after configuring you can close the browser window and the bot keeps running unt
 -   finish 5 min earlier
 -   inactive finder
 -   easy scout
--   custom trade routes
+-   custom trade routes + ww support
 -   timed send
 -   train troops
 -   improve troops
