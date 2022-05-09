@@ -42,8 +42,35 @@ export function get_random_int(min: number, max: number): number {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+export function get_random_string(n: number, charset?: string): string {
+	let res = '';
+	let chars =
+		charset || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	let charLen = chars.length;
+	for (var i = 0; i < n; i++) {
+		res += chars.charAt(Math.floor(Math.random() * charLen));
+	}
+	return res;
+}
+
 export function get_diff_time(time: number): number {
 	return Number(time) - get_date();
+}
+
+/**
+ * python's zip function equivalent
+ * @param arrays array of pairs
+ * @returns zip array object
+ */
+export function zip(arrays: any[]) {
+	var shortest = arrays.length==0 ? [] : arrays.reduce(function(a,b){
+		return a.length<b.length ? a : b;
+	});
+	return shortest.map(function(_: any,i: string | number) {
+		return arrays.map(function(array) {
+			return array[i];
+		});
+	});
 }
 
 export function clash_obj(merge_obj: any, ident: string, ident2: string = ''): any {

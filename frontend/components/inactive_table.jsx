@@ -10,6 +10,11 @@ const rowStyle = {
 	whiteSpace: 'nowrap'
 };
 
+const rowCenterStyle = {
+	verticalAlign: 'middle',
+	textAlign: 'center',
+};
+
 export default connect(storeKeys)(props => {
 	const { content, clicked } = props;
 	const list = content.map(item => <Inactive content={ item } clicked={ clicked } />);
@@ -19,15 +24,13 @@ export default connect(storeKeys)(props => {
 			<table className='table is-hoverable is-fullwidth'>
 				<thead>
 					<tr>
-						<th style={ rowStyle }>{props.lang_table_distance}</th>
-						<th style={ rowStyle }>{props.lang_table_evolution}</th>
-						<th style={ rowStyle }>{props.lang_table_coordinates}</th>
-						<th style={ rowStyle }>{props.lang_table_population}</th>
+						<th style={ rowCenterStyle }>{props.lang_table_distance}</th>
+						<th style={ rowCenterStyle }>{props.lang_table_coordinates}</th>
+						<th style={ rowCenterStyle }>{props.lang_table_population}</th>
 						<th style={ rowStyle }>{props.lang_table_village}</th>
 						<th style={ rowStyle }>{props.lang_table_player}</th>
 						<th style={ rowStyle }>{props.lang_table_tribe}</th>
-						<th style={ rowStyle }>{props.lang_table_villages}</th>
-						<th style={ rowStyle }>{props.lang_table_kingdom}</th>
+						<th style={ rowCenterStyle }>{props.lang_table_kingdom}</th>
 						<th />
 					</tr>
 				</thead>
@@ -44,15 +47,14 @@ class Inactive extends Component {
 
 	render({ content, clicked }, { toggled }) {
 		const {
-			distance, evolution, x, y, pop, pop_g,
-			name, capital, name_player, tribe,
-			villages, kingdom_tag
+			distance, x, y, population, isMainVillage,
+			village_name, player_name, tribeId, kingdom_tag
 		} = content;
 
 		const coordinates = `(${x}|${y})`;
 
 		let tribe_name;
-		switch (tribe) {
+		switch (tribeId) {
 			case '1': tribe_name = lang.translate('lang_tribe_roman'); break;
 			case '2': tribe_name = lang.translate('lang_tribe_teuton'); break;
 			case '3': tribe_name = lang.translate('lang_tribe_gaul'); break;
@@ -67,39 +69,33 @@ class Inactive extends Component {
 
 		return (
 			<tr>
-				<td style={ rowStyle }>
+				<td style={ rowCenterStyle }>
 					{ Number(distance).toFixed(1) }
 				</td>
-				<td style={ rowStyle }>
-					{ evolution }
-				</td>
-				<td style={ rowStyle }>
+				<td style={ rowCenterStyle }>
 					{ coordinates }
 				</td>
-				<td style={ rowStyle }>
-					{ pop }/{ pop_g }
+				<td style={ rowCenterStyle }>
+					{ population }
 				</td>
 				<td style={ rowStyle }>
-					{ capital == '1' &&
+					{ isMainVillage &&
 						<span class="icon-text">
 							<span class="icon">
 								<i class="fas fa-home"></i>
 							</span>
-							<span>{name}</span>
+							<span>{village_name}</span>
 						</span>
 					}
-					{ capital != '1' && name }
+					{ !isMainVillage && village_name }
 				</td>
 				<td style={ rowStyle }>
-					{ name_player }
+					{ player_name }
 				</td>
 				<td style={ rowStyle }>
 					{ tribe_name }
 				</td>
-				<td style={ rowStyle }>
-					{ villages }
-				</td>
-				<td style={ rowStyle }>
+				<td style={ rowCenterStyle }>
 					{ kingdom_tag }
 				</td>
 				<td style={ rowStyle }>

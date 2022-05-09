@@ -43,23 +43,18 @@ export interface Ifarmlist_units {
 }
 
 export interface Ifarmfinder {
-	id: number,
-	id_player: number,
-	pop: number,
+	villageId: number,
+	village_name: string,
 	x: number,
 	y: number,
-	name: string,
-	capital: number,
-	distance: number,
-	name_player: string,
-	tribe: tribe,
-	villages: number,
-	evolution: number,
-	id_kingdom: number,
-	name_kingdom: string,
-	pop_g: number,
-	inFarmList: number
-	kingdom_tag: string
+	population: number,
+	isMainVillage: boolean,
+	isCity: boolean,
+	playerId: number,
+	player_name: string,
+	tribeId: tribe,
+	kingdomId: number,
+	distance: number
 }
 
 export interface Iunits {

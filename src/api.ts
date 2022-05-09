@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import createHttpsProxy from 'https-proxy-agent';
-import { clash_obj, get_date, camelcase_to_string } from './util';
+import { clash_obj, get_date, camelcase_to_string, get_random_string } from './util';
 import manage_login from './login';
 import settings, { Icredentials } from './settings';
 import database from './database';
@@ -332,6 +332,48 @@ class api {
 		return await this.post('startCelebration', 'building', params);
 	}
 
+	async get_map_api_keys(gameworld: string): Promise<any> {
+		const site_url = 'https://www.reddit.com';
+		const site_name = get_random_string(8);
+		const email = `${site_name}@gmail.com`;
+
+		let url = `https://${gameworld}.kingdoms.com/api/external.php?`;
+		url += 'action=requestApiKey&';
+		url += `email=${email}&`;
+		url += `siteName=${site_name}&`;
+		url += `siteUrl=${site_url}&`;
+		url += 'public=false';
+
+		const response: any = await this.ax.get(url);
+		response.data = this.handle_errors(response.data, 'get_map_api_keys');
+		return this.merge_data(response.data);
+	}
+
+	async get_map(gameworld: string, date: Date = null): Promise<any> {
+		// get api key
+		const api_keys = await this.get_map_api_keys(gameworld);
+		if (api_keys.errors)
+			return api_keys;
+		const privateApiKey = api_keys.privateApiKey;
+
+		let url = `https://${gameworld}.kingdoms.com/api/external.php?`;
+		url += 'action=getMapData&';
+		url += `privateApiKey=${privateApiKey}&`;
+		if (date) {
+			// needs to be a date in format: d.m.Y (e.g. 27.08.2014)
+			const date_formatted = [
+				('0' + date.getDate()).slice(-2),
+				('0' + (date.getMonth() + 1)).slice(-2),
+				date.getFullYear()
+			].join('.');
+			url += `date=${date_formatted}`;
+		}
+
+		const response: any = await this.ax.get(url);
+		response.data = this.handle_errors(response.data, 'get_map');
+		return this.merge_data(response.data);
+	}
+
 	async post(action: string, controller: string, params: object): Promise<any> {
 		const session = this.session;
 
@@ -359,7 +401,7 @@ class api {
 	handle_errors: any = (data: any, group: string) => {
 		let errors = [];
 		if (data.response.errors) {
-			logger.debug(data, `${group}.handle_errors`);
+			logger.debug(data, `${group}.error`);
 			for (let error of data.response.errors) {
 				if (error.message.split(' ').length == 1)
 					error.message = camelcase_to_string(error.message);
@@ -373,7 +415,7 @@ class api {
 		}
 
 		if (data.error) {
-			logger.debug(data, `${group}.handle_error`);
+			logger.debug(data, `${group}.error`);
 			if (data.error.message.split(' ').length == 1)
 				data.error.message = camelcase_to_string(data.error.message);
 			return {
