@@ -66,6 +66,32 @@ export enum celebration_types {
 
 export const default_Iunits = { 1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0 };
 
+export enum res_type {
+	default = '4446',
+	wood_1 = '5436',
+	wood_2 = '5346',
+	clay_1 = '4536',
+	clay_2 = '3546',
+	iron_1 = '4356',
+	iron_2 = '3456',
+	c7_1 = '4347',
+	c7_2 = '4437',
+	c7_3 = '3447',
+	c9 = '3339',
+	c15 = '11115'
+}
+
+export enum oasis_type {
+	wood = '10',
+	wood_crop = '11',
+	clay = '20',
+	clay_crop = '21',
+	iron = '30',
+	iron_crop = '31',
+	crop = '40',
+	crop_double = '41',
+}
+
 export const building_types: { [index: number]: string } = {
 	1: 'wood',
 	2: 'clay',

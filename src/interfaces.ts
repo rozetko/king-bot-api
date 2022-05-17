@@ -1,4 +1,4 @@
-import { tribe, hero_status, time_type, time_format, celebration_types } from './data';
+import { tribe, hero_status, time_type, time_format, celebration_types, oasis_type } from './data';
 
 export interface Ifarmlist {
 	listId: number;
@@ -54,7 +54,20 @@ export interface Ifarmfinder {
 	player_name: string,
 	tribeId: tribe,
 	kingdomId: number,
+	kingdom_tag: string,
 	distance: number
+}
+
+export interface Icropfinder {
+	id: number,
+	x: number,
+	y: number,
+	is_15c: boolean,
+	bonus: number,
+	playerId: number,
+	player_name: string,
+	distance: number,
+	free: boolean
 }
 
 export interface Iunits {
@@ -330,14 +343,48 @@ export interface Idurations {
 
 export interface Imap_details {
 	isOasis: boolean,
-	oasisType: number,
+	oasisType: oasis_type,
 	hasVillage: number,
 	hasNPC: number,
 	resType: number,
 	isHabitable: number,
 	landscape: number,
+	oasisBonus: Iresources,
+	troops: Itroops,
+	playerId: number,
+	playerName: string,
+	kingdomId: number,
+	kingdomTag: string,
+	ownKingdomInfluence: number,
+	defBonus: number,
+	ownRank: number,
+	playersWithTroops: Iplayers_with_troops[]
+	oasisStatus: number,
+	ownTroops: Iown_troops,
+	population: number,
+	tribe: tribe,
+	treasures: 0
 	npcInfo: Inpc_info,
 	wwZone: number
+}
+
+export interface Iplayers_with_troops {
+	playerId: number,
+	bonus: number
+}
+
+export interface Iown_troops {
+	id: number,
+	oasisId: number,
+	oasisType: oasis_type,
+	playerId: number,
+	rank: number,
+	amount: number,
+	maxUsableTroops: number,
+	usedByVillage: number,
+	villageInfluence: number,
+	bonus: Iresources,
+	troopProduction: number
 }
 
 export interface Inpc_info {

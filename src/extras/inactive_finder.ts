@@ -35,7 +35,7 @@ class inactive_finder {
 		};
 	}
 
-	async get_new_farms(
+	async get_inactives(
 		village_id: number,
 		min_player_pop: number,
 		max_player_pop: number,
@@ -45,6 +45,8 @@ class inactive_finder {
 		min_distance: number,
 		max_distance: number
 	): Promise<any> {
+
+		const gameworld = settings.gameworld;
 
 		// default values
 		if (!min_player_pop || isNaN(min_player_pop))
@@ -62,6 +64,7 @@ class inactive_finder {
 		if (!max_distance || isNaN(max_distance))
 			max_distance = 100;
 
+		// find village
 		const village_data = await village.get_own();
 		const found_village: Ivillage = village.find(village_id, village_data);
 		if (!found_village) {
@@ -73,24 +76,27 @@ class inactive_finder {
 		}
 		const { x, y } = found_village.coordinates;
 
-		const inactives: any = await this.get_inactives(
-			settings.gameworld,
-			inactive_for,
-			min_village_pop,
-			max_player_pop,
-			min_player_pop,
-			max_player_pop,
-			x, y,
-			min_distance,
-			max_distance);
-		if (inactives.errors) {
+		// get actual map
+		const map_data = await api.get_map(gameworld);
+		if (map_data.errors)
 			return {
 				error: true,
-				message: inactives.errors[0]?.message,
+				message: map_data.errors[0]?.message,
 				data: null
 			};
-		}
 
+		// get aged map
+		var aged_map_date = new Date();
+		aged_map_date.setDate(aged_map_date.getDate()-inactive_for);
+		const aged_map_data = await api.get_map(gameworld, aged_map_date);
+		if (aged_map_data.errors)
+			return {
+				error: true,
+				message: map_data.errors[0]?.message,
+				data: null
+			};
+
+		// get villages already in farmlists
 		const farmlists = await farming.get_own();
 		const data: any[] = find_state_data(farming.farmlist_ident, farmlists);
 		const villages_farmlist: Array<number> = [];
@@ -101,70 +107,8 @@ class inactive_finder {
 			}
 		}
 
-		const rv: any[] = [];
-		for (let farm of inactives) {
-			if (villages_farmlist.indexOf(Number(farm.villageId)) > -1)
-				continue;
-			rv.push(farm);
-		}
-
-		// get kingdom names
-		const k_id_params: Set<string> = new Set();
-		for (let farm of rv) {
-			const kID: number = Number(farm.kingdomId);
-			if (kID == 0) continue;
-			k_id_params.add('Kingdom:' + kID);
-		}
-		const kingdom_response = await api.get_cache(Array.from(k_id_params));
-		if (kingdom_response) {
-			const kingdom_data: { [index: number]: string } = {};
-			for (let k_data of kingdom_response) {
-				const k = k_data.data;
-				kingdom_data[Number(k.groupId)] = k.tag;
-			}
-			for (let farm of rv) {
-				const kID: number = Number(farm.kingdomId);
-				if (kID == 0) {
-					farm['kingdom_tag'] = '-';
-					continue;
-				}
-				farm['kingdom_tag'] = kingdom_data[kID];
-			}
-		}
-
-		return {
-			error: false,
-			message: `${ inactives.length } found / ${ rv.length } displayed`,
-			data: rv
-		};
-	}
-
-	async get_inactives(
-		gameworld: string,
-		inactivity_days: number,
-		min_village_pop: number,
-		max_village_pop: number,
-		min_player_pop: number,
-		max_player_pop: number,
-		x: number,
-		y: number,
-		min_distance: number,
-		max_distance: number) : Promise<any> {
-
-		// get actual map
-		const map_data = await api.get_map(gameworld);
-		if (map_data.errors)
-			return map_data;
-
-		// get aged map
-		var aged_map_date = new Date();
-		aged_map_date.setDate(aged_map_date.getDate()-inactivity_days);
-		const aged_map_data = await api.get_map(gameworld, aged_map_date);
-		if (aged_map_data.errors)
-			return map_data;
-
 		// find inactive players
-		let matches = [];
+		let inactives = [];
 		const inactive_players: any = this.discover_inactive_players(map_data, aged_map_data);
 		for (let player of inactive_players) {
 			let player_pop = 0;
@@ -172,17 +116,20 @@ class inactive_finder {
 				player_pop += Number(village.population);
 
 			if (player_pop > max_player_pop || player_pop < min_player_pop)
-				continue; // continue if max player pop is reached or min is reached
+				continue; // max player pop is reached or min is reached
 
 			// max player pop didnt reached
 			for (let village of player.villages) {
+				if (villages_farmlist.indexOf(Number(village.villageId)) > -1)
+					continue; // village is already in farmlist
+
 				let vil_pop = Number(village.population);
 				if (vil_pop > max_village_pop || vil_pop < min_village_pop)
-					continue; // continue if pop is too high or too low
+					continue; // pop is too high or too low
 
 				let distance = this.calculate_distance(village, x, y);
 				if (distance > max_distance || distance < min_distance)
-					continue; // continue of distance is too high or too low
+					continue; // distance is too high or too low
 
 				const farm : Ifarmfinder = {
 					villageId: village.villageId,
@@ -196,19 +143,45 @@ class inactive_finder {
 					player_name: player.name,
 					tribeId: player.tribeId,
 					kingdomId: player.kingdomId,
+					kingdom_tag: '-',
 					distance: distance
 				};
-				matches.push(farm);
+				inactives.push(farm);
 			}
 		}
 
 		// sort by distance, lowest on top
-		matches.sort((a, b) => a.distance - b.distance);
+		inactives.sort((a, b) => a.distance - b.distance);
 
-		return matches;
+		// get kingdom names
+		const k_id_params: Set<string> = new Set();
+		for (let farm of inactives) {
+			if (farm.kingdomId == 0)
+				continue;
+			k_id_params.add('Kingdom:' + farm.kingdomId);
+		}
+		const kingdom_response = await api.get_cache(Array.from(k_id_params));
+		if (kingdom_response) {
+			const kingdom_data: { [index: number]: string } = {};
+			for (let k_data of kingdom_response) {
+				const k = k_data.data;
+				kingdom_data[Number(k.groupId)] = k.tag;
+			}
+			for (let farm of inactives) {
+				if (farm.kingdomId == 0)
+					continue;
+				farm.kingdom_tag = kingdom_data[farm.kingdomId];
+			}
+		}
+
+		return {
+			error: false,
+			message: `${ inactive_players.length } found / ${ inactives.length } displayed`,
+			data: inactives
+		};
 	}
 
-	discover_players(map_data: any, aged_map_data: any): Promise<any> {
+	discover_players(map_data: any, aged_map_data: any): any {
 		const recent_players = map_data.players;
 		const aged_players = aged_map_data.players;
 		const overlap_recent_players = [];
@@ -226,7 +199,7 @@ class inactive_finder {
 		return zip(list); // return an array from pairs
 	}
 
-	discover_inactive_players(map_data: any, aged_map_data: any) {
+	discover_inactive_players(map_data: any, aged_map_data: any) : any {
 		const inactive_players = [];
 		const overlapping_players: any = this.discover_players(map_data, aged_map_data);
 		for (let player of overlapping_players) {
@@ -243,11 +216,11 @@ class inactive_finder {
 		return inactive_players;
 	}
 
-	calculate_distance(village: any, x: number, y: number) {
+	calculate_distance(village: any, x: number, y: number) : number {
 		return Math.hypot(Number(village.x) - x, Number(village.y) - y);
 	}
 
-	compare_village_populations(recent_data: any, aged_data: any) {
+	compare_village_populations(recent_data: any, aged_data: any) : boolean {
 		for (let recent_village of recent_data) {
 			let found = false;
 			for (let aged_village of aged_data) {

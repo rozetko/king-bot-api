@@ -145,7 +145,7 @@ export default class EasyScout extends Component {
 
 						<Input
 							label={ props.lang_common_amount }
-							placeholder={ props.lang_finder_default + ': 1' }
+							placeholder={ props.lang_inactivefinder_default + ': 1' }
 							value={ amount }
 							onChange={ e => this.setState({ amount: e.target.value }) }
 							className={ input_class_amount }

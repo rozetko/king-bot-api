@@ -173,8 +173,8 @@ export default class InactiveFinder extends Component {
 		return (
 			<div>
 				<InfoTitle
-					title={ props.lang_finder_name }
-					description={ props.lang_finder_description }
+					title={ props.lang_inactivefinder_name }
+					description={ props.lang_inactivefinder_description }
 				/>
 
 				<div className='columns'>
@@ -182,7 +182,7 @@ export default class InactiveFinder extends Component {
 					<div className='column'>
 
 						<Select
-							label = { props.lang_finder_distance_to }
+							label = { props.lang_inactivefinder_distance_to }
 							value = { village_id }
 							onChange = { e => this.setState({
 								village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
@@ -194,9 +194,9 @@ export default class InactiveFinder extends Component {
 						/>
 
 						<DoubleInput
-							label = { props.lang_finder_player_pop }
-							placeholder1 = { props.lang_finder_default + ': 0' }
-							placeholder2 = { props.lang_finder_default + ': 500' }
+							label = { props.lang_inactivefinder_player_pop }
+							placeholder1 = { props.lang_inactivefinder_default + ': 0' }
+							placeholder2 = { props.lang_inactivefinder_default + ': 500' }
 							value1 = { min_player_pop }
 							value2 = { max_player_pop }
 							onChange1 = { e => this.setState({ min_player_pop: e.target.value }) }
@@ -205,9 +205,9 @@ export default class InactiveFinder extends Component {
 						/>
 
 						<DoubleInput
-							label = { props.lang_finder_village_pop }
-							placeholder1 = { props.lang_finder_default + ': 0' }
-							placeholder2 = { props.lang_finder_default + ': 200' }
+							label = { props.lang_inactivefinder_village_pop }
+							placeholder1 = { props.lang_inactivefinder_default + ': 0' }
+							placeholder2 = { props.lang_inactivefinder_default + ': 200' }
 							value1 = { min_village_pop }
 							value2 = { max_village_pop }
 							onChange1 = { e => this.setState({ min_village_pop: e.target.value }) }
@@ -228,7 +228,7 @@ export default class InactiveFinder extends Component {
 					<div className='column'>
 
 						<Select
-							label = { props.lang_finder_add_list }
+							label = { props.lang_inactivefinder_add_list }
 							value = { selected_farmlist }
 							onChange = { e => this.setState({ selected_farmlist: e.target.value }) }
 							options = { farmlist_opt }
@@ -237,9 +237,9 @@ export default class InactiveFinder extends Component {
 						/>
 
 						<DoubleInput
-							label={ props.lang_finder_distance }
-							placeholder1={ props.lang_finder_default + ': 0' }
-							placeholder2={ props.lang_finder_default + ': 100' }
+							label={ props.lang_inactivefinder_distance }
+							placeholder1={ props.lang_inactivefinder_default + ': 0' }
+							placeholder2={ props.lang_inactivefinder_default + ': 100' }
 							value1={ min_distance }
 							value2={ max_distance }
 							onChange1={ e => this.setState({ min_distance: e.target.value }) }
@@ -247,13 +247,13 @@ export default class InactiveFinder extends Component {
 							icon = 'fa-ruler-horizontal'
 						/>
 
-						<label class='label'>{props.lang_finder_inactive_for}</label>
+						<label class='label'>{props.lang_inactivefinder_inactive_for}</label>
 						<div class='field has-addons'>
 							<p class='control has-icons-left'>
 								<input
 									class='input is-radiusless'
 									type='text'
-									placeholder={ props.lang_finder_default + ': 5' }
+									placeholder={ props.lang_inactivefinder_default + ': 5' }
 									value={ inactive_for }
 									onChange={ e => this.setState({ inactive_for: e.target.value }) }
 									style = {{ width: '11.95em' }}
@@ -262,7 +262,7 @@ export default class InactiveFinder extends Component {
 							</p>
 							<p class='control'>
 								<a class='button is-static is-radiusless'>
-									{props.lang_finder_days}
+									{props.lang_inactivefinder_days}
 								</a>
 							</p>
 						</div>

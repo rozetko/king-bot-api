@@ -4,7 +4,7 @@ import kingbot from './index';
 import api from './api';
 import settings from './settings';
 import logger from './logger';
-import { inactive_finder } from './extras';
+import { inactive_finder, crop_finder } from './extras';
 import { building_types, tribe, troops_status, troops_type, unit_types } from './data';
 import { Ifeature_params, feature } from './features/feature';
 import { Ivillage, Ibuilding, Iplayer, Iunits } from './interfaces';
@@ -259,9 +259,8 @@ class server {
 					max_distance
 				} = data;
 
-				const response = await inactive_finder.get_new_farms(
-					village_id,
-					min_player_pop, max_player_pop,
+				const response = await inactive_finder.get_inactives(
+					village_id,	min_player_pop, max_player_pop,
 					min_village_pop, max_village_pop,
 					inactive_for, min_distance, max_distance
 				);
@@ -273,6 +272,35 @@ class server {
 			if (action == 'toggle') {
 				const { farmlist, village } = data;
 				const response = await inactive_finder.add_inactive_player(farmlist, village);
+
+				res.send(response);
+				return;
+			}
+
+			res.send({
+				error: true,
+				message: 'could not identify action',
+				data: []
+			});
+		});
+
+		this.app.post('/api/cropfinder', async (req: any, res: any) => {
+			const { action, data } = req.body;
+
+			if (action == 'get') {
+				const {
+					village_id,
+					find_15c,
+					find_9c,
+					only_free
+				} = data;
+
+				const response = await crop_finder.get_crops(
+					village_id,
+					find_15c,
+					find_9c,
+					only_free
+				);
 
 				res.send(response);
 				return;

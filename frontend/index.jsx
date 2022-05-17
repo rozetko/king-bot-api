@@ -11,6 +11,7 @@ import Login from './sites/login';
 import EditFeature from './sites/edit_feature';
 import EasyScout from './extras/easy_scout';
 import InactiveFinder from './extras/inactive_finder';
+import CropFinder from './extras/crop_finder';
 import FeatureList from './sites/feature_list';
 import Logger from './sites/logger';
 import lang, { languages } from './language';
@@ -36,6 +37,7 @@ const App = () => (
 					<EditFeature path='/edit_feature/:ident/:uuid' />
 					<EasyScout path='/easy_scout' />
 					<InactiveFinder path='/inactive_finder' />
+					<CropFinder path='/crop_finder' />
 					<Logger path='/logger' />
 				</Router>
 			</div>
