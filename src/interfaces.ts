@@ -70,6 +70,15 @@ export interface Icropfinder {
 	free: boolean
 }
 
+export interface Inaturefinder {
+	id: number,
+	x: number,
+	y: number,
+	oasis_type: oasis_type,
+	nature: Iunits,
+	distance: number
+}
+
 export interface Iunits {
 	[index: number]: number
 	1: number;

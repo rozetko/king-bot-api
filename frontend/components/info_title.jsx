@@ -29,7 +29,7 @@ export default class InfoTitle extends Component {
 					}
 				</h1>
 				<article class="message" style={ description_style }>
-					<div class="message-body" style={{ marginTop: '-2rem' }}>
+					<div class="message-body" style={{ marginTop: '-2rem', whiteSpace: 'pre-line' }}>
 						{description}
 					</div>
 				</article>

@@ -4,7 +4,7 @@ import kingbot from './index';
 import api from './api';
 import settings from './settings';
 import logger from './logger';
-import { inactive_finder, crop_finder } from './extras';
+import { inactive_finder, crop_finder, nature_finder } from './extras';
 import { building_types, tribe, troops_status, troops_type, unit_types } from './data';
 import { Ifeature_params, feature } from './features/feature';
 import { Ivillage, Ibuilding, Iplayer, Iunits } from './interfaces';
@@ -300,6 +300,31 @@ class server {
 					find_15c,
 					find_9c,
 					only_free
+				);
+
+				res.send(response);
+				return;
+			}
+
+			res.send({
+				error: true,
+				message: 'could not identify action',
+				data: []
+			});
+		});
+
+		this.app.post('/api/naturefinder', async (req: any, res: any) => {
+			const { action, data } = req.body;
+
+			if (action == 'get') {
+				const {
+					village_id,
+					nature_type
+				} = data;
+
+				const response = await nature_finder.get_nature(
+					village_id,
+					nature_type
 				);
 
 				res.send(response);

@@ -118,11 +118,11 @@ class crop_finder {
 		for (let cell of map_data.map.cells) {
 			switch (cell.oasis)
 			{
-				case oasis_type.wood_crop:
-				case oasis_type.clay_crop:
-				case oasis_type.iron_crop:
+				case oasis_type.wood_1:
+				case oasis_type.clay_1:
+				case oasis_type.iron_1:
 				case oasis_type.crop:
-				case oasis_type.crop_double:
+				case oasis_type.crop_1:
 					oasis.push(cell);
 					break;
 			}

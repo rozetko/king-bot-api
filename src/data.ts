@@ -83,13 +83,26 @@ export enum res_type {
 
 export enum oasis_type {
 	wood = '10',
-	wood_crop = '11',
+	wood_1 = '11',
 	clay = '20',
-	clay_crop = '21',
+	clay_1 = '21',
 	iron = '30',
-	iron_crop = '31',
+	iron_1 = '31',
 	crop = '40',
-	crop_double = '41',
+	crop_1 = '41'
+}
+
+export enum nature_type {
+	rat = '1',
+	spider = '2',
+	snake = '3',
+	bat = '4',
+	boar = '5',
+	wolf = '6',
+	bear = '7',
+	crocodile = '8',
+	tiger = '9',
+	elephant = '10',
 }
 
 export const building_types: { [index: number]: string } = {

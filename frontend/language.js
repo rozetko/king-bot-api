@@ -8,6 +8,7 @@ const languages = {
 		lang_navbar_easy_scout: 'easy scout',
 		lang_navbar_inactive_finder: 'inactive finder',
 		lang_navbar_crop_finder: 'crop finder',
+		lang_navbar_nature_finder: 'nature finder',
 		lang_navbar_logger: 'logs',
 		lang_navbar_change_login: 'change login',
 		lang_navbar_language: 'language',
@@ -80,6 +81,8 @@ const languages = {
 		lang_table_type: 'type',
 		lang_table_bonus: 'bonus',
 		lang_table_free: 'free',
+		lang_table_oasis: 'oasis',
+		lang_table_nature: 'nature',
 
 		lang_button_submit: 'submit',
 		lang_button_cancel: 'cancel',
@@ -131,6 +134,11 @@ const languages = {
 		lang_cropfinder_distance_to: 'distance relative to',
 		lang_cropfinder_filters: 'filters',
 		lang_cropfinder_only_free: 'only those that are free',
+
+		lang_naturefinder_name: 'nature finder',
+		lang_naturefinder_description: '',
+		lang_naturefinder_distance_to: 'distance relative to',
+		lang_naturefinder_nature_type: 'nature type',
 
 		lang_log_level: 'level',
 		lang_log_group: 'group',
@@ -275,6 +283,30 @@ const languages = {
 			43: 'natarian wall',
 			44: '',
 			45: 'hidden treasury'
+		},
+
+		lang_oasis_types: {
+			10: 'wood',
+			11: 'wood & crop',
+			20: 'clay',
+			21: 'clay & crop',
+			30: 'iron',
+			31: 'iron & crop',
+			40: 'crop',
+			41: 'double crop'
+		},
+
+		lang_nature_types: {
+			1: 'rat',
+			2: 'spider',
+			3: 'snake',
+			4: 'bat',
+			5: 'wild boar',
+			6: 'wolf',
+			7: 'bear',
+			8: 'crocodile',
+			9: 'tiger',
+			10: 'elephant'
 		}
 	},
 	es: {
@@ -284,6 +316,7 @@ const languages = {
 		lang_navbar_easy_scout: 'espionaje',
 		lang_navbar_inactive_finder: 'buscar inactivos',
 		lang_navbar_crop_finder: 'buscar granjas',
+		lang_navbar_nature_finder: 'buscar naturaleza',
 		lang_navbar_logger: 'logs',
 		lang_navbar_change_login: 'cambiar login',
 		lang_navbar_language: 'idioma',
@@ -356,6 +389,8 @@ const languages = {
 		lang_table_type: 'tipo',
 		lang_table_bonus: 'bono',
 		lang_table_free: 'libre',
+		lang_table_oasis: 'oasis',
+		lang_table_nature: 'naturaleza',
 
 		lang_button_submit: 'guardar',
 		lang_button_cancel: 'cancelar',
@@ -407,6 +442,11 @@ const languages = {
 		lang_cropfinder_distance_to: 'distancia relativa a',
 		lang_cropfinder_filters: 'filtros',
 		lang_cropfinder_only_free: 'sólo las que están libres',
+
+		lang_naturefinder_name: 'buscar naturaleza',
+		lang_naturefinder_description: '',
+		lang_naturefinder_distance_to: 'distancia relativa a',
+		lang_naturefinder_nature_type: 'tipo de naturaleza',
 
 		lang_log_level: 'nivel',
 		lang_log_group: 'grupo',
@@ -551,6 +591,30 @@ const languages = {
 			43: 'muro natal',
 			44: '',
 			45: 'tesorería escondida'
+		},
+
+		lang_oasis_types: {
+			10: 'madera',
+			11: 'madera y cereal',
+			20: 'barro',
+			21: 'barro y cereal',
+			30: 'hierro',
+			31: 'hierro y cereal',
+			40: 'cereal',
+			41: 'doble cereal'
+		},
+
+		lang_nature_types: {
+			1: 'rata',
+			2: 'araña',
+			3: 'serpiente',
+			4: 'murciélago',
+			5: 'jabalí',
+			6: 'lobo',
+			7: 'oso',
+			8: 'cocodrilo',
+			9: 'tigre',
+			10: 'elefante'
 		}
 	},
 	de: {
@@ -560,6 +624,7 @@ const languages = {
 		lang_navbar_easy_scout: 'einfaches spähen',
 		lang_navbar_inactive_finder: 'inaktiver finder',
 		lang_navbar_crop_finder: 'crop finder',
+		lang_navbar_nature_finder: 'natur finder',
 		lang_navbar_logger: 'logs',
 		lang_navbar_change_login: 'login ändern',
 		lang_navbar_language: 'sprache',
@@ -632,6 +697,8 @@ const languages = {
 		lang_table_type: 'typ',
 		lang_table_bonus: 'bonus',
 		lang_table_free: 'frei',
+		lang_table_oasis: 'oase',
+		lang_table_nature: 'natur',
 
 		lang_button_submit: 'abschicken',
 		lang_button_cancel: 'abbrechen',
@@ -683,6 +750,11 @@ const languages = {
 		lang_cropfinder_distance_to: 'distanz relativ zu',
 		lang_cropfinder_filters: 'filtern',
 		lang_cropfinder_only_free: 'nur die frei sind',
+
+		lang_naturefinder_name: 'natur sucher',
+		lang_naturefinder_description: '',
+		lang_naturefinder_distance_to: 'distanz relativ zu',
+		lang_naturefinder_nature_type: 'naturtyp',
 
 		lang_log_level: 'level',
 		lang_log_group: 'gruppe',
@@ -827,6 +899,30 @@ const languages = {
 			43: 'natarenmauer',
 			44: '',
 			45: 'verborgene schatzkammer'
+		},
+
+		lang_oasis_types: {
+			10: 'holz',
+			11: 'holz und getreide',
+			20: 'lehm',
+			21: 'lehm und getreide',
+			30: 'eisen',
+			31: 'eisen und getreide',
+			40: 'getreide',
+			41: 'doppelgetreide'
+		},
+
+		lang_nature_types: {
+			1: 'ratte',
+			2: 'spinne',
+			3: 'schlange',
+			4: 'fledermaus',
+			5: 'wildschwein',
+			6: 'wolf',
+			7: 'bär',
+			8: 'krokodil',
+			9: 'tiger',
+			10: 'elefant'
 		}
 	}
 };
