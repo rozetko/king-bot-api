@@ -121,11 +121,13 @@ class api {
 		};
 
 		const response: any = await this.ax.post(`/?c=cache&a=get&t${get_date()}`, payload);
-		if (response.data?.error?.type == 'ClientException' &&
-			response.data?.error?.message == 'Authentication failed') {
+		if (response?.data?.error?.type == 'ClientException' &&
+			response?.data?.error?.message == 'Authentication failed') {
 			logger.error('authentication failed', 'cache.get');
 			await this.refresh_token();
 		}
+		if (!response)
+			return null;
 		response.data = this.handle_errors(response.data, 'cache.get');
 		return this.merge_data(response.data);
 	}

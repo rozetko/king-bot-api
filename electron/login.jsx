@@ -5,7 +5,7 @@ import { connect } from 'unistore/preact';
 import { storeKeys } from '../frontend/language';
 import { Input, Button } from '../frontend/components/form';
 
-const version = '1.3.5';
+const version = '1.3.6';
 
 @connect(storeKeys)
 class Login extends Component {

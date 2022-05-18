@@ -4,11 +4,11 @@ import logger from '../logger';
 
 export async function clean_farmlist(farmlist_id: number, losses_farmlist_id: number): Promise<void> {
 	const params = [ `Collection:FarmListEntry:${farmlist_id}` ];
-	const listResponse = await api.get_cache(params);
+	const farmlist = await api.get_cache(params);
 
-	if (listResponse.length < 1) return;
+	if (!farmlist || farmlist.length < 1) return;
 
-	for (let data of listResponse[0].data) {
+	for (let data of farmlist[0].data) {
 		const farm = data.data;
 
 		// no last report given
