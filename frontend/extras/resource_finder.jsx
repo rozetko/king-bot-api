@@ -4,20 +4,21 @@ import classNames from 'classnames';
 import { connect } from 'unistore/preact';
 import { storeKeys } from '../language';
 import { handle_response } from '../actions';
-import CropTable from '../components/crop_table';
+import ResourceTable from '../components/resource_table';
 import InfoTitle from '../components/info_title';
 import { Select, Button } from '../components/form';
 
 @connect(`notifications,${storeKeys}`, handle_response)
-export default class CropFinder extends Component {
+export default class ResourceFinder extends Component {
 	state = {
 		village_name: '',
 		village_id: 0,
 		all_villages: [],
-		find_15c: true,
-		find_9c: true,
+		find_wood: true,
+		find_clay: true,
+		find_iron: true,
 		only_free: false,
-		crops: [],
+		resources: [],
 		error_village: false,
 		loading: false,
 		message: '',
@@ -42,19 +43,21 @@ export default class CropFinder extends Component {
 
 		if (this.state.error_village) return;
 
-		this.setState({ loading: true, message: '', crops: [] });
+		this.setState({ loading: true, message: '', resources: [] });
 
 		const {
 			village_id,
-			find_15c,
-			find_9c,
+			find_wood,
+			find_clay,
+			find_iron,
 			only_free
 		} = this.state;
 
 		const payload_data = {
 			village_id,
-			find_15c,
-			find_9c,
+			find_wood,
+			find_clay,
+			find_iron,
 			only_free
 		};
 
@@ -63,7 +66,7 @@ export default class CropFinder extends Component {
 			data: payload_data,
 		};
 
-		let response = await axios.post('/api/cropfinder', payload);
+		let response = await axios.post('/api/resourcefinder', payload);
 
 		const { error, data } = response.data;
 
@@ -73,33 +76,40 @@ export default class CropFinder extends Component {
 			return;
 		}
 
-		this.setState({ crops: [ ...data ], loading: false });
+		this.setState({ resources: [ ...data ], loading: false });
 	}
 
-	set_crop_type = async e =>  {
-		let { find_15c, find_9c } = this.state;
+	set_res_type = async e =>  {
+		let { find_wood, find_clay, find_iron } = this.state;
 		switch (e.target.name) {
-			case 'find_15c':
-				find_15c = e.target.checked;
-				if (!find_15c)
-					find_9c = true;
+			case 'find_wood':
+				find_wood = e.target.checked;
+				if (!find_clay && !find_iron)
+					find_clay = true;
 				break;
 
-			case 'find_9c':
-				find_9c = e.target.checked;
-				if (!find_9c)
-					find_15c = true;
+			case 'find_clay':
+				find_clay = e.target.checked;
+				if (!find_wood && !find_iron)
+					find_wood = true;
+				break;
+
+			case 'find_iron':
+				find_iron = e.target.checked;
+				if (!find_wood && !find_clay)
+					find_wood = true;
 				break;
 		}
-		this.setState({ find_15c, find_9c });
+		this.setState({ find_wood, find_clay, find_iron });
 	};
 
 	render(props, {
 		village_id,
-		find_15c,
-		find_9c,
+		find_wood,
+		find_clay,
+		find_iron,
 		all_villages,
-		crops, loading
+		resources, loading
 	}) {
 		const village_select_class = classNames({
 			select: true,
@@ -125,8 +135,8 @@ export default class CropFinder extends Component {
 		return (
 			<div>
 				<InfoTitle
-					title={ props.lang_cropfinder_name }
-					description={ props.lang_cropfinder_description }
+					title={ props.lang_resourcefinder_name }
+					description={ props.lang_resourcefinder_description }
 				/>
 
 				<div className='columns'>
@@ -134,7 +144,7 @@ export default class CropFinder extends Component {
 					<div className='column'>
 
 						<Select
-							label = { props.lang_cropfinder_distance_to }
+							label = { props.lang_resourcefinder_distance_to }
 							value = { village_id }
 							onChange = { e => this.setState({
 								village_name: e.target[e.target.selectedIndex].attributes.village_name.value,
@@ -158,23 +168,31 @@ export default class CropFinder extends Component {
 					<div className='column'>
 
 						<div class="field">
-							<label class="label">{ props.lang_cropfinder_type }</label>
+							<label class="label">{ props.lang_resourcefinder_type }</label>
 							<p class='control'>
 								<label class='radio is-radiusless'>
 									<input
 										type = "checkbox"
-										name = "find_15c"
-										onChange = { this.set_crop_type }
-										checked = { find_15c }
-									/> 15c
+										name = "find_wood"
+										onChange = { this.set_res_type }
+										checked = { find_wood }
+									/> { props.lang_resourcefinder_wood }
 								</label>
 								<label class='radio is-radiusless'>
 									<input
 										type = "checkbox"
-										name = "find_9c"
-										onChange = { this.set_crop_type }
-										checked = { find_9c }
-									/> 9c
+										name = "find_clay"
+										onChange = { this.set_res_type }
+										checked = { find_clay }
+									/> { props.lang_resourcefinder_clay }
+								</label>
+								<label class='radio is-radiusless'>
+									<input
+										type = "checkbox"
+										name = "find_iron"
+										onChange = { this.set_res_type }
+										checked = { find_iron }
+									/> { props.lang_resourcefinder_iron }
 								</label>
 							</p>
 						</div>
@@ -186,7 +204,7 @@ export default class CropFinder extends Component {
 										type = "checkbox"
 										name = "only_free"
 										onChange = { e => this.setState({ only_free: e.target.checked }) }
-									/> { props.lang_cropfinder_only_free }
+									/> { props.lang_resourcefinder_only_free }
 								</label>
 							</p>
 						</div>
@@ -195,8 +213,8 @@ export default class CropFinder extends Component {
 
 				</div>
 
-				<CropTable
-					content={ crops }
+				<ResourceTable
+					content={ resources }
 				/>
 
 			</div>

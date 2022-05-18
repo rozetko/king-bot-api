@@ -70,6 +70,18 @@ export interface Icropfinder {
 	free: boolean
 }
 
+export interface Iresourcefinder {
+	id: number,
+	x: number,
+	y: number,
+	res_type: number,
+	bonus: number,
+	playerId: number,
+	player_name: string,
+	distance: number,
+	free: boolean
+}
+
 export interface Inaturefinder {
 	id: number,
 	x: number,

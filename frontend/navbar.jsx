@@ -131,6 +131,9 @@ export default class NavBar extends Component {
 									<a className="navbar-item" onclick={ () => this.route('/crop_finder') }>
 										{this.props.lang_navbar_crop_finder}
 									</a>
+									<a className="navbar-item" onclick={ () => this.route('/resource_finder') }>
+										{this.props.lang_navbar_resource_finder}
+									</a>
 									<a className="navbar-item" onclick={ () => this.route('/nature_finder') }>
 										{this.props.lang_navbar_nature_finder}
 									</a>

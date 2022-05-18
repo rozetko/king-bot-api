@@ -8,6 +8,7 @@ const languages = {
 		lang_navbar_easy_scout: 'easy scout',
 		lang_navbar_inactive_finder: 'inactive finder',
 		lang_navbar_crop_finder: 'crop finder',
+		lang_navbar_resource_finder: 'resource finder',
 		lang_navbar_nature_finder: 'nature finder',
 		lang_navbar_logger: 'logs',
 		lang_navbar_change_login: 'change login',
@@ -27,15 +28,22 @@ const languages = {
 		lang_feature_celebrations: 'celebrations',
 
 		lang_feature_desc_hero: 'sends the hero automaticly on an adventure if the health is above given percentage.',
-		lang_feature_desc_queue: 'this is an endless building queue. don\'t change the village once it\'s set, if you want to change the village, just do another building queue feature with your desired village.',
-		lang_feature_desc_raise_fields: 'will raise all your fields to a given level on it\'s own, it will always upgrade the type which got the lowest storage.',
+		lang_feature_desc_queue: 'this is an endless building queue. don\'t change the village once it\'s set, if you want to change the village, ' +
+			'just do another building queue feature with your desired village.',
+		lang_feature_desc_raise_fields: 'will raise all your fields to a given level on it\'s own, it will always upgrade the type which got the ' +
+			'lowest storage.',
 		lang_feature_desc_farming: 'will just send the farmlist in a given interval.',
 		lang_feature_desc_trade_route: 'sends merchants from the origin village to the desination at a given interval.',
 		lang_feature_desc_timed_send: 'send troops at a scheduled time, consider the travel time of the units for the arrival time.',
-		lang_feature_desc_train_troops: 'train troops in a given interval and order, it goes through the entire list at each interval, if the amount is greater than the cost of the available resources, it will train as many troops as possible.',
-		lang_feature_desc_robber_hideouts: 'check for robber hideouts and send the given units to attack them, it will retry with the same hideout until its destroyed, and then it will move on to the next and so on. it is also possible to send all units of a specific type by adding a unit value of \'-1\'.',
-		lang_feature_desc_improve_troops: 'checks if it can upgrade given units in given order, first it checks unit and if it is not available or is maxed out, it will try to upgrade the next unit, you can increase the list as long as you want to.',
-		lang_feature_desc_celebrations: 'checks if it can hold celebrations for the given villages, it will try to always hold a celebration and plan another one if possible.',
+		lang_feature_desc_train_troops: 'train troops in a given interval and order, it goes through the entire list at each interval.\nif the ' +
+			'amount is greater than the cost of the available resources, it will train as many troops as possible.',
+		lang_feature_desc_robber_hideouts: 'check for robber hideouts and send the given units to attack them, it will retry with the same hideout ' +
+			'until its destroyed, and then it will move on to the next and so on.\n\nnb: it is also possible to send all units of a specific type by ' +
+			'adding a unit value of \'-1\'.',
+		lang_feature_desc_improve_troops: 'checks if it can upgrade given units in given order, first it checks unit and if it is not available ' +
+			'or is maxed out, it will try to upgrade the next unit, you can increase the list as long as you want to.',
+		lang_feature_desc_celebrations: 'checks if it can hold celebrations for the given villages, it will try to always hold a celebration ' +
+			'and plan another one if possible.',
 
 		lang_home_name: 'feature name',
 		lang_home_description: 'description',
@@ -119,7 +127,8 @@ const languages = {
 		lang_timed_send_help_error_wrong: 'something went wrong, is your target a robber?',
 
 		lang_inactivefinder_name: 'inactive finder',
-		lang_inactivefinder_description: 'searches for inactive players and displays their villages based on distance, once you added them to your farmlist, you can use the easy scout feature to spy them.',
+		lang_inactivefinder_description: 'searches for inactive players and displays their villages based on distance, once you added them to ' +
+			'your farmlist, you can use the easy scout feature to spy them.',
 		lang_inactivefinder_distance_to: 'distance relative to',
 		lang_inactivefinder_player_pop: 'player pop (min / max)',
 		lang_inactivefinder_village_pop: 'village pop (min / max)',
@@ -130,13 +139,25 @@ const languages = {
 		lang_inactivefinder_default: 'default',
 
 		lang_cropfinder_name: 'crop finder',
-		lang_cropfinder_description: 'find villages with a lot of cereal fields. 15c and 9c stands for villages with 15 and 9 cereal fields.\nthe \'bonus\' is the maximum bonus for crop production achievable with the surrounding oases.\nnb: a natar village is considered as a free village.',
+		lang_cropfinder_description: 'find villages with a lot of cereal fields. 15c and 9c stands for villages with 15 and 9 cereal fields.\n' +
+			'the \'bonus\' is the maximum bonus for crop production achievable with the surrounding oases.\n' +
+			'\nnb: a natar village is considered as a free village.',
 		lang_cropfinder_distance_to: 'distance relative to',
-		lang_cropfinder_filters: 'filters',
+		lang_cropfinder_type: 'crop type',
 		lang_cropfinder_only_free: 'only those that are free',
 
+		lang_resourcefinder_name: 'resource finder',
+		lang_resourcefinder_description: 'search for villages with 5 resource fields, either wood, clay and/or iron.\nthe \'bonus\' is the maximum ' +
+			' bonus for resource production achievable with the surrounding oases.',
+		lang_resourcefinder_distance_to: 'distance relative to',
+		lang_resourcefinder_type: 'resource type',
+		lang_resourcefinder_wood: 'wood',
+		lang_resourcefinder_clay: 'clay',
+		lang_resourcefinder_iron: 'iron',
+		lang_resourcefinder_only_free: 'only those that are free',
+
 		lang_naturefinder_name: 'nature finder',
-		lang_naturefinder_description: '',
+		lang_naturefinder_description: 'search for nature in the oases for a specific animal.',
 		lang_naturefinder_distance_to: 'distance relative to',
 		lang_naturefinder_nature_type: 'nature type',
 
@@ -315,7 +336,8 @@ const languages = {
 		lang_navbar_extras: 'extras',
 		lang_navbar_easy_scout: 'espionaje',
 		lang_navbar_inactive_finder: 'buscar inactivos',
-		lang_navbar_crop_finder: 'buscar granjas',
+		lang_navbar_crop_finder: 'buscar cereal',
+		lang_navbar_resource_finder: 'buscar recursos',
 		lang_navbar_nature_finder: 'buscar naturaleza',
 		lang_navbar_logger: 'logs',
 		lang_navbar_change_login: 'cambiar login',
@@ -335,15 +357,22 @@ const languages = {
 		lang_feature_celebrations: 'celebraciones',
 
 		lang_feature_desc_hero: 'envía al héroe automáticamente a una aventura si la salud está por encima del porcentaje dado.',
-		lang_feature_desc_queue: 'esta es una cola de construcción interminable, no cambies la aldea una vez que esté establecida, si quieres cambiar la aldea, simplemente crea otra función de cola de construcción con tu aldea deseada.',
-		lang_feature_desc_raise_fields: 'subirá todos tus recursos a un nivel determinado automáticamente, siempre actualizará el tipo que tenga el almacenamiento más bajo.',
+		lang_feature_desc_queue: 'esta es una cola de construcción interminable, no cambies la aldea una vez que esté establecida, si quieres ' +
+			'cambiar la aldea, simplemente crea otra función de cola de construcción con tu aldea deseada.',
+		lang_feature_desc_raise_fields: 'subirá todos tus recursos a un nivel determinado automáticamente, siempre actualizará el tipo que tenga ' +
+			'el almacenamiento más bajo.',
 		lang_feature_desc_farming: 'se limitará a enviar la lista de vacas en un intervalo determinado.',
 		lang_feature_desc_trade_route: 'envía a los comerciantes de la aldea de origen a la de destino en un intervalo determinado.',
 		lang_feature_desc_timed_send: 'enviar tropas a una hora programada, considera la duración del viaje de las unidades para la hora de llegada.',
-		lang_feature_desc_train_troops: 'entrenar tropas en un intervalo y orden determinado, recorre toda la lista en cada intervalo, si la cantidad es mayor que el coste de los recursos disponibles, entrenará las tropas posibles.',
-		lang_feature_desc_robber_hideouts: 'comprueba los escondites de los ladrones y envía las unidades dadas para atacarlos, volverá a intentar con el mismo escondite hasta que sea destruido, y entonces pasará al siguiente y así sucesivamente. también es posible enviar todas las unidades de un tipo específico añadiendo un valor de unidad de \'-1\'.',
-		lang_feature_desc_improve_troops: 'comprueba si puede mejorar las unidades dadas en un orden determinado, primero comprueba la unidad y si no está disponible o está al máximo, intentará mejorar la siguiente unidad, puedes aumentar la lista tanto como quieras.',
-		lang_feature_desc_celebrations: 'comprueba si puede realizar celebraciones para las aldeas determinadas, siempre intentará realizar una celebración y planificar otra si es posible.',
+		lang_feature_desc_train_troops: 'entrenar tropas en un intervalo y orden determinado, recorre toda la lista en cada intervalo.\nsi la ' +
+			'cantidad es mayor que el coste de los recursos disponibles, entrenará las tropas posibles.',
+		lang_feature_desc_robber_hideouts: 'comprueba los escondites de los ladrones y envía las unidades dadas para atacarlos, volverá a ' +
+			'intentar con el mismo escondite hasta que sea destruido, y entonces pasará al siguiente y así sucesivamente.\n' +
+			'\nnota: también es posible enviar todas las unidades de un tipo específico añadiendo un valor de unidad de \'-1\'.',
+		lang_feature_desc_improve_troops: 'comprueba si puede mejorar las unidades dadas en un orden determinado, primero comprueba la unidad ' +
+			'y si no está disponible o está al máximo, intentará mejorar la siguiente unidad, puedes aumentar la lista tanto como quieras.',
+		lang_feature_desc_celebrations: 'comprueba si puede realizar celebraciones para las aldeas determinadas, siempre intentará realizar ' +
+			'una celebración y planificar otra si es posible.',
 
 		lang_home_name: 'nombre función',
 		lang_home_description: 'descripción',
@@ -427,7 +456,8 @@ const languages = {
 		lang_timed_send_help_error_wrong: 'algo salió mal, ¿tu objetivo es un ladrón?',
 
 		lang_inactivefinder_name: 'buscador de inactivos',
-		lang_inactivefinder_description: 'busca a los jugadores inactivos y muestra sus aldeas en función de la distancia, una vez que los hayas añadido a tu lista de vacas, puedes espiarlos fácilmente con la función de espionaje.',
+		lang_inactivefinder_description: 'busca a los jugadores inactivos y muestra sus aldeas en función de la distancia, una vez que los ' +
+			'hayas añadido a tu lista de vacas, puedes espiarlos fácilmente con la función de espionaje.',
 		lang_inactivefinder_distance_to: 'distancia relativa a',
 		lang_inactivefinder_player_pop: 'población jugador (mín. / máx.)',
 		lang_inactivefinder_village_pop: 'población aldea (mín. / máx.)',
@@ -437,14 +467,26 @@ const languages = {
 		lang_inactivefinder_days: 'días',
 		lang_inactivefinder_default: 'pred',
 
-		lang_cropfinder_name: 'buscar cereal',
-		lang_cropfinder_description: 'busca aldeas con muchos campos de cereal. 15c y 9c significa aldeas con 15 y 9 campos de cereales.\nel \'bono\' es el máximo bono de producción de granjas que se puede conseguir con los oasis circundantes.\nnota: una aldea natar se considera una aldea libre.',
+		lang_cropfinder_name: 'buscador de cereal',
+		lang_cropfinder_description: 'busca aldeas con muchos campos de cereal. 15c y 9c se refiere a aldeas con 15 y 9 campos de cereal.\n' +
+			'el \'bono\' es el máximo bono de producción de cereal que se puede conseguir con los oasis circundantes.\n' +
+			'\nnota: una aldea natar se considera una aldea libre.',
 		lang_cropfinder_distance_to: 'distancia relativa a',
-		lang_cropfinder_filters: 'filtros',
+		lang_cropfinder_type: 'tipo de cereal',
 		lang_cropfinder_only_free: 'sólo las que están libres',
 
-		lang_naturefinder_name: 'buscar naturaleza',
-		lang_naturefinder_description: '',
+		lang_resourcefinder_name: 'buscador de recursos',
+		lang_resourcefinder_description: 'busca aldeas con 5 campos de recursos, ya sea madera, barro y/o hierro.\nel \'bono\' es el máximo ' +
+			'bono de producción de recurso que se puede conseguir con los oasis circundantes.',
+		lang_resourcefinder_distance_to: 'distancia relativa a',
+		lang_resourcefinder_type: 'tipo de recurso',
+		lang_resourcefinder_wood: 'madera',
+		lang_resourcefinder_clay: 'barro',
+		lang_resourcefinder_iron: 'hierro',
+		lang_resourcefinder_only_free: 'sólo las que están libres',
+
+		lang_naturefinder_name: 'buscador de naturaleza',
+		lang_naturefinder_description: 'busca naturaleza en los oasis por un animal específico.',
 		lang_naturefinder_distance_to: 'distancia relativa a',
 		lang_naturefinder_nature_type: 'tipo de naturaleza',
 
@@ -459,7 +501,8 @@ const languages = {
 		lang_login_reconnect: 'reconectar a',
 		lang_login_relogin: 'o % con otra cuenta',
 		lang_login_relogin_button: 'inicia sesión',
-		lang_login_info: 'si la aplicación se cierra, es posible que hayas introducido unas credenciales incorrectas, debes reiniciar y volver a iniciar sesión.',
+		lang_login_info: 'si la aplicación se cierra, es posible que hayas introducido unas credenciales incorrectas, debes reiniciar y volver ' +
+			'a iniciar sesión.',
 		lang_login_notification: 'el bot se va a apagar.... reinícialo, para que los cambios surtan efecto.',
 		lang_login_reset_features: '¡esto restablecerá todas las funciones que hayas configurado!',
 		lang_login_gameworld: 'mundo de juego',
@@ -467,7 +510,8 @@ const languages = {
 		lang_login_password: 'contraseña',
 		lang_login_sitter_dual: 'representante / dual ?',
 		lang_login_optional: '(opcional)',
-		lang_login_sitter_description: 'si juegas como representante o dual necesitamos el nombre en el juego para identificar el id correcto del mundo de juego',
+		lang_login_sitter_description: 'si juegas como representante o dual necesitamos el nombre en el juego para identificar el id correcto ' +
+			'del mundo de juego',
 		lang_login_ingame_name: 'nombre en el juego (sólo cuando se trata de un representante o de un dual)',
 
 		lang_trade_source_village: 'seleccionar aldea de origen',
@@ -622,9 +666,10 @@ const languages = {
 		lang_navbar_add_feature: 'neues feature',
 		lang_navbar_extras: 'extras',
 		lang_navbar_easy_scout: 'einfaches spähen',
-		lang_navbar_inactive_finder: 'inaktiver finder',
-		lang_navbar_crop_finder: 'crop finder',
-		lang_navbar_nature_finder: 'natur finder',
+		lang_navbar_inactive_finder: 'inaktive finden',
+		lang_navbar_crop_finder: 'getreide finden',
+		lang_navbar_resource_finder: 'ressourcen finden',
+		lang_navbar_nature_finder: 'natur finden',
 		lang_navbar_logger: 'logs',
 		lang_navbar_change_login: 'login ändern',
 		lang_navbar_language: 'sprache',
@@ -643,15 +688,25 @@ const languages = {
 		lang_feature_celebrations: 'feste',
 
 		lang_feature_desc_hero: 'der held wird automatisch auf abenteuer geschickt wenn er eine gewisse mindestprozentzahl an gesundheit hat.',
-		lang_feature_desc_queue: 'dies ist eine endlose bauschleife. falls du die stadt ändern willst, lege ein neues feature mit einer neuen stadt an. sonst kommt es zu problemen.',
-		lang_feature_desc_raise_fields: 'die ressourcesfelder werden automatisch auf ein gewisses level ausgebaut, dabei wird geguckt welche ressource am wenigsten speicher hat.',
+		lang_feature_desc_queue: 'dies ist eine endlose bauschleife. falls du die stadt ändern willst, lege ein neues feature mit einer neuen ' +
+			'stadt an. sonst kommt es zu problemen.',
+		lang_feature_desc_raise_fields: 'die ressourcesfelder werden automatisch auf ein gewisses level ausgebaut, dabei wird geguckt welche ' +
+			'ressource am wenigsten speicher hat.',
 		lang_feature_desc_farming: 'verschickt farmlisten automatisch in einem bestimmten intervall.',
 		lang_feature_desc_trade_route: 'händler werden automatisch zwischen zwei städten geschickt.',
-		lang_feature_desc_timed_send: 'schickt truppen zu einer geplanten zeit, wobei die reisezeit der einheiten für die ankunftszeit berücksichtigt wird.',
-		lang_feature_desc_train_troops: 'truppen in einem bestimmten intervall und in einer bestimmten reihenfolge auszubilden, geht es in jedem intervall die gesamte liste durch, wenn die menge größer ist als die kosten der verfügbaren ressourcen, bildet es so viele truppen wie möglich aus.',
-		lang_feature_desc_robber_hideouts: 'sucht nach räuberverstecken und schickt die entsprechenden truppen zum angriff. er versucht es so lange mit demselben versteck, bis es zerstört ist, und geht dann zum nächsten weiter usw. es ist auch möglich, alle einheiten eines bestimmten typs zu senden, indem man einen einheitenwert von \'-1\' hinzufügt.',
-		lang_feature_desc_improve_troops: 'prüft, ob bestimmte einheiten in einer bestimmten reihenfolge aufgerüstet werden können, zuerst wird die einheit geprüft und wenn sie nicht verfügbar ist oder das maximum erreicht hat, wird versucht, die nächste einheit aufzurüsten, die liste kann beliebig verlängert werden.',
-		lang_feature_desc_celebrations: 'prüft, ob bestimmte dörfer feste veranstalten können, versucht immer, ein fest zu veranstalten, und plant nach möglichkeit ein weiteres.',
+		lang_feature_desc_timed_send: 'schickt truppen zu einer geplanten zeit, wobei die reisezeit der einheiten für die ankunftszeit ' +
+			'berücksichtigt wird.',
+		lang_feature_desc_train_troops: 'truppen in einem bestimmten intervall und in einer bestimmten reihenfolge auszubilden, geht es in '+
+			'jedem intervall die gesamte liste durch.\nwenn die menge größer ist als die kosten der verfügbaren ressourcen, bildet es so viele ' +
+			'truppen wie möglich aus.',
+		lang_feature_desc_robber_hideouts: 'sucht nach räuberverstecken und schickt die entsprechenden truppen zum angriff. er versucht es so ' +
+			'lange mit demselben versteck, bis es zerstört ist, und geht dann zum nächsten weiter usw.\n\nnb: es ist auch möglich, alle einheiten ' +
+			'eines bestimmten typs zu senden, indem man einen einheitenwert von \'-1\' hinzufügt.',
+		lang_feature_desc_improve_troops: 'prüft, ob bestimmte einheiten in einer bestimmten reihenfolge aufgerüstet werden können, zuerst ' +
+			'wird die einheit geprüft und wenn sie nicht verfügbar ist oder das maximum erreicht hat, wird versucht, die nächste einheit ' +
+			'aufzurüsten, die liste kann beliebig verlängert werden.',
+		lang_feature_desc_celebrations: 'prüft, ob bestimmte dörfer feste veranstalten können, versucht immer, ein fest zu veranstalten, ' +
+			'und plant nach möglichkeit ein weiteres.',
 
 		lang_home_name: 'feature name',
 		lang_home_description: 'beschreibung',
@@ -734,8 +789,9 @@ const languages = {
 		lang_timed_send_error_arrival_duration: 'fehlermeldung: reisedauer überschreitet ankunftszeit',
 		lang_timed_send_help_error_wrong: 'etwas ist schief gelaufen, ist dein ziel ein räuber?',
 
-		lang_inactivefinder_name: 'inaktiven sucher',
-		lang_inactivefinder_description: 'sucht inaktive spieler und fügt sie mit einem klick zu einer farmliste hinzu. wenn sie einfach hinzugefügt sind kann man sie mit dem einfach spähen feature auspähen',
+		lang_inactivefinder_name: 'inaktiver sucher',
+		lang_inactivefinder_description: 'sucht nach inaktive spieler und fügt sie mit einem klick zu einer farmliste hinzu. wenn sie einfach ' +
+			'hinzugefügt sind kann man sie mit dem einfach spähen feature auspähen',
 		lang_inactivefinder_distance_to: 'distanz relativ zu',
 		lang_inactivefinder_player_pop: 'spieler pop (min / max)',
 		lang_inactivefinder_village_pop: 'dorf pop (min / max)',
@@ -745,14 +801,26 @@ const languages = {
 		lang_inactivefinder_days: 'tagen',
 		lang_inactivefinder_default: 'standard',
 
-		lang_cropfinder_name: 'crop sucher',
-		lang_cropfinder_description: 'sucht dörfer mit vielen getreidefeldern. 15c und 9c stehen für dörfer mit 15 und 9 getreidefeldern.\nder \'bonus\' ist der maximale bonus für die getreideproduktion, der mit den umliegenden oasen erreicht werden kann.\nnb: ein natar-dorf wird als freies dorf betrachtet.',
+		lang_cropfinder_name: 'getreide sucher',
+		lang_cropfinder_description: 'sucht nach dörfer mit vielen getreidefeldern. 15c und 9c stehen für dörfer mit 15 und 9 getreidefeldern.\n' +
+			'der \'bonus\' ist der maximale bonus für die getreideproduktion, der mit den umliegenden oasen erreicht werden kann.\n' +
+			'\nnb: ein natar-dorf wird als freies dorf betrachtet.',
 		lang_cropfinder_distance_to: 'distanz relativ zu',
-		lang_cropfinder_filters: 'filtern',
+		lang_cropfinder_type: 'etreidesorte',
 		lang_cropfinder_only_free: 'nur die frei sind',
 
+		lang_resourcefinder_name: 'ressourcen sucher',
+		lang_resourcefinder_description: 'sucht nach dörfern mit 5 ressourcenfelder, entweder holz, lehm und/oder eisen.\nder \'bonus\' ist ' +
+			'der maximale bonus für die ressourcenproduktion, der mit den umliegenden oasen erreicht werden kann.',
+		lang_resourcefinder_distance_to: 'distanz relativ zu',
+		lang_resourcefinder_type: 'ressourcentyp',
+		lang_resourcefinder_wood: 'holz',
+		lang_resourcefinder_clay: 'lehm',
+		lang_resourcefinder_iron: 'eisen',
+		lang_resourcefinder_only_free: 'nur die frei sind',
+
 		lang_naturefinder_name: 'natur sucher',
-		lang_naturefinder_description: '',
+		lang_naturefinder_description: 'sucht natur in den oasen nach einem bestimmten tier.',
 		lang_naturefinder_distance_to: 'distanz relativ zu',
 		lang_naturefinder_nature_type: 'naturtyp',
 
@@ -767,7 +835,8 @@ const languages = {
 		lang_login_reconnect: 'wiederverbinden mit',
 		lang_login_relogin: 'oder mit einem anderen konto %',
 		lang_login_relogin_button: 'anmelden',
-		lang_login_info: 'wenn die app herunterfährt, hast du möglicherweise falsche anmeldedaten eingegeben, du solltes neu starten und dich wieder anmelden.',
+		lang_login_info: 'wenn die app herunterfährt, hast du möglicherweise falsche anmeldedaten eingegeben, du solltes neu starten und ' +
+			'dich wieder anmelden.',
 		lang_login_notification: 'der bot beendet sich nun.... starte ihn neu damit die änderungen funktionieren',
 		lang_login_reset_features: 'dies wird alle deine features zurücksetzen!',
 		lang_login_gameworld: 'spielwelt',

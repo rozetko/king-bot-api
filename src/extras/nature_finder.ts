@@ -3,7 +3,7 @@ import api from '../api';
 import { village } from '../gamedata';
 import { Inaturefinder, Imap_details, Ivillage } from '../interfaces';
 import { find_state_data } from '../util';
-import { nature_type, oasis_type } from '../data';
+import { nature_type } from '../data';
 
 class nature_finder {
 
@@ -15,7 +15,7 @@ class nature_finder {
 		if (!nature_type) {
 			return {
 				error: true,
-				message: 'please choose an animal!',
+				message: 'nature type not been provided.',
 				data: null
 			};
 		}
@@ -42,21 +42,21 @@ class nature_finder {
 			};
 		}
 
-		// find oasis
-		const oasis: any = this.discover_oasis(map_data);
+		// find oases
+		const oases: any = this.discover_oases(map_data);
 
 		// get map details
 		let map_details: Imap_details = null;
 		const params: Set<string> = new Set();
-		for (let cell of oasis) {
+		for (let cell of oases) {
 			if (Number(cell.id) == 0) continue;
 			params.add(village.map_details_ident + cell.id);
 		}
 		const map_details_data: any[] = await api.get_cache(Array.from(params));
 
-		// filter and sort oasis with animals
+		// filter and sort oases with nature
 		let nature = [];
-		for (let cell of oasis) {
+		for (let cell of oases) {
 			map_details = find_state_data(village.map_details_ident + cell.id, map_details_data);
 			if (!map_details)
 				continue;
@@ -91,24 +91,13 @@ class nature_finder {
 		};
 	}
 
-	discover_oasis(map_data: any): any {
-		const oasis = [];
+	discover_oases(map_data: any): any {
+		const oases = [];
 		for (let cell of map_data.map.cells) {
 			if (cell.oasis != '0')
-				oasis.push(cell);
-			/*
-			switch (cell.oasis)
-			{
-				case oasis_type.wood_crop:
-				case oasis_type.clay_crop:
-				case oasis_type.iron_crop:
-				case oasis_type.crop:
-				case oasis_type.crop_double:
-					oasis.push(cell);
-					break;
-			}*/
+				oases.push(cell);
 		}
-		return oasis;
+		return oases;
 	}
 
 	calculate_distance(village: any, x: number, y: number) {

@@ -18,7 +18,7 @@ const rowCenterStyle = {
 };
 
 @connect(storeKeys)
-export default class CropTable extends Component {
+export default class ResourceTable extends Component {
 
 	table = null;
 
@@ -27,7 +27,7 @@ export default class CropTable extends Component {
 			this.table.destroy();
 		this.table = jQuery('#table').DataTable({
 			dom: 'ritp',
-			pageLength: 10,
+			pageLength: 25,
 			lengthChange: false,
 			language: {
 				url: '/i18n/' + lang.currentLanguage + '.json'
@@ -52,7 +52,7 @@ export default class CropTable extends Component {
 
 	render(props) {
 		const { content } = props;
-		const list = content.map(item => <Crop content={ item } />);
+		const list = content.map(item => <Resource content={ item } props={ props } />);
 
 		return (
 			<div>
@@ -73,14 +73,30 @@ export default class CropTable extends Component {
 	}
 }
 
-class Crop extends Component {
+class Resource extends Component {
 
-	render({ content }) {
+	render({ content, props }) {
 		const {
-			id, x, y, is_15c, bonus, playerId, player_name, distance, free
+			id, x, y, res_type, bonus, playerId, player_name, distance, free
 		} = content;
 
 		const coordinates = `(${x}|${y})`;
+
+		let oasis_type;
+		switch (res_type) {
+			case '5436':
+			case '5346':
+				oasis_type = '10';
+				break;
+			case '4536':
+			case '3546':
+				oasis_type = '20';
+				break;
+			case '4356':
+			case '3456':
+				oasis_type = '30';
+				break;
+		}
 
 		return (
 			<tr>
@@ -91,7 +107,10 @@ class Crop extends Component {
 					{ coordinates }
 				</td>
 				<td style={ rowStyle }>
-					{ is_15c ? '15c' : '9c' }
+					<div style={{ display: 'inline-flex', alignItems: 'center', verticalAlign: 'text-top' }}>
+						{ oasis_type && <i class={ `oasis oasis${oasis_type}` } title={ props.lang_oasis_types[oasis_type] }></i> }
+						<span style={{ paddingLeft: '0.2em', paddingRight: '0.4em' }}>{ res_type }</span>
+					</div>
 				</td>
 				<td style={ rowStyle }>
 					{ bonus }%
