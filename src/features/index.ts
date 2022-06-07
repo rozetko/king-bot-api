@@ -9,6 +9,7 @@ import train_troops from './train_troops';
 import improve_troops from './improve_troops';
 import robber_hideouts from './robber_hideouts';
 import celebrations from './celebrations';
+import stolen_goods from './stolen_goods';
 
 export {
 	finish_earlier,
@@ -21,5 +22,6 @@ export {
 	train_troops,
 	improve_troops,
 	robber_hideouts,
-	celebrations
+	celebrations,
+	stolen_goods
 };

@@ -4,7 +4,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { connect } from 'unistore/preact';
 import { storeKeys } from '../language';
-import CelebrationTable from '../components/celebrations_table';
+import CelebrationsTable from '../components/celebrations_table';
 import { Select, Button } from '../components/form';
 
 const townhall = 24;
@@ -119,7 +119,7 @@ export default class Celebrations extends Component {
 		if (is_already)
 			return; // celebration already added
 		celebrations.push(selected_celebration);
-		this.setState({ celebrations });
+		this.setState({ celebrations, error_celebrations: false });
 		this.set_button();
 	};
 
@@ -248,7 +248,7 @@ export default class Celebrations extends Component {
 							options = { celebration_types }
 							className = { celebration_select_class }
 							button = { <Button
-								action = { button_edit ? props.lang_common_add_edit : props.lang_common_add_unit }
+								action = { button_edit ? props.lang_common_edit : props.lang_common_add }
 								className = 'is-success'
 								onClick = { this.add_celebration.bind(this) }
 								icon = { button_edit ? 'fa-pen' : 'fa-plus' } /> }
@@ -263,7 +263,7 @@ export default class Celebrations extends Component {
 
 					<div className="column">
 
-						<CelebrationTable
+						<CelebrationsTable
 							content={ celebrations }
 							remove_celebration={ this.remove_celebration.bind(this) }
 							edit_celebration={ this.edit_celebration.bind(this) }

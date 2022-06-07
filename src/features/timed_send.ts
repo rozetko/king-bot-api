@@ -284,7 +284,11 @@ class timed_send_feature extends feature_item {
 
 					// hero speed
 					if (key == '11') {
-						let hero_speed = (await hero.get()).speed;
+						// get hero data
+						const hero_data = await hero.get();
+						if (!hero_data)
+							continue;
+						let hero_speed = hero_data.speed;
 						if (hero_speed < speed) {
 							duration = target_durations[key];
 							duration = duration * 1000; // to ms
@@ -342,6 +346,12 @@ class timed_send_feature extends feature_item {
 				if (send_hero) {
 					// get hero data
 					const hero_data: Ihero = await hero.get();
+					if (!hero_data) {
+						logger.error(`timed ${mission_type_name} aborted from ${village_name} to ${target_village_name} ` +
+						'because couldn\'t find the hero', this.params.name);
+						this.options.error = true;
+						return; // stop
+					}
 
 					if (hero_data.isMoving || hero_data.status != hero_status.idle)
 					{

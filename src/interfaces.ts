@@ -253,6 +253,38 @@ export interface Ihero {
 	level: number;
 }
 
+export interface Ihero_item_collection {
+	name: string
+	data: Ihero_item
+}
+
+export interface Ihero_item {
+	id: number,
+	playerId: number,
+	tribeId: tribe,
+	inSlot: number,
+	itemId: number,
+	itemType: number,
+	amount: number,
+	strength: number,
+	images: string[],
+	bonuses: [],
+	stackable: boolean,
+	slot: number,
+	lastChange: number,
+	hasSpeedBonus: boolean,
+	inventorySlotNr: number,
+	previousOwners: number,
+	upgradeLevel: number,
+	upgradableItemType: boolean,
+	itemQuality: number,
+	itemTier: number,
+	baseUpgradeBonus: [],
+	cardGameItem: boolean,
+	premiumItem: boolean,
+	upgradedItem: boolean
+}
+
 export interface Iplayer {
 	playerId: number,
 	name: string,

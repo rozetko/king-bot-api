@@ -8,6 +8,7 @@ import TrainTroops from './train_troops';
 import ImproveTroops from './improve_troops';
 import RobberHideouts from './robber_hideouts';
 import Celebrations from './celebrations';
+import StolenGoods from './stolen_goods';
 
 const features = {
 	hero: {
@@ -49,6 +50,10 @@ const features = {
 	celebrations: {
 		navbar: true,
 		component: Celebrations,
+	},
+	stolen_goods: {
+		navbar: true,
+		component: StolenGoods,
 	}
 };
 

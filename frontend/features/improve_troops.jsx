@@ -48,7 +48,7 @@ export default class ImproveTroops extends Component {
 		let research_units = [];
 		if (response.data != null) {
 			for (let unit_data of response.data) {
-				research_units[unit_data.unitType] = unit_data.canResearch;
+				research_units[unit_data.unitType] = unit_data.unitLevel != '-2';
 			}
 		}
 		if (!research_units[unit_type])
@@ -114,7 +114,7 @@ export default class ImproveTroops extends Component {
 		if (is_already)
 			return; // unit already added
 		units.push(selected_unit);
-		this.setState({ units });
+		this.setState({ units, error_units: false });
 		this.set_button();
 	};
 
@@ -319,7 +319,7 @@ export default class ImproveTroops extends Component {
 							options = { own_troops }
 							className = { unit_select_class }
 							button = { <Button
-								action = { button_edit ? props.lang_common_add_edit : props.lang_common_add_unit }
+								action = { button_edit ? props.lang_common_edit : props.lang_common_add }
 								className = 'is-success'
 								onClick = { this.add_unit.bind(this) }
 								icon = { button_edit ? 'fa-pen' : 'fa-plus' } /> }

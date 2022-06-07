@@ -286,7 +286,7 @@ class api {
 		return await this.post('sendResources', 'trade', params);
 	}
 
-	async start_adventure(type: number): Promise<void> {
+	async start_adventure(type: number): Promise<any> {
 		const params = {
 			questId: (type == 0) ? 991 : 992,
 			dialogId: 0,
@@ -374,6 +374,26 @@ class api {
 		const response: any = await this.ax.get(url);
 		response.data = this.handle_errors(response.data, 'get_map');
 		return this.merge_data(response.data);
+	}
+
+	async get_duration_to_closest_village_with_influence(villageId: number): Promise<any> {
+		const params = {
+			villageId
+		};
+		return await this.post('getDurationToClosestVillageWithInfluence', 'hero', params);
+	}
+
+	async get_treasure_sell_price(): Promise<any> {
+		return await this.post('getTreasureSellPrice', 'hero', {});
+	}
+
+	async hero_use_item(id: number, amount: number, villageId: number): Promise<any> {
+		const params = {
+			id,
+			amount,
+			villageId
+		};
+		return await this.post('useItem', 'hero', params);
 	}
 
 	async post(action: string, controller: string, params: object): Promise<any> {

@@ -255,6 +255,10 @@ class robber_feature extends feature_item {
 		if (this.send_hero) {
 			// get hero data
 			const hero_data: Ihero = await hero.get();
+			if (!hero_data) {
+				logger.error('send aborted because couldn\'t find the hero', this.params.name);
+				return;
+			}
 
 			if (hero_data.isMoving || hero_data.status != hero_status.idle)
 			{

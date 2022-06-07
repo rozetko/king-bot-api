@@ -89,30 +89,42 @@ class auto_adventure extends feature_single {
 		while (this.options.run) {
 			const { type, min_health } = this.options;
 
+			let sleep_time: number = 300;
+
 			// get hero data
 			const hero_data: Ihero = await hero.get();
+			if (hero_data) {
 
-			if (hero_data.adventurePoints > 0 && !hero_data.isMoving &&
-				hero_data.status == hero_status.idle && Number(hero_data.health) > min_health) {
+				const can_send =
+					hero_data.adventurePoints > 0 &&
+					!hero_data.isMoving &&
+					hero_data.status == hero_status.idle &&
+					Number(hero_data.health) > min_health;
 
-				let send: boolean = false;
-				if (type == adventure_type.short && Number(hero_data.adventurePoints) > 0)
-					send = true;
-				else if (type == adventure_type.long && Number(hero_data.adventurePoints > 1))
-					send = true;
+				if (can_send) {
 
-				if (send) {
-					await api.start_adventure(type);
-					logger.info('sent hero on adventure', this.params.name);
+					const has_adventure_points: boolean = adventure_type.short ?
+						Number(hero_data.adventurePoints) > 0 :
+						Number(hero_data.adventurePoints) > 1;
+
+					if (has_adventure_points) {
+						const aventure = await api.start_adventure(type);
+						if (aventure.errors) {
+							for (let error of aventure.errors)
+								logger.error(`send hero on adventure failed: ${error.message}`, this.params.name);
+						}
+						else
+							logger.info('sent hero on adventure', this.params.name);
+					}
 				}
+
+				const diff_time: number = get_diff_time(hero_data.untilTime);
+				if (diff_time > 0)
+					sleep_time = diff_time + 5;
 			}
 
-			const diff_time: number = get_diff_time(hero_data.untilTime);
-			let sleep_time: number = 60;
-
-			if (diff_time > 0) sleep_time = diff_time + 5;
-			if (sleep_time <= 0) sleep_time = 300;
-			if (sleep_time > 500) sleep_time = 500;
+			if (sleep_time <= 0)
+				sleep_time = 300;
 
 			await sleep(sleep_time);
 		}

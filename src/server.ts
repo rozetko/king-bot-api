@@ -20,7 +20,8 @@ import {
 	train_troops,
 	improve_troops,
 	robber_hideouts,
-	celebrations
+	celebrations,
+	stolen_goods
 } from './features';
 import { farming, village, player, troops } from './gamedata';
 import database from './database';
@@ -39,7 +40,8 @@ class server {
 		train_troops,
 		improve_troops,
 		robber_hideouts,
-		celebrations
+		celebrations,
+		stolen_goods
 	];
 
 	constructor() {

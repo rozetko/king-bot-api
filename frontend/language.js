@@ -26,6 +26,7 @@ const languages = {
 		lang_feature_robber_hideouts: 'robber hideouts',
 		lang_feature_improve_troops: 'improve troops',
 		lang_feature_celebrations: 'celebrations',
+		lang_feature_stolen_goods: 'stolen goods',
 
 		lang_feature_desc_hero: 'sends the hero automaticly on an adventure if the health is above given percentage.',
 		lang_feature_desc_queue: 'this is an endless building queue. don\'t change the village once it\'s set, if you want to change the village, ' +
@@ -44,6 +45,9 @@ const languages = {
 			'or is maxed out, it will try to upgrade the next unit, you can increase the list as long as you want to.',
 		lang_feature_desc_celebrations: 'checks if it can hold celebrations for the given villages, it will try to always hold a celebration ' +
 			'and plan another one if possible.',
+		lang_feature_desc_stolen_goods: 'checks if it can sell stolen goods in a given interval and villages, and only when the village is in ' +
+			'negative cereal production, it will always try to refill the granary by selling the stolen goods, but taking into account the cereal ' +
+			'that is arriving and making sure that the amount to sell does not exceed the capacity of the granary.',
 
 		lang_home_name: 'feature name',
 		lang_home_description: 'description',
@@ -200,8 +204,8 @@ const languages = {
 		lang_common_crop: 'crop',
 		lang_common_interval: 'interval in seconds (min / max)',
 		lang_common_target: 'target (x / y)',
-		lang_common_add_unit: 'add unit',
-		lang_common_add_edit: 'edit unit',
+		lang_common_add: 'add',
+		lang_common_edit: 'edit',
 
 		lang_mission_type_support: 'reinforcement',
 		lang_mission_type_attack: 'attack',
@@ -355,6 +359,7 @@ const languages = {
 		lang_feature_robber_hideouts: 'escondites de ladrones',
 		lang_feature_improve_troops: 'mejorar tropas',
 		lang_feature_celebrations: 'celebraciones',
+		lang_feature_stolen_goods: 'bienes robados',
 
 		lang_feature_desc_hero: 'envía al héroe automáticamente a una aventura si la salud está por encima del porcentaje dado.',
 		lang_feature_desc_queue: 'esta es una cola de construcción interminable, no cambies la aldea una vez que esté establecida, si quieres ' +
@@ -373,6 +378,9 @@ const languages = {
 			'y si no está disponible o está al máximo, intentará mejorar la siguiente unidad, puedes aumentar la lista tanto como quieras.',
 		lang_feature_desc_celebrations: 'comprueba si puede realizar celebraciones para las aldeas determinadas, siempre intentará realizar ' +
 			'una celebración y planificar otra si es posible.',
+		lang_feature_desc_stolen_goods: 'comprueba si puede vender los bienes robados en un intervalo y aldeas determinadas, y sólo cuando la ' +
+			'aldea está en producción negativa de cereal, siempre intentará rellenar el granero vendiendo los bienes robados, pero teniendo en ' +
+			'cuenta el cereal que está llegando y asegurándose de que la cantidad a vender no supera la capacidad del granero.',
 
 		lang_home_name: 'nombre función',
 		lang_home_description: 'descripción',
@@ -531,8 +539,8 @@ const languages = {
 		lang_common_crop: 'cereal',
 		lang_common_interval: 'intervalo en segundos (mín. / máx.)',
 		lang_common_target: 'objetivo (x / y)',
-		lang_common_add_unit: 'añadir',
-		lang_common_add_edit: 'editar',
+		lang_common_add: 'añadir',
+		lang_common_edit: 'editar',
 
 		lang_mission_type_support: 'refuerzo',
 		lang_mission_type_attack: 'ataque',
@@ -686,6 +694,7 @@ const languages = {
 		lang_feature_robber_hideouts: 'räuberverstecke',
 		lang_feature_improve_troops: 'truppen verbessern',
 		lang_feature_celebrations: 'feste',
+		lang_feature_stolen_goods: 'diebesgut',
 
 		lang_feature_desc_hero: 'der held wird automatisch auf abenteuer geschickt wenn er eine gewisse mindestprozentzahl an gesundheit hat.',
 		lang_feature_desc_queue: 'dies ist eine endlose bauschleife. falls du die stadt ändern willst, lege ein neues feature mit einer neuen ' +
@@ -707,6 +716,10 @@ const languages = {
 			'aufzurüsten, die liste kann beliebig verlängert werden.',
 		lang_feature_desc_celebrations: 'prüft, ob bestimmte dörfer feste veranstalten können, versucht immer, ein fest zu veranstalten, ' +
 			'und plant nach möglichkeit ein weiteres.',
+		lang_feature_desc_stolen_goods: 'prüft, ob er in einem bestimmten intervall und an bestimmte dörfer diebesgut verkaufen kann, und nur ' +
+			'wenn das dorf eine negative getreideproduktion hat, wird er immer versuchen, die kornspeicher durch den verkauf der diebesgut ' +
+			'wieder aufzufüllen, wobei er jedoch das ankommende getreide berücksichtigt und darauf achtet, dass die zu verkaufende menge die ' +
+			'kapazität der kornspeicher nicht übersteigt.',
 
 		lang_home_name: 'feature name',
 		lang_home_description: 'beschreibung',
@@ -864,8 +877,8 @@ const languages = {
 		lang_common_crop: 'getreide',
 		lang_common_interval: 'interval in sekunden (min / max)',
 		lang_common_target: 'ziel (x / y)',
-		lang_common_add_unit: 'hinzufügen',
-		lang_common_add_edit: 'editieren',
+		lang_common_add: 'hinzufügen',
+		lang_common_edit: 'editieren',
 
 		lang_mission_type_support: 'unterstützung',
 		lang_mission_type_attack: 'angriff',

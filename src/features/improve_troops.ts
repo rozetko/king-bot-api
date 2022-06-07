@@ -200,7 +200,7 @@ class train_feature extends feature_item {
 			}
 
 			// check if can upgrade
-			if (!unit_data.canResearch) {
+			if (unit_data.unitLevel == -2) {
 				logger.error(
 					`improving unit type ${unit_type_name} in village ${village_name} skipped ` +
 					'because unit type has not been learned',
