@@ -201,6 +201,7 @@ class queue extends feature_item {
 			logger.info(`building ${building_type} on village ${village_name} is already at the maximum level, removed from queue`, this.params.name);
 			// delete queue item
 			this.options.queue.shift();
+			this.save();
 			return 1;
 		}
 
@@ -224,18 +225,19 @@ class queue extends feature_item {
 
 			// delete queue item
 			this.options.queue.shift();
+			this.save();
 
 			const upgrade_time: number = Number(building.upgradeTime);
 			// check if building time is less than 5 min
 			if (upgrade_time < five_minutes && finish_earlier.running && canUseInstant) {
 				const res: any = await api.finish_now(village_id, queue_type);
 				if (res.data === false) {
-					logger.error(`instant finish on village ${village_name} failed`, this.params.name);
+					logger.error(`instant finish for building ${building_type} on village ${village_name} failed`, this.params.name);
 
 					// check again later if it might be possible
 					return 60;
 				}
-				logger.info(`upgrade time less 5 min on village ${village_name}, instant finish!`, this.params.name);
+				logger.info(`upgrade time less 5 min for building ${building_type} on village ${village_name}, instant finish!`, this.params.name);
 
 				// only wait one second to build next building
 				return 1;

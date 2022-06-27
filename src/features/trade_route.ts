@@ -1,5 +1,5 @@
 import { sleep, get_random_int } from '../util';
-import { Ivillage } from '../interfaces';
+import { Iresources, Ivillage } from '../interfaces';
 import { feature_collection, feature_item, Ioptions } from './feature';
 import { village } from '../gamedata';
 import api from '../api';
@@ -164,8 +164,6 @@ class trade_feature extends feature_item {
 				await this.trade_own_route();
 			else
 				await this.trade_external_route();
-			if (this.options.error)
-				break;
 		}
 
 		this.running = false;
@@ -206,36 +204,37 @@ class trade_feature extends feature_item {
 			return;
 		}
 
-		var resources = [0, 0, 0, 0, 0];
+		var resources: Iresources = { 1:0, 2:0, 3:0, 4:0 };
 		resources[1] = Math.floor(Math.min(send_wood, source_village.storage['1']));
 		resources[2] = Math.floor(Math.min(send_clay, source_village.storage['2']));
 		resources[3] = Math.floor(Math.min(send_iron, source_village.storage['3']));
 		resources[4] = Math.floor(Math.min(send_crop, source_village.storage['4']));
 
-		// if there are enough merchants
-		if (await this.enough_merchants(resources)) {
-			// and source village has more than desired
-			// and destination has less than desired
-			if (source_village.storage['1'] < source_wood || destination_village.storage['1'] > destination_wood) {
-				resources[1] = 0;
-			} if (source_village.storage['2'] < source_clay || destination_village.storage['2'] > destination_clay) {
-				resources[2] = 0;
-			} if (source_village.storage['3'] < source_iron || destination_village.storage['3'] > destination_iron) {
-				resources[3] = 0;
-			} if (source_village.storage['4'] < source_crop || destination_village.storage['4'] > destination_crop) {
-				resources[4] = 0;
-			}
-			if (resources[1] + resources[2] + resources[3] + resources[4] > 0) {
-				await api.send_merchants(source_village_id, destination_village_id, resources);
-				logger.info(`trade ${resources} sent from ${source_village_name} to ${destination_village_name}`, this.params.name);
-			} else {
-				logger.info(`trade ${source_village_name} -> ${destination_village_name} conditions not met. ${resources}`, this.params.name);
-			}
-			await sleep(get_random_int(interval_min, interval_max));
-		} else {
+		// check if there are enough merchants
+		if (!await this.enough_merchants(resources)) {
 			logger.warn(`not enough merchants for trade ${source_village_name} -> ${destination_village_name}`, this.params.name);
 			await sleep(get_random_int(300, 600));
+			return;
 		}
+
+		// check if source village has more and destination has less than desired
+		if (source_village.storage['1'] < source_wood || destination_village.storage['1'] > destination_wood) {
+			resources[1] = 0;
+		} if (source_village.storage['2'] < source_clay || destination_village.storage['2'] > destination_clay) {
+			resources[2] = 0;
+		} if (source_village.storage['3'] < source_iron || destination_village.storage['3'] > destination_iron) {
+			resources[3] = 0;
+		} if (source_village.storage['4'] < source_crop || destination_village.storage['4'] > destination_crop) {
+			resources[4] = 0;
+		}
+
+		// if there is something to send
+		if (resources[1] + resources[2] + resources[3] + resources[4] > 0) {
+			await api.send_merchants(source_village_id, destination_village_id, resources);
+			logger.info(`trade [wood: ${resources[1]}, clay: ${resources[2]}, iron: ${resources[3]}, crop: ${resources[4]}] ` +
+				`sent from ${source_village_name} to ${destination_village_name}`, this.params.name);
+		}
+		await sleep(get_random_int(interval_min, interval_max));
 	}
 
 	async trade_external_route(): Promise<void> {
@@ -260,35 +259,37 @@ class trade_feature extends feature_item {
 			return;
 		}
 
-		var resources = [0, 0, 0, 0, 0];
+		var resources: Iresources = { 1:0, 2:0, 3:0, 4:0 };
 		resources[1] = Math.floor(Math.min(send_wood, source_village.storage['1']));
 		resources[2] = Math.floor(Math.min(send_clay, source_village.storage['2']));
 		resources[3] = Math.floor(Math.min(send_iron, source_village.storage['3']));
 		resources[4] = Math.floor(Math.min(send_crop, source_village.storage['4']));
 
-		// if there are enough merchants
+		// check if there are enough merchants
 		if (await this.enough_merchants(resources)) {
-			// and source village has more than desired
-			if (source_village.storage['1'] < source_wood) {
-				resources[1] = 0;
-			} if (source_village.storage['2'] < source_clay) {
-				resources[2] = 0;
-			} if (source_village.storage['3'] < source_iron) {
-				resources[3] = 0;
-			} if (source_village.storage['4'] < source_crop) {
-				resources[4] = 0;
-			}
-			if (resources[1] + resources[2] + resources[3] + resources[4] > 0) {
-				await api.send_merchants(source_village_id, destination_village_id, resources);
-				logger.info(`trade ${resources} sent from ${source_village_name} to ${destination_village_name}`, this.params.name);
-			} else {
-				logger.info(`trade ${source_village_name} -> ${destination_village_name} conditions not met. ${resources}`, this.params.name);
-			}
-			await sleep(get_random_int(interval_min, interval_max));
-		} else {
 			logger.warn(`not enough merchants for trade ${source_village_name} -> ${destination_village_name}`, this.params.name);
 			await sleep(get_random_int(300, 600));
+			return;
 		}
+
+		// check if source village has more than desired
+		if (source_village.storage['1'] < source_wood) {
+			resources[1] = 0;
+		} if (source_village.storage['2'] < source_clay) {
+			resources[2] = 0;
+		} if (source_village.storage['3'] < source_iron) {
+			resources[3] = 0;
+		} if (source_village.storage['4'] < source_crop) {
+			resources[4] = 0;
+		}
+
+		// if there is something to send
+		if (resources[1] + resources[2] + resources[3] + resources[4] > 0) {
+			await api.send_merchants(source_village_id, destination_village_id, resources);
+			logger.info(`trade [wood: ${resources[1]}, clay: ${resources[2]}, iron: ${resources[3]}, crop: ${resources[4]}] ` +
+				`sent from ${source_village_name} to ${destination_village_name}`, this.params.name);
+		}
+		await sleep(get_random_int(interval_min, interval_max));
 	}
 }
 

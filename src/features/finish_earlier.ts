@@ -2,12 +2,12 @@ import { feature_single, Ioptions, Iresponse } from './feature';
 import { find_state_data, sleep, get_diff_time } from '../util';
 import { village } from '../gamedata';
 import { Ivillage, Ibuilding_queue } from '../interfaces';
+import { building_types } from '../data';
 import api from '../api';
 import logger from '../logger';
 import uniqid from 'uniqid';
 
 class finish_earlier extends feature_single {
-	building_queue_ident: string = 'BuildingQueue:';
 
 	options: Ioptions;
 
@@ -71,7 +71,7 @@ class finish_earlier extends feature_single {
 					sleep(60); // sleep 1 minute
 				}
 				const village_obj: Ivillage = data.data;
-				params.push(this.building_queue_ident + village_obj.villageId);
+				params.push(village.building_queue_ident + village_obj.villageId);
 			}
 
 			// fetch building queue data
@@ -86,7 +86,7 @@ class finish_earlier extends feature_single {
 					sleep(60); // sleep 1 minute
 				}
 				const village_obj: Ivillage = data.data;
-				const queue_data: Ibuilding_queue = find_state_data(this.building_queue_ident + village_obj.villageId, response);
+				const queue_data: Ibuilding_queue = find_state_data(village.building_queue_ident + village_obj.villageId, response);
 				if (!queue_data) {
 					logger.error(`could not get building queue data on village ${village_obj.name}`, this.params.name);
 					sleep(60); // sleep 1 minute
@@ -102,6 +102,7 @@ class finish_earlier extends feature_single {
 
 					const first_item: any = actual_queue[0];
 					const finished: number = first_item.finished;
+					const building_type = building_types[Number(first_item.buildingType)];
 
 					const rest_time: number = get_diff_time(finished);
 					const canUseInstant: boolean =
@@ -110,7 +111,7 @@ class finish_earlier extends feature_single {
 					// finish building instant
 					if (rest_time < five_minutes && canUseInstant) {
 						const res = await api.finish_now(village_obj.villageId, queue_type);
-						logger.info(`finished building earlier for free on village ${village_obj.name}`, this.params.name);
+						logger.info(`finished ${building_type} earlier for free on village ${village_obj.name}`, this.params.name);
 						continue;
 					}
 
@@ -121,15 +122,17 @@ class finish_earlier extends feature_single {
 				}
 			}
 
+			// retry now if sleep time is less than 5 min, or equal or less than zero
+			if (sleep_time && sleep_time < five_minutes || sleep_time <= 0)
+				sleep_time = 1;
+
+			// subtract 5 min from sleep time if its longer than that
 			if (sleep_time && sleep_time > five_minutes)
 				sleep_time = sleep_time - five_minutes;
 
-			if (!sleep_time)
-				sleep_time = 60;
-			if (sleep_time <= 0)
-				sleep_time = 5;
-			if (sleep_time > 300)
-				sleep_time = 300;
+			// default to 5 min
+			if (!sleep_time || sleep_time > five_minutes)
+				sleep_time = five_minutes;
 
 			await sleep(sleep_time);
 		}

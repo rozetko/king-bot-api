@@ -208,13 +208,8 @@ class train_feature extends feature_item {
 				this.options.error = true;
 				continue;
 			}
-			if (!unit_data.canUpgrade) {
-				logger.warn(
-					`improving unit type ${unit_type_name} in village ${village_name} skipped ` +
-					'because unit type is maxed out',
-					this.params.name);
+			if (!unit_data.canUpgrade)
 				continue;
-			}
 
 			// get resources cost
 			let costs = unit_data.costs;

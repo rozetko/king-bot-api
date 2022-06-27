@@ -246,6 +246,32 @@ class server {
 			process.exit();
 		});
 
+		this.app.post('/api/settings', (req: any, res: any) => {
+			const { action } = req.body;
+
+			let response: {};
+
+			if (action == 'get') {
+				response = {
+					data: {
+						logzio_enabled: database.get('account.logzio_enabled').value(),
+						logzio_host: database.get('account.logzio_host').value(),
+						logzio_token: database.get('account.logzio_token').value()
+					}
+				};
+			}
+
+			if (action == 'save') {
+				const { logzio_enabled, logzio_host, logzio_token } = req.body;
+				database.set('account.logzio_enabled', logzio_enabled).write();
+				database.set('account.logzio_host', logzio_host).write();
+				database.set('account.logzio_token', logzio_token).write();
+				response = { status: 'ok' };
+			}
+
+			res.send(response);
+		});
+
 		this.app.post('/api/inactivefinder', async (req: any, res: any) => {
 			const { action, data } = req.body;
 

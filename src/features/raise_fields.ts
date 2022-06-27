@@ -248,17 +248,19 @@ class raise extends feature_item {
 		}
 
 		if (upgrade_building) {
-			// upgrade building
+			const building_type = building_types[upgrade_building.buildingType];
+
+			// upgrade field
 			const res: any = await api.upgrade_building(upgrade_building.buildingType, upgrade_building.locationId, village_id);
 			if (res.errors) {
 				for (let error of res.errors)
-					logger.error(`upgrade building ${building_types[upgrade_building.buildingType]} on village ${village_name} failed: ${error.message}`, this.params.name);
+					logger.error(`upgrade field ${building_type} on village ${village_name} failed: ${error.message}`, this.params.name);
 
 				// check again later if it might be possible
 				return 60;
 			}
 
-			logger.info(`upgrade building ${building_types[upgrade_building.buildingType]} on village ${village_name}`, this.params.name);
+			logger.info(`upgrade field ${building_type} on village ${village_name}`, this.params.name);
 
 			const upgrade_time: number = Number(upgrade_building.upgradeTime);
 			// check if building time is less than 5 min
@@ -270,9 +272,9 @@ class raise extends feature_item {
 					// check again later if it might be possible
 					return 60;
 				}
-				logger.info(`upgrade time less 5 min on village ${village_name}, instant finish!`, this.params.name);
+				logger.info(`upgrade time less 5 min for field ${building_type} on village ${village_name}, instant finish!`, this.params.name);
 
-				// only wait one second to build next building
+				// only wait one second to build next field
 				return 1;
 			}
 

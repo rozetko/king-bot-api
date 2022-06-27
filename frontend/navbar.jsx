@@ -178,6 +178,9 @@ export default class NavBar extends Component {
 									<a class="navbar-item" onclick={ () => this.route('/logger') }>
 										{this.props.lang_navbar_logger}
 									</a>
+									<a class="navbar-item" onclick={ () => this.route('/settings') }>
+										{this.props.lang_navbar_settings}
+									</a>
 									<a class="navbar-item" onclick={ () => this.route('/login') }>
 										{this.props.lang_navbar_change_login}
 									</a>

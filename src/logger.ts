@@ -3,6 +3,7 @@ import winston from 'winston';
 import logzio_transport from 'winston-logzio';
 import { format } from 'logform';
 import settings from './settings';
+import database from './database';
 
 const level = () => {
 	const env = process.env.NODE_ENV || 'development';
@@ -20,10 +21,23 @@ interface log {
 class logger {
 	log_inst: any = null;
 	logz_inst: any = null;
-
 	log_list: log[] = [];
 
+	logzio_enabled: boolean = false;
+
 	constructor() {
+		this.logzio_enabled = database.get('account.logzio_enabled').value();
+		let logzio_host = database.get('account.logzio_host').value();
+		let logzio_token = database.get('account.logzio_token').value();
+		if (logzio_host === undefined && logzio_token === undefined) {
+			this.logzio_enabled = true;
+			logzio_host = 'listener.logz.io'; // default host
+			logzio_token = 'GwcFiWmxTgedlLRgCjyGNSzNtZEojIhp'; // default token
+			database.set('account.logzio_enabled', this.logzio_enabled).write();
+			database.set('account.logzio_host', logzio_host).write();
+			database.set('account.logzio_token', logzio_token).write();
+		}
+
 		const CONSOLE_FORMAT = winston.format.combine(
 			format.colorize(),
 			format.printf(
@@ -51,24 +65,31 @@ class logger {
 			transports
 		});
 
-		this.logz_inst = winston.createLogger({
-			level: 'info',
-			transports: [
-				new logzio_transport({
-					level: 'info',
-					name: 'king-bot-api',
-					token: 'GwcFiWmxTgedlLRgCjyGNSzNtZEojIhp',
-					host: 'listener.logz.io'
-				})
-			]
-		});
+		if (this.logzio_enabled) {
+			this.logz_inst = winston.createLogger({
+				level: 'debug',
+				transports: [
+					new logzio_transport({
+						level: 'info',
+						name: 'king-bot-api',
+						token: logzio_token,
+						host: logzio_host,
+						callback: (err: any) => {
+							if (err)
+								this.logzio_enabled = false;
+						}
+					})
+				]
+			});
+		}
 	}
 
 	info(obj: any, group: string = 'general'): void {
 		const message: string = this.get_string(obj);
 		const timestamp: string = this.get_timestamp();
 		this.log_inst.info(this.get_logz_data(message, timestamp, group));
-		this.logz_inst.info(this.get_logz_data(message, timestamp, group));
+		if (this.logzio_enabled)
+			this.logz_inst.info(this.get_logz_data(message, timestamp, group));
 		this.log_list.push({
 			level: 'info',
 			message,
@@ -81,7 +102,8 @@ class logger {
 		const message: string = this.get_string(obj);
 		const timestamp: string = this.get_timestamp();
 		this.log_inst.warn(this.get_logz_data(message, timestamp, group));
-		this.logz_inst.warn(this.get_logz_data(message, timestamp, group));
+		if (this.logzio_enabled)
+			this.logz_inst.warn(this.get_logz_data(message, timestamp, group));
 		this.log_list.push({
 			level: 'warn',
 			message,
@@ -94,7 +116,8 @@ class logger {
 		const message: string = this.get_string(obj);
 		const timestamp: string = this.get_timestamp();
 		this.log_inst.error(this.get_logz_data(message, timestamp, group));
-		this.logz_inst.error(this.get_logz_data(message, timestamp, group));
+		if (this.logzio_enabled)
+			this.logz_inst.error(this.get_logz_data(message, timestamp, group));
 		this.log_list.push({
 			level: 'error',
 			message,
@@ -107,7 +130,14 @@ class logger {
 		const message: string = this.get_string(obj);
 		const timestamp: string = this.get_timestamp();
 		this.log_inst.debug(this.get_logz_data(message, timestamp, group));
-		this.logz_inst.debug(this.get_logz_data(message, timestamp, group));
+		if (this.logzio_enabled)
+			this.logz_inst.debug(this.get_logz_data(message, timestamp, group));
+		this.log_list.push({
+			level: 'debug',
+			message,
+			group,
+			timestamp
+		});
 	}
 
 	get_string(obj: any): string {

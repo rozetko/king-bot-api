@@ -93,7 +93,10 @@ export default class Login extends Component {
 			'is-danger': error_sitter,
 		});
 
-		const sitter_types = ['', 'sitter', 'dual'].map(option =>
+		const sitter_types = [ '',
+			props.lang_login_type_sitter,
+			props.lang_login_type_dual
+		].map(option =>
 			<option	value={ option }>{option}</option>
 		);
 
@@ -114,7 +117,7 @@ export default class Login extends Component {
 
 									<Input
 										label={ props.lang_login_gameworld }
-										placeholder='gameworld'
+										placeholder={ props.lang_login_gameworld }
 										value={ gameworld }
 										onChange={ e => this.setState({ gameworld: e.target.value }) }
 										className={ input_class_gameworld }
@@ -123,7 +126,7 @@ export default class Login extends Component {
 
 									<Input
 										label={ props.lang_login_email }
-										placeholder='email'
+										placeholder={ props.lang_login_email }
 										type='email'
 										value={ email }
 										onChange={ e => this.setState({ email: e.target.value }) }
@@ -133,7 +136,7 @@ export default class Login extends Component {
 
 									<Input
 										label={ props.lang_login_password }
-										placeholder='password'
+										placeholder={ props.lang_login_password }
 										type='password'
 										value={ password }
 										onChange={ e => this.setState({ password: e.target.value }) }
@@ -143,7 +146,7 @@ export default class Login extends Component {
 
 									<div class='field'>
 										<label class="label">
-											{props.lang_login_sitter_dual}
+											{props.lang_login_sitter_type}
 											<i style={{ paddingLeft: '0.7em', fontWeight: 'normal' }}>{props.lang_login_optional}</i>
 										</label>
 										<p class='control'>
@@ -162,7 +165,7 @@ export default class Login extends Component {
 										<p><small>{props.lang_login_sitter_description}</small></p>
 										<Input
 											label={ props.lang_login_ingame_name }
-											placeholder='player name'
+											placeholder={ props.lang_login_player_name }
 											value={ sitter_name }
 											onChange={ e => this.setState({ sitter_name: e.target.value }) }
 											className={ input_class_sitter }

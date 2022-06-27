@@ -16,6 +16,7 @@ import ResourceFinder from './extras/resource_finder';
 import NatureFinder from './extras/nature_finder';
 import FeatureList from './sites/feature_list';
 import Logger from './sites/logger';
+import Settings from './sites/settings';
 import lang, { languages } from './language';
 
 const store = createStore({ notifications: [], ...languages.en });
@@ -43,6 +44,7 @@ const App = () => (
 					<ResourceFinder path='/resource_finder' />
 					<NatureFinder path='/nature_finder' />
 					<Logger path='/logger' />
+					<Settings path='/settings' />
 				</Router>
 			</div>
 		</section>

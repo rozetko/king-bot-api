@@ -77,9 +77,25 @@ async function login_to_lobby(axios: AxiosInstance, email: string, password: str
 	let res: AxiosResponse, options: AxiosRequestConfig, url: string, msid: string, token_lobby: string, session_lobby: string;
 
 	// get msid
-	res = await axios.get('https://mellon-t5.traviangames.com/authentication/login/ajax/form-validate?');
+	url = 'https://mellon-t5.traviangames.com/authentication/login/ajax/form-validate?';
+	res = await axios.get(url);
 	let $ = ci.load(res.data);
 	let html: string = $.html();
+	if (!html) {
+		let msi_retries: number = 1;
+		while (!html) {
+			if (msi_retries >= 5) {
+				logger.error('couldn\'t get the msid', 'login');
+				break;
+			}
+			logger.debug(`retrying to get the msid... ${msi_retries}`, 'login');
+			// retry
+			res = await axios.get(url);
+			$ = ci.load(res.data);
+			html = $.html();
+			msi_retries++;
+		}
+	}
 
 	let startIndex: number = html.indexOf('msid');
 	let endIndex: number = html.indexOf('{}', startIndex);
@@ -106,6 +122,21 @@ async function login_to_lobby(axios: AxiosInstance, email: string, password: str
 	let rv: any = parse_token(res.data);
 	let tokenURL: string = rv.url;
 	token_lobby = rv.token;
+	if (!token_lobby) {
+		let token_retries: number = 1;
+		while (!token_lobby) {
+			if (token_retries >= 5) {
+				logger.error('couldn\'t get the lobby token', 'login');
+				break;
+			}
+			logger.debug(`retrying to get the lobby token... ${token_retries}`, 'login');
+			res = await axios(options);
+			rv = parse_token(res.data);
+			tokenURL = rv.url;
+			token_lobby = rv.token;
+			token_retries++;
+		}
+	}
 
 	if (!token_lobby) {
 		logger.error('error parsing lobby cookies. maybe you entered wrong credentials ?', 'login');
@@ -124,8 +155,9 @@ async function login_to_lobby(axios: AxiosInstance, email: string, password: str
 
 	let cookies: AxiosResponse = await axios(options);
 
-	options.url = cookies.headers.location;
-	cookies = await axios(options);
+	// TODO: Review why this fails and if its actually needed.
+	//options.url = cookies.headers.location;
+	//cookies = await axios(options);
 
 	// set lobby cookies
 	let cookies_lobby = parse_cookies(cookies.headers['set-cookie'].slice(2));

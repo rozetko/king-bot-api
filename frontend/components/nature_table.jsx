@@ -81,7 +81,6 @@ class Nature extends Component {
 		const {
 			id, x, y, oasis_type, nature, distance
 		} = content;
-		console.log(props);
 
 		const coordinates = `(${x}|${y})`;
 

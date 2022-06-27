@@ -4,7 +4,7 @@ import { clash_obj, get_date, camelcase_to_string, get_random_string } from './u
 import manage_login from './login';
 import settings, { Icredentials } from './settings';
 import database from './database';
-import { Iunits } from './interfaces';
+import { Iresources, Iunits } from './interfaces';
 import { default_Iunits } from './data';
 import logger from './logger';
 
@@ -37,7 +37,7 @@ class api {
 		}
 		this.ax = axios.create(options);
 		this.ax.defaults.withCredentials = true;
-		this.ax.defaults.headers.common['User-Agent'] = 'Chrome/51.0.2704.63';
+		this.ax.defaults.headers.common['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36';
 	}
 
 	async test_proxy(): Promise<void> {
@@ -120,11 +120,13 @@ class api {
 			session
 		};
 
-		const response: any = await this.ax.post(`/?c=cache&a=get&t${get_date()}`, payload);
+		let response: any = await this.ax.post(`/?c=cache&a=get&t${get_date()}`, payload);
 		if (response?.data?.error?.type == 'ClientException' &&
 			response?.data?.error?.message == 'Authentication failed') {
 			logger.error('authentication failed', 'cache.get');
 			await this.refresh_token();
+			// retry
+			response = await this.ax.post(`/?c=cache&a=get&t${get_date()}`, payload);
 		}
 		if (!response)
 			return null;
@@ -275,7 +277,7 @@ class api {
 		return await this.post('send', 'troops', params);
 	}
 
-	async send_merchants(sourceVillageId: number, destVillageId: number, resources: number[]): Promise<any> {
+	async send_merchants(sourceVillageId: number, destVillageId: number, resources: Iresources): Promise<any> {
 		const params = {
 			destVillageId,
 			sourceVillageId,
@@ -406,11 +408,13 @@ class api {
 			session
 		};
 
-		const response: any = await this.ax.post(`/?t${get_date()}`, payload);
+		let response: any = await this.ax.post(`/?t${get_date()}`, payload);
 		if (response.data?.error?.type == 'ClientException' &&
 			response.data?.error?.message == 'Authentication failed') {
-			logger.error(response.data.error.message, `${controller}.${action}`);
+			logger.error('authentication failed', `${controller}.${action}`);
 			await this.refresh_token();
+			// retry
+			response = await this.ax.post(`/?t${get_date()}`, payload);
 		}
 		response.data = this.handle_errors(response.data, `${controller}.${action}`);
 
@@ -423,7 +427,6 @@ class api {
 	handle_errors: any = (data: any, group: string) => {
 		let errors = [];
 		if (data.response.errors) {
-			logger.debug(data, `${group}.error`);
 			for (let error of data.response.errors) {
 				if (error.message.split(' ').length == 1)
 					error.message = camelcase_to_string(error.message);
@@ -437,7 +440,6 @@ class api {
 		}
 
 		if (data.error) {
-			logger.debug(data, `${group}.error`);
 			if (data.error.message.split(' ').length == 1)
 				data.error.message = camelcase_to_string(data.error.message);
 			return {

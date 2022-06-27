@@ -145,7 +145,7 @@ class celebration_feature extends feature_item {
 
 			// check if can hold large celebration
 			if (Number(celebration_type) == celebration_types.large
-				&& (Number(building_data.lvl) < 10 || villages_data.length == 1)) {
+				&& (Number(building_data.lvl) < 10 || villages_data[0].data.length == 1)) {
 				logger.warn(
 					`${celebration_type_name} celebration in village ${village_name} skipped ` +
 					'because it does not meet the requirements',
@@ -164,6 +164,7 @@ class celebration_feature extends feature_item {
 			if (!celebration_data[celebration_type]) {
 				logger.error(`could not find celebration ${celebration_type_name} on village ${village_name}`,
 					this.params.name);
+				continue;
 			}
 			const celebration_list: Icelebration = celebration_data[celebration_type];
 

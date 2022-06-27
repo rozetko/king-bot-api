@@ -1,7 +1,7 @@
 import database from '../database';
 import uniqid from 'uniqid';
 import logger from '../logger';
-import { log, list_remove } from '../util';
+import { list_remove } from '../util';
 
 export interface Ifeature_params extends Ifeature, Ioptions {
 	description?: string
@@ -94,13 +94,19 @@ export abstract class feature_single implements feature {
 		try {
 			this.running = true;
 			await this.run();
+			this.save();
 		} catch (error:any) {
 			logger.error(error.message, this.params.name);
 			if (error.stack)
 				logger.debug(error.stack, this.params.name);
 
-			this.running = false;
-			this.set_options({ ...this.get_options(), run: false, error: true });
+			// restart
+			this.set_options({ ...this.get_options(), run: true, error: true });
+			this.running = true;
+			this.save();
+			logger.warn(`uuid: ${this.get_options().uuid} failed, restarting...`, this.params.name);
+			await this.run();
+			this.save();
 		}
 	}
 
@@ -352,6 +358,7 @@ export abstract class feature_item {
 
 		try {
 			this.running = true;
+			this.save();
 			await this.run();
 			this.save();
 		} catch (error:any) {
@@ -359,8 +366,13 @@ export abstract class feature_item {
 			if (error.stack)
 				logger.debug(error.stack, this.params.name);
 
-			this.running = false;
-			this.set_options({ ...this.get_options(), run: false, error: true });
+			// restart
+			this.set_options({ ...this.get_options(), run: true, error: true });
+			this.running = true;
+			this.save();
+			logger.warn(`uuid: ${this.get_options().uuid} failed, restarting...`, this.params.name);
+			await this.run();
+			this.save();
 		}
 	}
 }
