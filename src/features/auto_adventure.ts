@@ -1,6 +1,6 @@
 import { Ihero } from '../interfaces';
 import { feature_single, Ioptions, Iresponse } from './feature';
-import { get_diff_time, sleep } from '../util';
+import { get_diff_time, sleep_with_random_delay } from '../util';
 import { adventure_type, hero_status } from '../data';
 import { hero } from '../gamedata';
 import api from '../api';
@@ -126,7 +126,7 @@ class auto_adventure extends feature_single {
 			if (sleep_time <= 0)
 				sleep_time = 300;
 
-			await sleep(sleep_time);
+      await sleep_with_random_delay(sleep_time);
 		}
 
 		this.running = false;

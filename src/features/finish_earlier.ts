@@ -1,5 +1,5 @@
 import { feature_single, Ioptions, Iresponse } from './feature';
-import { find_state_data, sleep, get_diff_time } from '../util';
+import { find_state_data, sleep, get_diff_time, sleep_with_random_delay } from '../util';
 import { village } from '../gamedata';
 import { Ivillage, Ibuilding_queue } from '../interfaces';
 import { building_types } from '../data';
@@ -134,7 +134,7 @@ class finish_earlier extends feature_single {
 			if (!sleep_time || sleep_time > five_minutes)
 				sleep_time = five_minutes;
 
-			await sleep(sleep_time);
+			await sleep_with_random_delay(sleep_time);
 		}
 
 		logger.info(`uuid: ${this.options.uuid} stopped`, this.params.name);
